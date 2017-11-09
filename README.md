@@ -4,7 +4,7 @@ This library allows you to use the entities and services provided to bootstrap a
 
 ## Getting started
 
-The example 'test-project' in this repository shows the minimal configuration needed to use the library. First, add this dependency to your pom:
+The repo 'example_auth_project' in this project shows the minimum configuration needed to use the library. First, add this dependency to your pom:
 
 ```
 		<dependency>
@@ -130,6 +130,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 }
+```
+
+Configure the Spring Datasource in your Boot application. If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles. Insert the users/roles relevant for your application.
+
+Once the application has started, you should be able to log in via curl:
+
+```
+curl -c /tmp/cookie.txt -XPOST --data "username=xxxxx&password=xxxxx" http://localhost:8080/login
 ```
 
 TODO:
