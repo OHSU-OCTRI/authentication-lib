@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.octri.authentication.server.security.service;
 
 import java.util.List;

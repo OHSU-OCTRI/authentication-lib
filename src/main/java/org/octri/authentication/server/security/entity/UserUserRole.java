@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.octri.authentication.server.security.entity;
 
 import javax.persistence.Entity;

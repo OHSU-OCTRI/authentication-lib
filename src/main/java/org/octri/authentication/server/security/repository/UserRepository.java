@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.octri.authentication.server.security.repository;
 
 import org.octri.authentication.server.security.entity.User;
