@@ -4,7 +4,7 @@ This library allows you to use the entities and services provided to bootstrap a
 
 ## Getting started
 
-The repo 'example_auth_project' in this project shows the minimum configuration needed to use the library. First, add this dependency to your pom:
+The repo 'auth_example_project' in this project shows the minimum configuration needed to use the library. First, add this dependency to your pom:
 
 ```
 		<dependency>
@@ -35,7 +35,7 @@ public class TestProjectApplication {
 }
 ```
 
-Now your application can define its Security Configuration using the autowired components available in the library. Here's an example of LDAP Only
+Now your application can define its Security Configuration using the autowired components available in the library. Here's an example of LDAP Only and success and failure handlers that record the login attempt and redirect in a standard way.
 
 ```
 @Configuration
@@ -60,16 +60,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	AuthenticationUserDetailsService userDetailsService;
 
 	@Autowired
-	private StatusOnlyAuthenticationEntryPoint authenticationEntryPoint;
+	private ApplicationAuthenticationSuccessHandler authSuccessHandler;
 
 	@Autowired
-	private JsonResponseAuthenticationSuccessHandler authSuccessHandler;
-
-	@Autowired
-	private JsonResponseAuthenticationFailureHandler authFailureHandler;
-
-	@Autowired
-	private StatusOnlyLogoutSuccessHandler logoutSuccessHandler;
+	private ApplicationAuthenticationFailureHandler authFailureHandler;
 
 	@Bean
 	@ConfigurationProperties(prefix = "ldap.contextSource")
@@ -107,17 +101,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.exceptionHandling()
-				.authenticationEntryPoint(authenticationEntryPoint)
 				.and()
 				.csrf().disable() // TODO: Figure out
 				.formLogin()
 				.permitAll()
 				.successHandler(authSuccessHandler)
 				.failureHandler(authFailureHandler)
+				.failureUrl("/error")
 				.and()
 				.logout()
 				.permitAll()
-				.logoutSuccessHandler(logoutSuccessHandler)
 				.and()
 				.authorizeRequests()
 				.antMatchers("/index.html", "/login/**", "/login*", "/login*/**","/", "/assets/**", "/home/**", "/components/**", "/fonts/**")
@@ -141,8 +134,8 @@ curl -c /tmp/cookie.txt -XPOST --data "username=xxxxx&password=xxxxx" http://loc
 ```
 
 TODO:
-Audit tables/Envers?
-Client code? Login page?
-CSRF
+Audit tables for user management
+Client code for login screens/user management
+Default CSRF
 Add back in table-based options
 Make max login attempts optional with a default value of 3
