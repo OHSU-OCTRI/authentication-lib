@@ -1,9 +1,14 @@
 package org.octri.authentication.server.security.entity;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -24,6 +29,33 @@ public class User extends AbstractEntity {
 	public User() {
 		super();
 		// by default not enabled
+		defaults();
+	}
+
+	/**
+	 * Required fields constructor. Defaults are set for other fields - same as
+	 * default constructor.
+	 * 
+	 * @param username
+	 * @param firstName
+	 * @param lastName
+	 * @param institution
+	 * @param email
+	 */
+	public User(String username, String firstName, String lastName, String institution, String email) {
+		super();
+		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.institution = institution;
+		this.email = email;
+		defaults();
+	}
+
+	/**
+	 * Set default values. Used in each constructor.
+	 */
+	private void defaults() {
 		this.enabled = false;
 		this.accountLocked = false;
 		this.accountExpired = false;
@@ -77,12 +109,12 @@ public class User extends AbstractEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
 	private Date credentialsExpirationDate;
-
-	@Override
-	public String toString() {
-		return String.format("User [id=%s, username=%s, firstName=%s, lastName=%s, email=%s", this.id, this.username,
-				this.lastName, this.firstName, this.email);
-	}
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_user_role", 
+               joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name = "user_role", referencedColumnName = "id"))
+	private List<UserRole> userRoles;
 
 	public boolean isEnabled() {
 		if (this.enabled != null && this.enabled) {
@@ -202,6 +234,14 @@ public class User extends AbstractEntity {
 		this.password = password;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public String getFirstName() {
 		return this.firstName;
 	}
@@ -272,6 +312,14 @@ public class User extends AbstractEntity {
 
 	public void setCredentialsExpirationDate(Date credentialsExpirationDate) {
 		this.credentialsExpirationDate = credentialsExpirationDate;
+	}
+
+	public List<UserRole> getUserRoles() {
+		return userRoles;
+	}
+
+	public void setUserRoles(List<UserRole> userRoles) {
+		this.userRoles = userRoles;
 	}
 
 }
