@@ -12,6 +12,11 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+/**
+ * Logout success handler for handling redirects.
+ * 
+ * @author sams
+ */
 @Component
 public class AdminLogoutSuccessHandler implements LogoutSuccessHandler {
 

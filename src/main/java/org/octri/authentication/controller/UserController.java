@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+/**
+ * Controller for managing {@link User}.
+ * 
+ * @author sams
+ */
 @Controller
 public class UserController {
 
@@ -114,11 +119,21 @@ public class UserController {
 		return "redirect:/admin/user/list";
 	}
 
+	/**
+	 * Model attribute that can be used in templates.
+	 * 
+	 * @return Returns a list of all {@link UserRole}.
+	 */
 	@ModelAttribute("allUserRoles")
 	public List<UserRole> userRoles() {
 		return userRoleService.findAll();
 	}
 
+	/**
+	 * Model attribute that can be used in templates.
+	 * 
+	 * @return Returns a list of all {@link User}.
+	 */
 	@ModelAttribute("allUsers")
 	public List<User> users() {
 		return userService.findAll();
