@@ -80,20 +80,6 @@
 				</tbody>
 			</table>
 		</div>
-		<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.16/media/css/dataTables.bootstrap.min.css}" />
-		<script type="text/javascript" th:src="@{/webjars/datatables/1.10.16/media/js/jquery.js}"></script>
-		<script type="text/javascript" th:src="@{/webjars/datatables/1.10.16/media/js/jquery.dataTables.min.js}"></script>
-		<script type="text/javascript" th:src="@{/webjars/datatables/1.10.16/media/js/dataTables.bootstrap.min.js}"></script>
-		<script type="text/javascript">
-			$(function() {
-				$('.users-table').DataTable({
-					responsive: true,
-					columnDefs: [{
-						targets: 0,
-						orderable: false
-					}]
-				});
-			});
-		</script>
+		<div th:replace="fragments/assets :: javascript" />
 	</body>
 </html>

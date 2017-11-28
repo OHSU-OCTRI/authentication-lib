@@ -52,7 +52,11 @@ function disableSave(booleanValue) {
 
 $(function() {
 	$('.users-table').DataTable({
-		responsive: true
+		responsive: true,
+		columnDefs: [{
+			targets: 0,
+			orderable: false
+		}]
 	});
 	
 	$('.btn.cancel').on('click', cancel);
