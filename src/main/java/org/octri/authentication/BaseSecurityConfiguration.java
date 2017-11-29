@@ -18,11 +18,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
 
 /**
  * A base security configuration class that extends
@@ -96,6 +100,43 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Bean
 	public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
 		return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
+	}
+
+	/**
+	 * Set up authentication.
+	 *
+	 * @param auth
+	 * @throws Exception
+	 */
+	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
+		// Use table-based authentication by default
+		auth.userDetailsService(userDetailsService).and().authenticationProvider(tableBasedAuthenticationProvider());
+
+		// Authentication falls through to LDAP if configured
+		if (enableLdap) {
+			log.info("Enabling LDAP authentication.");
+			auth.ldapAuthentication().contextSource(contextSource()).userSearchBase(ldapSearchBase)
+					.userSearchFilter(ldapSearchFilter).ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
+					.userDetailsContextMapper(ldapContextMapper());
+		} else {
+			log.info("Not enabling LDAP authentication: octri.authentication.enable-ldap was false.");
+		}
+	}
+
+	/**
+	 * Set up basic authentication and restrict requests based on HTTP methods,
+	 * URLS, and roles.
+	 */
+	protected void configureHttp(HttpSecurity http) throws Exception {
+		http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().csrf().and().formLogin()
+				.permitAll().defaultSuccessUrl("/admin/user/list").failureHandler(authFailureHandler)
+				.failureUrl("/error").and().logout().permitAll().logoutSuccessHandler(adminLogoutSuccessHandler).and()
+				.authorizeRequests()
+				.antMatchers("/index.html", "/login/**", "/login*", "/login*/**", "/", "/assets/**", "/home/**",
+						"/components/**", "/fonts/**")
+				.permitAll().antMatchers(HttpMethod.POST).authenticated().antMatchers(HttpMethod.PUT).authenticated()
+				.antMatchers(HttpMethod.PATCH).authenticated().antMatchers(HttpMethod.DELETE).denyAll().anyRequest()
+				.authenticated();
 	}
 
 }
