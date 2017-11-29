@@ -115,8 +115,11 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Authentication falls through to LDAP if configured
 		if (enableLdap) {
 			log.info("Enabling LDAP authentication.");
-			auth.ldapAuthentication().contextSource(contextSource()).userSearchBase(ldapSearchBase)
-					.userSearchFilter(ldapSearchFilter).ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
+			auth.ldapAuthentication()
+					.contextSource(contextSource())
+					.userSearchBase(ldapSearchBase)
+					.userSearchFilter(ldapSearchFilter)
+					.ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
 					.userDetailsContextMapper(ldapContextMapper());
 		} else {
 			log.info("Not enabling LDAP authentication: octri.authentication.enable-ldap was false.");
@@ -128,14 +131,29 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * URLS, and roles.
 	 */
 	protected void configureHttp(HttpSecurity http) throws Exception {
-		http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().csrf().and().formLogin()
-				.permitAll().defaultSuccessUrl("/admin/user/list").failureHandler(authFailureHandler)
-				.failureUrl("/error").and().logout().permitAll().logoutSuccessHandler(adminLogoutSuccessHandler).and()
+		http.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint)
+				.and()
+				.csrf()
+				.and()
+				.formLogin()
+				.permitAll()
+				.defaultSuccessUrl("/admin/user/list")
+				.failureHandler(authFailureHandler)
+				.failureUrl("/error")
+				.and()
+				.logout().permitAll()
+				.logoutSuccessHandler(adminLogoutSuccessHandler)
+				.and()
 				.authorizeRequests()
 				.antMatchers("/index.html", "/login/**", "/login*", "/login*/**", "/", "/assets/**", "/home/**",
 						"/components/**", "/fonts/**")
-				.permitAll().antMatchers(HttpMethod.POST).authenticated().antMatchers(HttpMethod.PUT).authenticated()
-				.antMatchers(HttpMethod.PATCH).authenticated().antMatchers(HttpMethod.DELETE).denyAll().anyRequest()
+				.permitAll()
+				.antMatchers(HttpMethod.POST).authenticated()
+				.antMatchers(HttpMethod.PUT).authenticated()
+				.antMatchers(HttpMethod.PATCH).authenticated()
+				.antMatchers(HttpMethod.DELETE).denyAll()
+				.anyRequest()
 				.authenticated();
 	}
 
