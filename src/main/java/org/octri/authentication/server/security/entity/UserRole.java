@@ -1,7 +1,10 @@
 package org.octri.authentication.server.security.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.Size;
 
 /**
@@ -18,6 +21,9 @@ public class UserRole extends AbstractEntity{
 
 	@Size(max = 50)
 	private String description;
+	
+	@ManyToMany(mappedBy = "userRoles")
+	private List<User> users;
 
 	public String getRoleName() {
 		return roleName;
@@ -34,4 +40,13 @@ public class UserRole extends AbstractEntity{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
+
 }

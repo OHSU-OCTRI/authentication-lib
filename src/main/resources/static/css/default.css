@@ -1,0 +1,17 @@
+body {
+	/* Keeps the body below the fixed navbar */
+	padding-top:75px;
+}
+
+tbody td {
+	font-family:monospace;
+}
+
+.users-table td {
+	white-space:nowrap;
+}
+
+.hidden {
+	visibility:none;
+	display:none;
+}

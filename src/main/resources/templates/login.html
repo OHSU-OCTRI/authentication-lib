@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Login</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
+    </head>
+    <body>
+		<nav th:replace="fragments/navbar :: navbar"/>
+        <div class="container-fluid">
+            <form class="form" th:action="@{/login}" method="POST">
+                <div class="form-group">
+                    <label>
+                        <input id="username" name="username"  class="form-control" type="text"/>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input id="password" name="password" class="form-control" type="password" />
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Log in</button>
+                </div>
+            </form>
+        </div>
+		<script type="text/javascript" th:src="@{/webjars/datatables/1.10.16/media/js/jquery.js}"></script>
+        <script type="text/javascript">
+        		$(function() {
+        			$('#username').focus();
+        		});
+        </script>
+    </body>
+</html>

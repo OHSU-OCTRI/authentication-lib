@@ -12,12 +12,13 @@ The repo 'auth_example_project' in this project shows the minimum configuration 
 			<artifactId>authentication_lib</artifactId>
 			<version>${authentication_lib.version}</version>
 		</dependency>
-``` 
+```
 
-The library requires one property to be set that configures the number of login attempts allowed before a user is locked out. (TODO: This should be optional.) In application.properties set:
+The library requires two properties to be set that configures the number of login attempts allowed before a user is locked out. (TODO: This should be optional.) In application.properties set:
 
 ```
 octri.authentication.max-login-attempts=3
+octri.authentication.enable-ldap=true
 ```
 
 The Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
@@ -35,92 +36,162 @@ public class TestProjectApplication {
 }
 ```
 
-Now your application can define its Security Configuration using the autowired components available in the library. Here's an example of LDAP Only and success and failure handlers that record the login attempt and redirect in a standard way.
+The authentication library provides the following `SecurityConfiguration.java`.
 
 ```
-@Configuration
+package org.octri.authentication;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.server.security.AdminLogoutSuccessHandler;
+import org.octri.authentication.server.security.AuthenticationUserDetailsService;
+import org.octri.authentication.server.security.JsonResponseAuthenticationFailureHandler;
+import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
+import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
+import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
+import org.octri.authentication.server.security.StatusOnlyLogoutSuccessHandler;
+import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.HttpMethod;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
+
+/**
+ * A security configuration class that extends
+ * {@link WebSecurityConfigurerAdapter} and sets default annotations for
+ * enabling config properties, aspect J auto proxy, JPA auditing, and global
+ * method security annotations. It provides LDAP properties and beans for
+ * managing authentication.
+ *
+ * @author sams
+ */
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableConfigurationProperties
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @EnableAspectJAutoProxy
 @EnableJpaAuditing
+@Configuration
+@Order(10)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private static final Log log = LogFactory.getLog(SecurityConfiguration.class);
+    protected static final Log log = LogFactory.getLog(SecurityConfiguration.class);
 
-	@Value("${server.context-path}")
-	private String contextPath;
+    @Value("${octri.authentication.enable-ldap}")
+    protected Boolean enableLdap;
 
-	@Value("${ldap.contextSource.searchBase}")
-	private String ldapSearchBase;
+    @Value("${server.context-path}")
+    protected String contextPath;
 
-	@Value("${ldap.contextSource.searchFilter}")
-	private String ldapSearchFilter;
+    @Value("${ldap.contextSource.searchBase}")
+    protected String ldapSearchBase;
 
-	@Autowired
-	AuthenticationUserDetailsService userDetailsService;
+    @Value("${ldap.contextSource.searchFilter}")
+    protected String ldapSearchFilter;
 
-	@Autowired
-	private ApplicationAuthenticationSuccessHandler authSuccessHandler;
+    @Autowired
+    protected AuthenticationUserDetailsService userDetailsService;
 
-	@Autowired
-	private ApplicationAuthenticationFailureHandler authFailureHandler;
+    @Autowired
+    protected StatusOnlyAuthenticationEntryPoint authenticationEntryPoint;
 
-	@Bean
-	@ConfigurationProperties(prefix = "ldap.contextSource")
-	public BaseLdapPathContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-		return contextSource;
-	}
+    @Autowired
+    protected JsonResponseAuthenticationSuccessHandler authSuccessHandler;
 
-	@Bean
-	public LdapUserDetailsContextMapper ldapContextMapper() {
-		return new LdapUserDetailsContextMapper(userDetailsService);
-	}
+    @Autowired
+    protected JsonResponseAuthenticationFailureHandler authFailureHandler;
 
-	/**
-	 * Set up authentication.
-	 *
-	 * @param auth
-	 * @throws Exception
-	 */
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		// authentication is always LDAP
-		log.info("Enabling LDAP authentication.");
-		auth.ldapAuthentication()
-				.contextSource(contextSource())
-				.userSearchBase(ldapSearchBase)
-				.userSearchFilter(ldapSearchFilter)
-				.ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
-				.userDetailsContextMapper(ldapContextMapper());
-	}
+    @Autowired
+    protected AdminLogoutSuccessHandler adminLogoutSuccessHandler;
 
-	/**
-	 * Set up basic authentication and restrict requests based on HTTP methods, URLS, and roles.
-	 */
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.exceptionHandling()
-				.and()
-				.csrf().disable() // TODO: Figure out
-				.formLogin()
-				.permitAll()
-				.successHandler(authSuccessHandler)
-				.failureHandler(authFailureHandler)
-				.failureUrl("/error")
-				.and()
-				.logout()
-				.permitAll()
-				.and()
-				.authorizeRequests()
-				.antMatchers("/index.html", "/login/**", "/login*", "/login*/**","/", "/assets/**", "/home/**", "/components/**", "/fonts/**")
-				.permitAll()
-				.antMatchers(HttpMethod.POST).access("hasRole('ADMIN') or hasRole('USER')")
-				.antMatchers(HttpMethod.PUT).access("hasRole('ADMIN') or hasRole('USER')")
-				.antMatchers(HttpMethod.PATCH).access("hasRole('ADMIN') or hasRole('USER')")
-				.antMatchers(HttpMethod.DELETE).denyAll()
-				.anyRequest().authenticated();
-	}
+    /**
+     * It looks like in Spring Web Security 4 there is already an implementation
+     * that only returns a status:
+     * {@link org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler}
+     */
+    @Autowired
+    protected StatusOnlyLogoutSuccessHandler logoutSuccessHandler;
+
+    @Bean
+    @ConfigurationProperties(prefix = "ldap.contextSource")
+    public BaseLdapPathContextSource contextSource() {
+        LdapContextSource contextSource = new LdapContextSource();
+        return contextSource;
+    }
+
+    @Bean
+    public LdapUserDetailsContextMapper ldapContextMapper() {
+        return new LdapUserDetailsContextMapper(userDetailsService);
+    }
+
+    @Bean
+    public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
+        return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
+    }
+
+    /**
+     * Set up authentication.
+     *
+     * @param auth
+     * @throws Exception
+     */
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        // Use table-based authentication by default
+        auth.userDetailsService(userDetailsService).and().authenticationProvider(tableBasedAuthenticationProvider());
+
+        // Authentication falls through to LDAP if configured
+        if (enableLdap) {
+            log.info("Enabling LDAP authentication.");
+            auth.ldapAuthentication().contextSource(contextSource()).userSearchBase(ldapSearchBase)
+                    .userSearchFilter(ldapSearchFilter).ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
+                    .userDetailsContextMapper(ldapContextMapper());
+        } else {
+            log.info("Not enabling LDAP authentication: octri.authentication.enable-ldap was false.");
+        }
+    }
+
+    /**
+     * Set up basic authentication and restrict requests based on HTTP methods, URLS, and roles.
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .csrf()
+                .and()
+                .formLogin()
+                .permitAll()
+                .defaultSuccessUrl("/admin/user/list")
+                .failureHandler(authFailureHandler)
+                .failureUrl("/error")
+                .and()
+                .logout()
+                .permitAll()
+                .logoutSuccessHandler(adminLogoutSuccessHandler)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/index.html","/login/**", "/login*", "/login*/**","/", "/assets/**", "/home/**",
+                        "/components/**", "/fonts/**").permitAll()
+                .antMatchers(HttpMethod.POST).authenticated()
+                .antMatchers(HttpMethod.PUT).authenticated()
+                .antMatchers(HttpMethod.PATCH).authenticated()
+                .antMatchers(HttpMethod.DELETE).denyAll()
+                .anyRequest().authenticated();
+    }
 
 }
 ```
@@ -135,7 +206,4 @@ curl -c /tmp/cookie.txt -XPOST --data "username=xxxxx&password=xxxxx" http://loc
 
 TODO:
 Audit tables for user management
-Client code for login screens/user management
-Default CSRF
-Add back in table-based options
 Make max login attempts optional with a default value of 3
