@@ -8,10 +8,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
- * A security configuration class for API clients. Clients do not need redirects
- * or views - only a simple status. The provided alternative is
- * {@link FormSecurityConfiguration} for applications like OptOut where there is
- * now client using an API.
+ * A security configuration class for API clients that do not need redirects or
+ * views - only a simple status. The provided alternative is
+ * {@link FormSecurityConfiguration} for applications like OptOut where the
+ * application is built-in. Use {@link ApiSecurityConfiguration} when a client
+ * needs to authenticate with the server as in Ember apps...
  * 
  * TODO: Introduce status only handlers - currently the same as
  * {@link FormSecurityConfiguration}.
