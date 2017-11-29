@@ -9,6 +9,7 @@ function cancel() {
  * Use debounce to wait for keyboard silence before executing a function.
  * For example:
  * 	 $('#username').on('keydown blur change', debounce(myfunction));
+ * @see https://john-dugan.com/javascript-debounce/
  * @param func
  * @param wait
  * @param immediate

@@ -49,7 +49,7 @@
 		<div th:replace="fragments/assets :: javascript" />
 		<script th:inline="javascript">
 		/*<![CDATA[*/
-			var url = /*[[@{/admin/user/taken}]]*/;
+			var url = /*[[@{/admin/user/taken}]]*/ null;
 
 			$('#username').on('keydown blur change', debounce(function() {
 				var username = $('#username').val();

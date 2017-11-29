@@ -36,11 +36,6 @@ public class MethodSecurityExpressions {
 	public static final String ADMIN_OR_SUPER = ADMIN + " or " + SUPER;
 
 	/**
-	 * Requires USER or ADMIN or SUPER role.
-	 */
-	public static final String USER_OR_ADMIN_OR_SUPER = USER + " or " + ADMIN + " or " + SUPER;
-
-	/**
 	 * Requires ADMIN or SUPER role, and the user must not be the authenticated
 	 * user.
 	 */

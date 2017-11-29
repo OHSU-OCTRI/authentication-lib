@@ -23,9 +23,6 @@ public class AdminLogoutSuccessHandler implements LogoutSuccessHandler {
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
-		if (authentication != null) {
-			System.out.println(authentication.getName());
-		}
 		Assert.notNull(authentication, "Authentication must not be null");
 		response.setStatus(HttpStatus.OK.value());
 		response.sendRedirect(request.getContextPath() + "/login");

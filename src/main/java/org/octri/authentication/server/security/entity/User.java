@@ -28,8 +28,7 @@ public class User extends AbstractEntity {
 
 	public User() {
 		super();
-		// by default not enabled
-		defaults();
+		setDefaults();
 	}
 
 	/**
@@ -49,13 +48,14 @@ public class User extends AbstractEntity {
 		this.lastName = lastName;
 		this.institution = institution;
 		this.email = email;
-		defaults();
+		setDefaults();
 	}
 
 	/**
 	 * Set default values. Used in each constructor.
 	 */
-	private void defaults() {
+	private void setDefaults() {
+		// by default not enabled
 		this.enabled = false;
 		this.accountLocked = false;
 		this.accountExpired = false;
