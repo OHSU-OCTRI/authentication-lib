@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
  * {@link FormSecurityConfiguration} for applications like OptOut where there is
  * now client using an API.
  * 
+ * TODO: Introduce status only handlers - currently the same as
+ * {@link FormSecurityConfiguration}.
+ * 
  * @author sams
  */
 @Order(20)
