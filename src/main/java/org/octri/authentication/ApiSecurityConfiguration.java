@@ -4,8 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * A security configuration class for API clients that do not need redirects or
@@ -41,7 +44,30 @@ public class ApiSecurityConfiguration extends BaseSecurityConfiguration {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		configureHttp(http);
+		http.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint)
+				.and()
+				.csrf()
+				.and()
+				.formLogin()
+				.permitAll()
+				.successHandler(jsonAuthSuccessHandler)
+				.failureHandler(jsonAuthFailureHandler)
+				.and()
+				.logout()
+				.permitAll()
+				.logoutRequestMatcher(new AntPathRequestMatcher(logoutUrl()))
+				.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+				.and()
+				.authorizeRequests()
+				.antMatchers("/", "/index.html", "/login/**", "/login*", "/login*/**", "/assets/**")
+				.permitAll()
+				.antMatchers(HttpMethod.POST).authenticated()
+				.antMatchers(HttpMethod.PUT).authenticated()
+				.antMatchers(HttpMethod.PATCH).authenticated()
+				.antMatchers(HttpMethod.DELETE).denyAll()
+				.anyRequest()
+				.authenticated();
 	}
 
 }

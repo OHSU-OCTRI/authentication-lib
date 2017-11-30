@@ -4,8 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * A form security configuration class that is to be used by the application as
@@ -37,7 +39,31 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		configureHttp(http);
+		http.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint)
+				.and()
+				.csrf()
+				.and()
+				.formLogin()
+				.permitAll()
+				.defaultSuccessUrl(defaultSuccessUrl())
+				.successHandler(formAuthSuccessHandler)
+				.failureHandler(formAuthFailureHandler)
+				.and()
+				.logout()
+				.permitAll()
+				.logoutRequestMatcher(new AntPathRequestMatcher(logoutUrl()))
+				.logoutSuccessHandler(formLogoutSuccessHandler)
+				.and()
+				.authorizeRequests()
+				.antMatchers("/", "/index.html", "/login/**", "/login*", "/login*/**", "/assets/**")
+				.permitAll()
+				.antMatchers(HttpMethod.POST).authenticated()
+				.antMatchers(HttpMethod.PUT).authenticated()
+				.antMatchers(HttpMethod.PATCH).authenticated()
+				.antMatchers(HttpMethod.DELETE).denyAll()
+				.anyRequest()
+				.authenticated();
 	}
 
 }

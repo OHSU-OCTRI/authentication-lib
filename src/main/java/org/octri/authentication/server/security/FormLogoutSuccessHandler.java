@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
  * @author sams
  */
 @Component
-public class AdminLogoutSuccessHandler implements LogoutSuccessHandler {
+public class FormLogoutSuccessHandler implements LogoutSuccessHandler {
 
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)

@@ -28,6 +28,7 @@ public class ApplicationAuthenticationFailureHandler extends AuditLoginAuthentic
 		recordLoginFailure(username, exception.getMessage(), request);
 		recordUserFailedAttempts(username, exception);
 		
+		super.setDefaultFailureUrl("/login?error");
 		super.onAuthenticationFailure(request, response, exception);
 	}
 
