@@ -125,7 +125,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	/**
 	 * This method returns the redirect URL for a successful login. Override
-	 * in your application to change the redirect location.
+	 * in your application to change the location.
 	 * 
 	 * @return A request mapping e.g. /admin/user/list
 	 */
@@ -134,7 +134,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * This is the logout request mapping.
+	 * This is the logout request mapping. Override in your application to change this URL.
 	 * 
 	 * @return A request mapping e.g. /logout
 	 */
@@ -143,7 +143,8 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * This is the URL a user will be redirected to after a failed login attempt.
+	 * This is the URL a user will be redirected to after a failed login attempt. Override
+	 * in your application to change the location.
 	 * 
 	 * @return A request mapping e.g. /logout?error
 	 */
