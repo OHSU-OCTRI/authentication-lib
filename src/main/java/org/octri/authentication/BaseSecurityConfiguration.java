@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.server.security.ApplicationAuthenticationFailureHandler;
 import org.octri.authentication.server.security.ApplicationAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;
-import org.octri.authentication.server.security.FormLogoutSuccessHandler;
 import org.octri.authentication.server.security.JsonResponseAuthenticationFailureHandler;
 import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
@@ -79,9 +78,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	protected ApplicationAuthenticationFailureHandler formAuthFailureHandler;
 
-	@Autowired
-	protected FormLogoutSuccessHandler formLogoutSuccessHandler;
-
 	@Bean
 	@ConfigurationProperties(prefix = "ldap.contextSource")
 	public BaseLdapPathContextSource contextSource() {
@@ -140,6 +136,16 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	protected String logoutUrl() {
 		return "/logout";
+	}
+
+	/**
+	 * This is the URL you will be redirected to after logging out successfully. Override in
+	 * your application to change this mapping.
+	 * 
+	 * @return A request mapping e.g. /logout
+	 */
+	protected String logoutSuccessUrl() {
+		return "/login";
 	}
 
 	/**

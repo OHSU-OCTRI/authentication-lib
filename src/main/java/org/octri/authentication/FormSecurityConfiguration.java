@@ -55,7 +55,7 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 				.logout()
 				.permitAll()
 				.logoutRequestMatcher(new AntPathRequestMatcher(logoutUrl()))
-				.logoutSuccessHandler(formLogoutSuccessHandler)
+				.logoutSuccessUrl(logoutSuccessUrl())
 				.and()
 				.authorizeRequests()
 				.antMatchers("/", "/index.html", "/login/**", "/login*", "/login*/**", "/assets/**")
