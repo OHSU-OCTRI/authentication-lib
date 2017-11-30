@@ -138,7 +138,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and()
 				.formLogin()
 				.permitAll()
-				.defaultSuccessUrl("/admin/user/list")
+				.defaultSuccessUrl(defaultSuccessUrl())
 				.failureHandler(authFailureHandler)
 				.failureUrl("/error")
 				.and()
@@ -155,6 +155,16 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.DELETE).denyAll()
 				.anyRequest()
 				.authenticated();
+	}
+
+	/**
+	 * This method returns the redirect URL for a successful login. Override
+	 * in your application to change the redirect location.
+	 * 
+	 * @return A request mapping e.g. /admin/user/list
+	 */
+	protected String defaultSuccessUrl() {
+		return "/admin/user/list";
 	}
 
 }
