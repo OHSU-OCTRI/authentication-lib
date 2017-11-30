@@ -17,8 +17,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * application is built-in. Use {@link ApiSecurityConfiguration} when a client
  * needs to authenticate with the server as in Ember apps...
  * 
- * TODO: Introduce status only handlers - currently the same as
- * {@link FormSecurityConfiguration}.
+ * TODO: Test this with LiverConference
  * 
  * @author sams
  */
