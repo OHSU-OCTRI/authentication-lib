@@ -40,6 +40,7 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		formAuthFailureHandler.setDefaultFailureUrl(loginFailureRedirectUrl());
 		http.exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
 				.and()

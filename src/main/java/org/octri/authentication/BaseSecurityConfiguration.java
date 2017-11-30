@@ -142,4 +142,12 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return "/logout";
 	}
 
+	/**
+	 * This is the URL a user will be redirected to after a failed login attempt.
+	 * 
+	 * @return A request mapping e.g. /logout?error
+	 */
+	protected String loginFailureRedirectUrl() {
+		return "/login?error";
+	}
 }
