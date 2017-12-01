@@ -36,37 +36,6 @@
 				</div>
 			</form>
 		</div>
-		<div th:fragment="new-js">
-			<!--/* TODO: Don't love this. Other solutions? */-->
-			<script th:inline="javascript">
-			/*<![CDATA[*/
-				var url = /*[[@{/admin/user/taken}]]*/ null;
-	
-				$('#username').on('keydown blur change', debounce(function() {
-					var username = $('#username').val();
-					if (username != null && username != '') {
-						$.get(url + '/' + encodeURIComponent(username), function(json) {
-							$('.username-taken').remove();
-							if (json.taken) {
-								disableSave(true);
-								if ($('.username-taken').size() === 0) {
-									$('#username').after(mutedDiv('This username is taken.', 'username-taken'));
-								}
-							} else {
-								disableSave(false);
-								if ($('.username-taken').size() === 0) {
-									$('#username').after(mutedDiv('Username available.', 'username-taken'));
-								}
-							}
-						});
-					} else {
-						$('.username-taken').remove();
-					}
-				}, 500));
-			/*]]>*/
-			</script>
-		
-		</div>
 	</body>
 </html>
 		

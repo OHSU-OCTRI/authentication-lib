@@ -64,4 +64,29 @@ $(function() {
 	
 	$("input[name=accountExpirationDate]").datepicker();
 	$("input[name=credentialsExpirationDate]").datepicker();
+	
+	let url = $("meta[name='ctx']").attr("content") + "admin/user/taken";
+	
+	$('#username').on('keydown blur change', debounce(function() {
+		var username = $('#username').val();
+		if (username != null && username != '') {
+			$.get(url + '/' + encodeURIComponent(username), function(json) {
+				$('.username-taken').remove();
+				if (json.taken) {
+					disableSave(true);
+					if ($('.username-taken').size() === 0) {
+						$('#username').after(mutedDiv('This username is taken.', 'username-taken'));
+					}
+				} else {
+					disableSave(false);
+					if ($('.username-taken').size() === 0) {
+						$('#username').after(mutedDiv('Username available.', 'username-taken'));
+					}
+				}
+			});
+		} else {
+			$('.username-taken').remove();
+		}
+	}, 500));
+
 });
