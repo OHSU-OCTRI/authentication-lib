@@ -3,7 +3,7 @@
 		<div class="container-fluid" th:fragment="new">
 			<h3>New User</h3>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${user}">
-				<input type="hidden" id="contextPath" th:value="@{/}" />
+				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">
 					<div class="col-lg-4 col-md-6 col-sm-12">
 						<div th:replace="fragments/forms :: required" />

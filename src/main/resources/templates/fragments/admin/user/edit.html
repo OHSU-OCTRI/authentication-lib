@@ -3,6 +3,7 @@
 		<div class="container-fluid" th:fragment="edit">
 			<h3 th:text="${'Edit User ' + user.id}">...</h3>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/edit/' + ${user.id}}" th:object="${user}">
+				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">
 					<div class="col-lg-4 col-md-6 col-sm-12">
 						<div th:replace="fragments/forms :: required" />
