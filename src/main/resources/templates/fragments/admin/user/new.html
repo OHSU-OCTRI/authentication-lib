@@ -1,0 +1,72 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<body>
+		<div class="container-fluid" th:fragment="new">
+			<h3>New User</h3>
+			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${user}">
+				<input type="hidden" id="contextPath" th:value="@{/}" />
+				<div class="row">
+					<div class="col-lg-4 col-md-6 col-sm-12">
+						<div th:replace="fragments/forms :: required" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-4 col-md-6 col-sm-12">
+						<div th:replace="fragments/user :: usernameForNew" />
+						<div th:replace="fragments/user :: firstName" />
+						<div th:replace="fragments/user :: lastName" />
+						<div th:replace="fragments/user :: institution" />
+						<div th:replace="fragments/user :: email" />
+						<div th:replace="fragments/user :: password" />
+						<div th:replace="fragments/user :: userRoles" />
+					</div>
+					<div class="col-lg-4 col-md-6 col-sm-12">
+						<div th:replace="fragments/user :: enabled" />
+						<div th:replace="fragments/user :: accountLocked" />
+						<div th:replace="fragments/user :: accountExpired" />
+						<div th:replace="fragments/user :: credentialsExpired" />
+						<div th:replace="fragments/user :: consecutiveLoginFailures" />
+						<div th:replace="fragments/user :: accountExpirationDate" />
+						<div th:replace="fragments/user :: credentialsExpirationDate" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div th:replace="fragments/forms :: save_cancel_buttons" />
+					</div>
+				</div>
+			</form>
+		</div>
+		<div th:fragment="new-js">
+			<!--/* TODO: Don't love this. Other solutions? */-->
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				var url = /*[[@{/admin/user/taken}]]*/ null;
+	
+				$('#username').on('keydown blur change', debounce(function() {
+					var username = $('#username').val();
+					if (username != null && username != '') {
+						$.get(url + '/' + encodeURIComponent(username), function(json) {
+							$('.username-taken').remove();
+							if (json.taken) {
+								disableSave(true);
+								if ($('.username-taken').size() === 0) {
+									$('#username').after(mutedDiv('This username is taken.', 'username-taken'));
+								}
+							} else {
+								disableSave(false);
+								if ($('.username-taken').size() === 0) {
+									$('#username').after(mutedDiv('Username available.', 'username-taken'));
+								}
+							}
+						});
+					} else {
+						$('.username-taken').remove();
+					}
+				}, 500));
+			/*]]>*/
+			</script>
+		
+		</div>
+	</body>
+</html>
+		

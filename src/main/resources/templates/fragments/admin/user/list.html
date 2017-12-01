@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<body>
+		<div class="container-fluid table-responsive" th:fragment="list">
+			<table class="table table-striped table-condensed users-table display responsive no-wrap">
+				<thead>
+					<th></th>
+					<th>Id</th>
+					<th>Username</th>
+					<th>Roles</th>
+					<th>Email</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Account Enabled</th>
+					<th>Account Locked</th>
+					<th>Account Expired</th>
+					<th>Credentials Expired</th>
+				</thead>
+				<tbody>
+					<tr th:each="user : ${allUsers}">
+						<td>
+							<a th:replace="fragments/utils :: edit_pencil(${user.id})"></a>
+						</td>
+						<td>
+							<div th:text="${user.id}">...</div>
+						</td>
+						<td>
+							<div th:text="${user.username}">...</div>
+						</td>
+ 						<td>
+							<p th:replace="fragments/utils :: roles_display(${user.userRoles})"></p>
+						</td>
+						<td>
+							<div th:text="${user.email}">...</div>
+						</td>
+						<td>
+							<div th:text="${user.firstName}">...</div>
+						</td>
+						<td>
+							<div th:text="${user.lastName}">...</div>
+						</td>
+						<td>
+							<div th:replace="fragments/utils :: boolean_display(${user.enabled})"></div>
+						</td>
+						<td>
+							<div th:replace="fragments/utils :: boolean_display(${user.accountLocked})"></div>
+						</td>
+						<td>
+							<div th:replace="fragments/utils :: boolean_display(${user.accountExpired})"></div>
+						</td>
+						<td>
+							<div th:replace="fragments/utils :: boolean_display(${user.credentialsExpired})"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
+	
