@@ -2,13 +2,13 @@ package org.octri.authentication;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.octri.authentication.server.security.AdminLogoutSuccessHandler;
+import org.octri.authentication.server.security.ApplicationAuthenticationFailureHandler;
+import org.octri.authentication.server.security.ApplicationAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;
 import org.octri.authentication.server.security.JsonResponseAuthenticationFailureHandler;
 import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
 import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
-import org.octri.authentication.server.security.StatusOnlyLogoutSuccessHandler;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,16 +18,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * A base security configuration class that extends
@@ -70,21 +67,16 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected StatusOnlyAuthenticationEntryPoint authenticationEntryPoint;
 
 	@Autowired
-	protected JsonResponseAuthenticationSuccessHandler authSuccessHandler;
+	protected JsonResponseAuthenticationSuccessHandler jsonAuthSuccessHandler;
 
 	@Autowired
-	protected JsonResponseAuthenticationFailureHandler authFailureHandler;
+	protected JsonResponseAuthenticationFailureHandler jsonAuthFailureHandler;
 
 	@Autowired
-	protected AdminLogoutSuccessHandler adminLogoutSuccessHandler;
+	protected ApplicationAuthenticationSuccessHandler formAuthSuccessHandler;
 
-	/**
-	 * It looks like in Spring Web Security 4 there is already an implementation
-	 * that only returns a status:
-	 * {@link org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler}
-	 */
 	@Autowired
-	protected StatusOnlyLogoutSuccessHandler logoutSuccessHandler;
+	protected ApplicationAuthenticationFailureHandler formAuthFailureHandler;
 
 	@Bean
 	@ConfigurationProperties(prefix = "ldap.contextSource")
@@ -128,35 +120,41 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Set up basic authentication and restrict requests based on HTTP methods,
-	 * URLS, and roles.
+	 * This method returns the redirect URL for a successful login. Override
+	 * in your application to change the location.
+	 * 
+	 * @return A request mapping e.g. /admin/user/list
 	 */
-	protected void configureHttp(HttpSecurity http) throws Exception {
-		http.exceptionHandling()
-				.authenticationEntryPoint(authenticationEntryPoint)
-				.and()
-				.csrf()
-				.and()
-				.formLogin()
-				.permitAll()
-				.defaultSuccessUrl("/admin/user/list")
-				.failureHandler(authFailureHandler)
-				.failureUrl("/error")
-				.and()
-				.logout().permitAll()
-				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				.logoutSuccessHandler(adminLogoutSuccessHandler)
-				.and()
-				.authorizeRequests()
-				.antMatchers("/index.html", "/login/**", "/login*", "/login*/**", "/", "/assets/**", "/home/**",
-						"/components/**", "/fonts/**")
-				.permitAll()
-				.antMatchers(HttpMethod.POST).authenticated()
-				.antMatchers(HttpMethod.PUT).authenticated()
-				.antMatchers(HttpMethod.PATCH).authenticated()
-				.antMatchers(HttpMethod.DELETE).denyAll()
-				.anyRequest()
-				.authenticated();
+	protected String defaultSuccessUrl() {
+		return "/admin/user/list";
 	}
 
+	/**
+	 * This is the logout request mapping. Override in your application to change this URL.
+	 * 
+	 * @return A request mapping e.g. /logout
+	 */
+	protected String logoutUrl() {
+		return "/logout";
+	}
+
+	/**
+	 * This is the URL you will be redirected to after logging out successfully. Override in
+	 * your application to change this mapping.
+	 * 
+	 * @return A request mapping e.g. /logout
+	 */
+	protected String logoutSuccessUrl() {
+		return "/login";
+	}
+
+	/**
+	 * This is the URL a user will be redirected to after a failed login attempt. Override
+	 * in your application to change the location.
+	 * 
+	 * @return A request mapping e.g. /logout?error
+	 */
+	protected String loginFailureRedirectUrl() {
+		return "/login?error";
+	}
 }
