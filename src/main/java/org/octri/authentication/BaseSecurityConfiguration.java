@@ -48,6 +48,9 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
 
+	@Value("${octri.authentication.enable-table-based}")
+	protected Boolean enableTableBased;
+
 	@Value("${octri.authentication.enable-ldap}")
 	protected Boolean enableLdap;
 
@@ -103,7 +106,10 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
 		// Use table-based authentication by default
-		auth.userDetailsService(userDetailsService).and().authenticationProvider(tableBasedAuthenticationProvider());
+		if (enableTableBased) {
+			auth.userDetailsService(userDetailsService).and()
+					.authenticationProvider(tableBasedAuthenticationProvider());
+		}
 
 		// Authentication falls through to LDAP if configured
 		if (enableLdap) {
