@@ -14,7 +14,7 @@ The repo 'auth_example_project' in this project shows the minimum configuration 
 		</dependency>
 ```
 
-The library requires two properties to be set that configures the number of login attempts allowed before a user is locked out. (TODO: This should be optional.) In application.properties set:
+The library requires three properties to be set that configures the number of login attempts allowed before a user is locked out, and whether or not ldap and tabled based authentication are enabled. (TODO: This should be optional.) In application.properties set:
 
 ```
 octri.authentication.max-login-attempts=3
