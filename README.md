@@ -22,6 +22,13 @@ octri.authentication.enable-ldap=true
 octri.authentication.enable-table-based=true
 ```
 
+These properties are defined in `BaseSecurityConfiguration.java`. For example,
+
+```
+@Value("${octri.authentication.enable-ldap}")
+protected Boolean enableLdap;
+```
+
 You can pass these as environment variables as well. 
 
 ```
