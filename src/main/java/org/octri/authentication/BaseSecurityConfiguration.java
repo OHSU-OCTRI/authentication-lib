@@ -48,10 +48,10 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
 
-	@Value("${octri.authentication.enable-table-based}")
+	@Value("${octri.authentication.enable-table-based:true}")
 	protected Boolean enableTableBased;
 
-	@Value("${octri.authentication.enable-ldap}")
+	@Value("${octri.authentication.enable-ldap:true}")
 	protected Boolean enableLdap;
 
 	@Value("${server.context-path}")
