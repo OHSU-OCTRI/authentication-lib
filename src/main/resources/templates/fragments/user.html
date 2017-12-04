@@ -79,7 +79,7 @@
 		</div>
 		<div th:fragment="consecutiveLoginFailures" class="form-group">
 			<label>Consecutive Login Failures*
-				<input class="form-control" type="text" th:field="*{consecutiveLoginFailures}" th:required="required" />
+				<input class="form-control" type="text" readonly="readonly" th:field="*{consecutiveLoginFailures}" th:required="required" />
 			</label>
 		</div>
 		<div th:fragment="accountExpirationDate" class="form-group">
