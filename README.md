@@ -14,11 +14,27 @@ The repo 'auth_example_project' in this project shows the minimum configuration 
 		</dependency>
 ```
 
-The library requires two properties to be set that configures the number of login attempts allowed before a user is locked out. (TODO: This should be optional.) In application.properties set:
+The library requires three properties to be set that configures the number of login attempts allowed before a user is locked out, and whether or not ldap and tabled based authentication are enabled. (TODO: This should be optional.) In application.properties set:
 
 ```
 octri.authentication.max-login-attempts=3
 octri.authentication.enable-ldap=true
+octri.authentication.enable-table-based=true
+```
+
+These properties are defined in `BaseSecurityConfiguration.java`. For example,
+
+```
+@Value("${octri.authentication.enable-ldap}")
+protected Boolean enableLdap;
+```
+
+You can pass these as environment variables as well. 
+
+```
+OCTRI_AUTHENTICATION_MAX_LOGIN_ATTEMPTS=3
+OCTRI_AUTHENTICATION_ENABLE_LDAP=true
+OCTRI_AUTHENTICATION_ENABLE_TABLE_BASED=true
 ```
 
 The Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
@@ -92,6 +108,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${octri.authentication.enable-ldap}")
     protected Boolean enableLdap;
 
+    @Value("${octri.authentication.enable-table-based}")
+    protected Boolean enableTableBased;
+
     @Value("${server.context-path}")
     protected String contextPath;
 
@@ -150,7 +169,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         // Use table-based authentication by default
-        auth.userDetailsService(userDetailsService).and().authenticationProvider(tableBasedAuthenticationProvider());
+        if (enableTableBased) {
+			auth.userDetailsService(userDetailsService).and()
+					.authenticationProvider(tableBasedAuthenticationProvider());
+		}
 
         // Authentication falls through to LDAP if configured
         if (enableLdap) {

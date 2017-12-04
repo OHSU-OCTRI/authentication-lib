@@ -20,8 +20,7 @@ import org.springframework.util.Assert;
 @Service
 public class UserService {
 
-	//TODO: Document and make optional with default
-	@Value("${octri.authentication.max-login-attempts}")
+	@Value("${octri.authentication.max-login-attempts:3}")
 	private int maxLoginAttempts;
 
 	@Resource
