@@ -7,11 +7,11 @@ This library allows you to use the entities, services, and templates provided to
 The repo 'auth_example_project' in this project shows a minimal web application that uses the library. When building your own application, add this dependency to your pom:
 
 ```
-		<dependency>
-			<groupId>org.octri.authentication</groupId>
-			<artifactId>authentication_lib</artifactId>
-			<version>${authentication_lib.version}</version>
-		</dependency>
+	<dependency>
+		<groupId>org.octri.authentication</groupId>
+		<artifactId>authentication_lib</artifactId>
+		<version>${authentication_lib.version}</version>
+	</dependency>
 ```
 
 The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
