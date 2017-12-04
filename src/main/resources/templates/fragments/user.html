@@ -41,8 +41,8 @@
 		<div th:fragment="userRoles" class="form-group">
 			<label>Roles</label>
 			<p th:each="userRole : ${allUserRoles}">
+				<input type="checkbox" th:field="*{userRoles}" th:value="${userRole.id}" />
 				<span th:text="${userRole.description}">...</span>
-					<input type="checkbox" th:field="*{userRoles}" th:value="${userRole.id}" />
 			 </p>
 		</div>
 		<div th:fragment="enabled" class="form-group">
