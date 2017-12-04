@@ -1,10 +1,10 @@
 # OCTRI Authentication Library
 
-This library allows you to use the entities, services, and templates provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided, along with Flyway migrations to initiate the database. Once configured, your application will have endpoints and UI for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes.
+This library allows you to use the entities, services, and templates provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided along with Flyway migrations to initiate a MySQL database. Once configured, your application will have endpoints and UI for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes and lock an account after a configurable number of failed login attempts.
 
 ## Getting started
 
-The repo 'auth_example_project' in this project shows the minimum configuration needed to use the library. First, add this dependency to your pom:
+The repo 'auth_example_project' in this project shows a minimal web application that uses the library. When building your own application, add this dependency to your pom:
 
 ```
 		<dependency>
@@ -14,36 +14,13 @@ The repo 'auth_example_project' in this project shows the minimum configuration 
 		</dependency>
 ```
 
-The library requires three properties to be set that configures the number of login attempts allowed before a user is locked out, and whether or not ldap and tabled based authentication are enabled. (TODO: This should be optional.) In application.properties set:
-
-```
-octri.authentication.max-login-attempts=3
-octri.authentication.enable-ldap=true
-octri.authentication.enable-table-based=true
-```
-
-These properties are defined in `BaseSecurityConfiguration.java`. For example,
-
-```
-@Value("${octri.authentication.enable-ldap}")
-protected Boolean enableLdap;
-```
-
-You can pass these as environment variables as well. 
-
-```
-OCTRI_AUTHENTICATION_MAX_LOGIN_ATTEMPTS=3
-OCTRI_AUTHENTICATION_ENABLE_LDAP=true
-OCTRI_AUTHENTICATION_ENABLE_TABLE_BASED=true
-```
-
-The Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
+The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
 
 ```
 @SpringBootApplication
 @ComponentScan({"org.octri.test", "org.octri.authentication"})
-@EntityScan( basePackages = {"org.octri.test", "org.octri.authentication.server.security.entity"} )
-@EnableJpaRepositories("org.octri.authentication.server.security.repository")
+@EntityScan( basePackages = {"org.octri.test", "org.octri.authentication"} )
+@EnableJpaRepositories("org.octri.authentication")
 public class TestProjectApplication {
 
 	public static void main(String[] args) {
@@ -52,180 +29,90 @@ public class TestProjectApplication {
 }
 ```
 
-The authentication library provides the following `SecurityConfiguration.java`.
+The authentication library provides security configuration options for a web-based application [FormSecurityConfiguration.java](src/main/java/org/octri/authentication/FormSecurityConfiguration.java) or a REST application [ApiSecurityConfiguration.java](src/main/java/org/octri/authentication/ApiSecurityConfiguration.java). Either can be enabled by simply extending the configuration you want to use and adding the @Configuration annotation:
 
 ```
-package org.octri.authentication;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.octri.authentication.server.security.AdminLogoutSuccessHandler;
-import org.octri.authentication.server.security.AuthenticationUserDetailsService;
-import org.octri.authentication.server.security.JsonResponseAuthenticationFailureHandler;
-import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
-import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
-import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
-import org.octri.authentication.server.security.StatusOnlyLogoutSuccessHandler;
-import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.http.HttpMethod;
-import org.springframework.ldap.core.support.BaseLdapPathContextSource;
-import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
-
-/**
- * A security configuration class that extends
- * {@link WebSecurityConfigurerAdapter} and sets default annotations for
- * enabling config properties, aspect J auto proxy, JPA auditing, and global
- * method security annotations. It provides LDAP properties and beans for
- * managing authentication.
- *
- * @author sams
- */
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableConfigurationProperties
-@EnableAspectJAutoProxy
-@EnableJpaAuditing
 @Configuration
-@Order(10)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    protected static final Log log = LogFactory.getLog(SecurityConfiguration.class);
-
-    @Value("${octri.authentication.enable-ldap}")
-    protected Boolean enableLdap;
-
-    @Value("${octri.authentication.enable-table-based}")
-    protected Boolean enableTableBased;
-
-    @Value("${server.context-path}")
-    protected String contextPath;
-
-    @Value("${ldap.contextSource.searchBase}")
-    protected String ldapSearchBase;
-
-    @Value("${ldap.contextSource.searchFilter}")
-    protected String ldapSearchFilter;
-
-    @Autowired
-    protected AuthenticationUserDetailsService userDetailsService;
-
-    @Autowired
-    protected StatusOnlyAuthenticationEntryPoint authenticationEntryPoint;
-
-    @Autowired
-    protected JsonResponseAuthenticationSuccessHandler authSuccessHandler;
-
-    @Autowired
-    protected JsonResponseAuthenticationFailureHandler authFailureHandler;
-
-    @Autowired
-    protected AdminLogoutSuccessHandler adminLogoutSuccessHandler;
-
-    /**
-     * It looks like in Spring Web Security 4 there is already an implementation
-     * that only returns a status:
-     * {@link org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler}
-     */
-    @Autowired
-    protected StatusOnlyLogoutSuccessHandler logoutSuccessHandler;
-
-    @Bean
-    @ConfigurationProperties(prefix = "ldap.contextSource")
-    public BaseLdapPathContextSource contextSource() {
-        LdapContextSource contextSource = new LdapContextSource();
-        return contextSource;
-    }
-
-    @Bean
-    public LdapUserDetailsContextMapper ldapContextMapper() {
-        return new LdapUserDetailsContextMapper(userDetailsService);
-    }
-
-    @Bean
-    public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
-        return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
-    }
-
-    /**
-     * Set up authentication.
-     *
-     * @param auth
-     * @throws Exception
-     */
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // Use table-based authentication by default
-        if (enableTableBased) {
-			auth.userDetailsService(userDetailsService).and()
-					.authenticationProvider(tableBasedAuthenticationProvider());
-		}
-
-        // Authentication falls through to LDAP if configured
-        if (enableLdap) {
-            log.info("Enabling LDAP authentication.");
-            auth.ldapAuthentication().contextSource(contextSource()).userSearchBase(ldapSearchBase)
-                    .userSearchFilter(ldapSearchFilter).ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
-                    .userDetailsContextMapper(ldapContextMapper());
-        } else {
-            log.info("Not enabling LDAP authentication: octri.authentication.enable-ldap was false.");
-        }
-    }
-
-    /**
-     * Set up basic authentication and restrict requests based on HTTP methods, URLS, and roles.
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-                .csrf()
-                .and()
-                .formLogin()
-                .permitAll()
-                .defaultSuccessUrl("/admin/user/list")
-                .failureHandler(authFailureHandler)
-                .failureUrl("/error")
-                .and()
-                .logout()
-                .permitAll()
-                .logoutSuccessHandler(adminLogoutSuccessHandler)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/index.html","/login/**", "/login*", "/login*/**","/", "/assets/**", "/home/**",
-                        "/components/**", "/fonts/**").permitAll()
-                .antMatchers(HttpMethod.POST).authenticated()
-                .antMatchers(HttpMethod.PUT).authenticated()
-                .antMatchers(HttpMethod.PATCH).authenticated()
-                .antMatchers(HttpMethod.DELETE).denyAll()
-                .anyRequest().authenticated();
-    }
+public class SecurityConfiguration extends FormSecurityConfiguration {
 
 }
 ```
 
-Configure the Spring Datasource in your Boot application. If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles. Insert the users/roles relevant for your application.
+The example project has a few other pieces of configuration, including a sample landing page "home.html" and a controller to handle request mappings. These are not strictly necessary.
 
-Once the application has started, you should be able to log in via curl:
+Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
 
 ```
-curl -c /tmp/cookie.txt -XPOST --data "username=xxxxx&password=xxxxx" http://localhost:8080/login
+ldap.contextSource.url=${LDAP_CONTEXTSOURCE_URL}
+ldap.contextSource.userDn=${LDAP_CONTEXTSOURCE_USERDN}
+ldap.contextSource.password=${LDAP_CONTEXTSOURCE_PASSWORD}
+ldap.contextSource.searchBase=${LDAP_CONTEXTSOURCE_SEARCHBASE}
+ldap.contextSource.searchFilter=${LDAP_CONTEXTSOURCE_SEARCHFILTER}
+ldap.contextSource.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
 ```
 
-TODO:
-Audit tables for user management
-Make max login attempts optional with a default value of 3
+If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
+
+## Default Behavior
+
+The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties:
+
+```
+octri.authentication.enable-ldap=false
+octri.authentication.enable-table-based=true
+```
+
+Users will be locked out after 3 login attempts. This limit can be configured as well:
+
+```
+octri.authentication.max-login-attempts=5
+```
+
+### User Roles
+
+The library sets up roles USER, ADMIN, and SUPER. The [UserController](src/main/java/org/octri/authentication/controller/UserController.java) restricts user management to the admin and super roles, and users cannot edit themselves.
+
+### Web Application Authentication and UI
+
+Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures.
+
+The following methods are provided by the [BaseSecurityConfiguration](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
+
+* defaultSuccessUrl() - Where to redirect after successful login. By default "/admin/user/list".
+* loginFailureRedirectUrl() - Where to redirect after failed login. By default "/login?error"
+* logoutUrl() - The request mapping for logout. By default "/logout".
+* logoutSuccessUrl() - Where to redirect after successful logout. By default "/login".
+
+For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create "login.html" in the /templates directory.
+
+#### Webjars
+
+The authentication library uses bootstrap, jquery, and datatables libraries for styling and functionality. These are included as resources through webjars in the pom.xml file. The library also uses the webjars-locator library which manages versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these libraries but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
+
+CSS:
+```
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/jquery.dataTables.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/dataTables.bootstrap.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.theme.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
+```
+Javascript:
+```
+<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" />
+<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/datatables/media/js/dataTables.bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/default.js}"></script>
+```
+
+If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables.
+
+TODO: Refactor so it is clear what each page needs instead of having all css loaded and the assets fragment loading all js on all pages.
+
+### API Authentication
+
+This functionality has not yet been tested or used in an example project, but should provide JSON responses to authentication requests.
+

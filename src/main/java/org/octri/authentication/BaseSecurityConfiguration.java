@@ -138,7 +138,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * This is the logout request mapping. Override in your application to change this URL.
 	 * 
-	 * @return A request mapping e.g. /logout
+	 * @return A request mapping /logout
 	 */
 	protected String logoutUrl() {
 		return "/logout";
@@ -148,7 +148,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * This is the URL you will be redirected to after logging out successfully. Override in
 	 * your application to change this mapping.
 	 * 
-	 * @return A request mapping e.g. /logout
+	 * @return A request mapping directing back to /login
 	 */
 	protected String logoutSuccessUrl() {
 		return "/login";
@@ -158,7 +158,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * This is the URL a user will be redirected to after a failed login attempt. Override
 	 * in your application to change the location.
 	 * 
-	 * @return A request mapping e.g. /logout?error
+	 * @return A request mapping directing back to /login with the error flag set
 	 */
 	protected String loginFailureRedirectUrl() {
 		return "/login?error";
