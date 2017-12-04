@@ -1,6 +1,6 @@
 # OCTRI Authentication Library
 
-This library allows you to use the entities and services provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided, along with Flyway migrations to initiate the database. Once configured, your application will have endpoints for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes.
+This library allows you to use the entities, services, and templates provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided, along with Flyway migrations to initiate the database. Once configured, your application will have endpoints and UI for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes.
 
 ## Getting started
 
