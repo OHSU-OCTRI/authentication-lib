@@ -16,7 +16,10 @@
 						<div th:replace="fragments/user :: lastName" />
 						<div th:replace="fragments/user :: institution" />
 						<div th:replace="fragments/user :: email" />
-						<div th:replace="fragments/user :: password" />
+						<div th:if="${tableBased}">
+							<div th:replace="fragments/user :: password" />
+						</div>
+						<h4>User Roles</h4>
 						<div th:replace="fragments/user :: userRoles" />
 					</div>
 					<div class="col-lg-4 col-md-6 col-sm-12">

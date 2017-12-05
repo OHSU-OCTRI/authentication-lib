@@ -37,6 +37,12 @@ public class UserController {
 
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+	@Autowired
+	private Boolean ldapEnabled;
+
+	@Autowired
+	private Boolean tableBasedEnabled;
+
 	/**
 	 * Returns view for displaying a list of all users.
 	 * 
@@ -61,6 +67,8 @@ public class UserController {
 	@GetMapping("admin/user/new")
 	public String newUser(Model model, HttpServletRequest request) {
 		model.addAttribute("user", new User());
+		model.addAttribute("ldap", ldapEnabled);
+		model.addAttribute("tableBased", tableBasedEnabled);
 		return "admin/user/new";
 	}
 

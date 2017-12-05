@@ -80,6 +80,16 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	protected ApplicationAuthenticationFailureHandler formAuthFailureHandler;
+	
+	@Bean
+	public Boolean ldapEnabled() {
+		return enableLdap;
+	}
+
+	@Bean
+	public Boolean tableBasedEnabled() {
+		return enableTableBased;
+	}
 
 	@Bean
 	@ConfigurationProperties(prefix = "ldap.contextSource")
@@ -109,6 +119,8 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (enableTableBased) {
 			auth.userDetailsService(userDetailsService).and()
 					.authenticationProvider(tableBasedAuthenticationProvider());
+		} else {
+			log.info("Not enabling table-based authentication: octri.authentication.enable-table-based was false.");
 		}
 
 		// Authentication falls through to LDAP if configured
