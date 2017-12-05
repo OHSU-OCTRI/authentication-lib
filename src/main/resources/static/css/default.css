@@ -1,6 +1,6 @@
 body {
 	/* Keeps the body below the fixed navbar */
-	padding-top:75px;
+	padding-top:50px;
 }
 
 tbody td {
@@ -9,6 +9,20 @@ tbody td {
 
 .users-table td {
 	white-space:nowrap;
+}
+
+.dataTables_wrapper {
+	margin-top: 20px;
+}
+
+/* Swap the default positioning of search filter and length input */
+.dataTables_wrapper .dataTables_filter {
+	float: left;
+	text-align: left;
+}
+
+.dataTables_wrapper .dataTables_length {
+	float: right;
 }
 
 .hidden {

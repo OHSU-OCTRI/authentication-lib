@@ -9,7 +9,7 @@
 		</div>
 
 		<p th:fragment="roles_display(userRoles)" th:each="userRole : ${userRoles}">
-			<span class="badge" th:text="${userRole.description}">...</span>
+			<span th:text="${userRole.description}">...</span>
 		</p>
 
 		<a th:fragment="edit_pencil(user_id)"
