@@ -11,8 +11,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component;
 
 /**
- * This failure handler can be used by applications to record the login event and redirect using the
- * standard logic in {@link SimpleUrlAuthenticationFailureHandler}
+ * This failure handler can be used by applications to record the login event, increment the number of failed attempts
+ * to authenticate, and redirect using the standard logic in {@link SimpleUrlAuthenticationFailureHandler}
  * 
  * @author yateam
  *
