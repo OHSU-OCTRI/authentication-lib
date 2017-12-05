@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<body>
 		<div th:fragment="boolean_display(input_value)">
-			<span th:class="${input_value} ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove'"></span>
+			<span th:class="${input_value} ? 'glyphicon glyphicon-ok text-success' : ''"></span>
 		</div>
 
 		<div th:fragment="date_display(date_value)">

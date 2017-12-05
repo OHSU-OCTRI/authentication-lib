@@ -3,12 +3,8 @@ body {
 	padding-top:50px;
 }
 
-tbody td {
-	font-family:monospace;
-}
-
-.users-table td {
-	white-space:nowrap;
+table.center-all td,th{
+    text-align :center;
 }
 
 .dataTables_wrapper {
