@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
  * This abstract failure handler can be extended to provide auditing of the login and increment the failed attempts flag, 
  * locking the account if the maximum is exceeded.
  * 
- * The number of failed attempts prior to locking can be configured using the octri.authentication.max-login-attempts
- * property, which can be configured using the OCTRI_AUTHENTICATION_MAX_LOGIN_ATTEMPTS environment variable.
+ * The number of failed attempts prior to locking can be configured using the property: 
+ * 	octri.authentication.max-login-attempts
+ * 
+ * See {@link UserService}
  * 
  * Adapted from ChimeraAuthenticationFailureHandler.
 
