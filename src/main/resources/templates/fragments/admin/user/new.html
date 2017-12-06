@@ -2,7 +2,6 @@
 	<body>
 		<div class="container-fluid" th:fragment="new">
 			<h3>New User</h3>
-			<span th:text="${blah}"></span>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${user}">
 				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">
@@ -16,7 +15,6 @@
 						<div th:replace="fragments/user :: usernameForNew" />
 						<div th:if="${ldap}">
 							<div th:replace="fragments/user :: ldapLookup" />
-							<span th:text="${user.email}"></span>
 						</div>
 						<div th:replace="fragments/user :: firstName" />
 						<div th:replace="fragments/user :: lastName" />
