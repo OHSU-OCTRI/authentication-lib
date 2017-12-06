@@ -10,23 +10,28 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="col-lg-3 col-md-3 col-sm-12">
+						<h4>User Details</h4>
 						<div th:replace="fragments/user :: usernameForNew" />
 						<div th:replace="fragments/user :: firstName" />
 						<div th:replace="fragments/user :: lastName" />
 						<div th:replace="fragments/user :: institution" />
 						<div th:replace="fragments/user :: email" />
 						<div th:replace="fragments/user :: password" />
+						<h4>User Roles</h4>
 						<div th:replace="fragments/user :: userRoles" />
 					</div>
-					<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="col-lg-1 col-md-1">
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-12">
+						<h4>Account Status</h4>
 						<div th:replace="fragments/user :: enabled" />
 						<div th:replace="fragments/user :: accountLocked" />
 						<div th:replace="fragments/user :: accountExpired" />
 						<div th:replace="fragments/user :: credentialsExpired" />
-						<div th:replace="fragments/user :: consecutiveLoginFailures" />
 						<div th:replace="fragments/user :: accountExpirationDate" />
 						<div th:replace="fragments/user :: credentialsExpirationDate" />
+						<div th:replace="fragments/user :: consecutiveLoginFailures" />
 					</div>
 				</div>
 				<div class="row">

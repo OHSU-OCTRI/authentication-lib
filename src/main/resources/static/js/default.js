@@ -57,7 +57,9 @@ $(function() {
 		columnDefs: [{
 			targets: 0,
 			orderable: false
-		}]
+		}],
+		order: [[ 1, "asc" ]],
+		dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
 	});
 	
 	$('.btn.cancel').on('click', cancel);
