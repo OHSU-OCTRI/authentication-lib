@@ -1,0 +1,30 @@
+ <html xmlns:th="http://www.thymeleaf.org">
+	<body>
+        <div class="container-fluid" th:fragment="login">
+         	<div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
+				<h3>Please Sign In</h3>
+	            <form class="form" th:action="@{/login}" method="POST">
+	                <div th:if="${param.error}">
+	                    <div class="alert alert-danger">
+	                        Invalid username and password.
+	                    </div>
+	                </div>
+	                
+	                <div class="form-group">
+	                    <label th:text="Username"></label>
+	                    <input id="username" name="username" class="form-control" type="text"/>
+	                </div>
+	
+	                <div class="form-group">
+	                    <label th:text="Password"></label>
+	                    <input id="password" name="password" class="form-control" type="password" />
+	                </div>
+	
+	                <div class="form-group">
+	                    <button class="btn btn-primary" type="submit">Log in</button>
+	                </div>
+	            </form>
+	    	</div>
+        </div>
+	</body>
+</html>

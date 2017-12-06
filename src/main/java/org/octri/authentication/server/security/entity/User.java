@@ -55,8 +55,8 @@ public class User extends AbstractEntity {
 	 * Set default values. Used in each constructor.
 	 */
 	private void setDefaults() {
-		// by default not enabled
-		this.enabled = false;
+		// enabled with credentials expired by default
+		this.enabled = true;
 		this.accountLocked = false;
 		this.accountExpired = false;
 		this.credentialsExpired = true;

@@ -57,7 +57,9 @@ $(function() {
 		columnDefs: [{
 			targets: 0,
 			orderable: false
-		}]
+		}],
+		order: [[ 1, "asc" ]],
+		dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
 	});
 	
 	$('.btn.cancel').on('click', cancel);
@@ -68,7 +70,7 @@ $(function() {
 	let url = $("meta[name='ctx']").attr("content") + "admin/user/taken";
 	
 	$('#username').on('keydown blur change', debounce(function() {
-		var username = $('#username').val();
+		let username = $('#username').val();
 		if (username != null && username != '') {
 			$.get(url + '/' + encodeURIComponent(username), function(json) {
 				$('.username-taken').remove();
@@ -88,5 +90,35 @@ $(function() {
 			$('.username-taken').remove();
 		}
 	}, 500));
+	
+	$('#ldapLookup').on('click', function(e) {
+		e.preventDefault();
+		let token =  $('input[name="_csrf"]').attr('value');
+	    $.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader('X-CSRF-TOKEN', token);
+	        }
+	    });
+	    
+		let username = $('#username').val();
+		let obj = {username: username};
+
+		// Full request seems to invalidate the session
+//		var xhr = new XMLHttpRequest();
+//		xhr.open("POST", "/admin/user/ldapLookup", true);
+//		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+//		xhr.setRequestHeader('X-CSRF-TOKEN', token);
+//		xhr.send(JSON.stringify(obj));
+		
+		// Ajax - would need to handle updating UI here. Model does not change.
+//		let request = $.ajax ({
+//	          type: "POST",
+//	          url: "/admin/user/ldapLookup",
+//	          data: obj,
+//	          error: function (xhr, status, message){
+//	             alert (status);
+//	          }
+//	    });
+	});
 
 });

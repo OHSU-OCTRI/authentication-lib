@@ -25,6 +25,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 
 /**
  * A base security configuration class that extends
@@ -57,11 +58,14 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${server.context-path}")
 	protected String contextPath;
 
-	@Value("${ldap.contextSource.searchBase}")
+	@Value("${ldap.contextSource.searchBase:#{null}}")
 	protected String ldapSearchBase;
 
-	@Value("${ldap.contextSource.searchFilter}")
+	@Value("${ldap.contextSource.searchFilter:#{null}}")
 	protected String ldapSearchFilter;
+
+	@Value("${ldap.contextSource.organization:#{null}}")
+	protected String ldapOrganization;
 
 	@Autowired
 	protected AuthenticationUserDetailsService userDetailsService;
@@ -90,12 +94,21 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public Boolean tableBasedEnabled() {
 		return enableTableBased;
 	}
+	
+	@Bean String ldapOrganization() {
+		return ldapOrganization;
+	}
 
 	@Bean
 	@ConfigurationProperties(prefix = "ldap.contextSource")
 	public BaseLdapPathContextSource contextSource() {
 		LdapContextSource contextSource = new LdapContextSource();
 		return contextSource;
+	}
+
+	@Bean
+	public FilterBasedLdapUserSearch ldapSearch() {
+		return enableLdap?new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()):null;
 	}
 
 	@Bean
@@ -107,7 +120,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
 		return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
 	}
-
+	
 	/**
 	 * Set up authentication.
 	 *

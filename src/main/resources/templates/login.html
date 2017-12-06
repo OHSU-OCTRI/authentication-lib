@@ -9,31 +9,8 @@
     </head>
     <body>
 		<nav th:replace="fragments/navbar :: navbar"/>
-        <div class="container-fluid">
-            <form class="form" th:action="@{/login}" method="POST">
-                <div th:if="${param.error}">
-                    <div class="alert alert-danger">
-                        Invalid username and password.
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input id="username" name="username"  class="form-control" type="text"/>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label>
-                        <input id="password" name="password" class="form-control" type="password" />
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <button class="btn btn-primary" type="submit">Log in</button>
-                </div>
-            </form>
-        </div>
-		<script type="text/javascript" th:src="@{/webjars/datatables/1.10.16/media/js/jquery.js}"></script>
+		<nav th:replace="fragments/login :: login"/>
+		<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.js}"></script>
         <script type="text/javascript">
         		$(function() {
         			$('#username').focus();
