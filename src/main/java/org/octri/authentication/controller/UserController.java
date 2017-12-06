@@ -10,10 +10,8 @@ import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -45,12 +43,6 @@ public class UserController {
 	@Autowired
 	private Boolean tableBasedEnabled;
 	
-	@Autowired
-	private FilterBasedLdapUserSearch ldapSearch;
-
-	@Autowired
-	private String ldapOrganization;
-
 	/**
 	 * Returns view for displaying a list of all users.
 	 * 
@@ -76,35 +68,6 @@ public class UserController {
 	public String newUser(Model model, HttpServletRequest request) {
 		model.addAttribute("user", new User());
 		model.addAttribute("ldap", ldapEnabled);
-		model.addAttribute("tableBased", tableBasedEnabled);
-		return "admin/user/new";
-	}
-
-	/**
-	 * Searches LDAP for the username and populates user fields with information found
-	 * 
-	 * @param model
-	 * @return New user view.
-	 */
-	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@PostMapping("admin/user/ldapLookup")
-	public String ldapLookup(String username, Model model) {
-		User user = new User();
-		DirContextOperations ldapUser = ldapSearch.searchForUser(username);
-		if (ldapUser != null) {
-			user.setFirstName(ldapUser.getStringAttribute("givenName"));
-			user.setLastName(ldapUser.getStringAttribute("sn"));
-			user.setEmail(ldapUser.getStringAttribute("mail"));
-			user.setInstitution(ldapOrganization);
-			System.out.println("Setting user fields for: " + user.getFirstName() + " " + user.getLastName());
-
-		} else {
-			model.addAttribute("ldapSearchError", "Could not find username in LDAP");
-		}
-		
-		model.addAttribute("user", user);
-		model.addAttribute("ldap", ldapEnabled);
-		model.addAttribute("blah", "Blah");
 		model.addAttribute("tableBased", tableBasedEnabled);
 		return "admin/user/new";
 	}

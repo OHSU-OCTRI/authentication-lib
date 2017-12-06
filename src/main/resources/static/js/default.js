@@ -103,22 +103,16 @@ $(function() {
 		let username = $('#username').val();
 		let obj = {username: username};
 
-		// Full request seems to invalidate the session
-//		var xhr = new XMLHttpRequest();
-//		xhr.open("POST", "/admin/user/ldapLookup", true);
-//		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-//		xhr.setRequestHeader('X-CSRF-TOKEN', token);
-//		xhr.send(JSON.stringify(obj));
-		
-		// Ajax - would need to handle updating UI here. Model does not change.
-//		let request = $.ajax ({
-//	          type: "POST",
-//	          url: "/admin/user/ldapLookup",
-//	          data: obj,
-//	          error: function (xhr, status, message){
-//	             alert (status);
-//	          }
-//	    });
+		$.post( "/admin/user/ldapLookup", obj, function(json) {
+			if (json.ldapLookupError) {
+				// TODO: Make this better
+				$('#username').after(mutedDiv(json.ldapLookupError, ''));
+			}
+			$('#firstName').val(json.firstName);
+			$('#lastName').val(json.lastName);
+			$('#email').val(json.email);
+			$('#institution').val(json.institution);
+		});
 	});
 
 });
