@@ -104,14 +104,15 @@ $(function() {
 		let obj = {username: username};
 
 		$.post( "/admin/user/ldapLookup", obj, function(json) {
+			$('.ldap-error').remove();
 			if (json.ldapLookupError) {
-				// TODO: Make this better
-				$('#username').after(mutedDiv(json.ldapLookupError, ''));
+				$('#ldapLookup').before(mutedDiv(json.ldapLookupError, 'ldap-error text-danger'));
+			} else {
+				$('#firstName').val(json.firstName);
+				$('#lastName').val(json.lastName);
+				$('#email').val(json.email);
+				$('#institution').val(json.institution);
 			}
-			$('#firstName').val(json.firstName);
-			$('#lastName').val(json.lastName);
-			$('#email').val(json.email);
-			$('#institution').val(json.institution);
 		});
 	});
 
