@@ -3,7 +3,10 @@
 		<input th:fragment="userId" class="form-control" type="hidden" th:field="*{id}" th:required="required" />
 		<div th:fragment="usernameForNew" class="form-group">
 			<label>Username*</label>
-			<input class="form-control" autocomplete="false" type="text" th:field="*{username}" th:required="required" />
+			<input class="form-control" autocomplete="off" type="text" th:field="*{username}" th:required="required" />
+		</div>
+		<div th:fragment="ldapLookup" class="form-group">
+			<button id="ldapLookup" class="btn btn-default">LDAP Lookup</button>
 		</div>
 		<div th:fragment="usernameForEdit" class="form-group">
 			<label>Username*</label>

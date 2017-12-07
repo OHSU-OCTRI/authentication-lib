@@ -70,7 +70,7 @@ $(function() {
 	let url = $("meta[name='ctx']").attr("content") + "admin/user/taken";
 	
 	$('#username').on('keydown blur change', debounce(function() {
-		var username = $('#username').val();
+		let username = $('#username').val();
 		if (username != null && username != '') {
 			$.get(url + '/' + encodeURIComponent(username), function(json) {
 				$('.username-taken').remove();
@@ -90,5 +90,30 @@ $(function() {
 			$('.username-taken').remove();
 		}
 	}, 500));
+	
+	$('#ldapLookup').on('click', function(e) {
+		e.preventDefault();
+		let token =  $('input[name="_csrf"]').attr('value');
+	    $.ajaxSetup({
+	        beforeSend: function(xhr) {
+	            xhr.setRequestHeader('X-CSRF-TOKEN', token);
+	        }
+	    });
+	    
+		let username = $('#username').val();
+		let obj = {username: username};
+
+		$.post( "/admin/user/ldapLookup", obj, function(json) {
+			$('.ldap-error').remove();
+			if (json.ldapLookupError) {
+				$('#ldapLookup').before(mutedDiv(json.ldapLookupError, 'ldap-error text-danger'));
+			} else {
+				$('#firstName').val(json.firstName);
+				$('#lastName').val(json.lastName);
+				$('#email').val(json.email);
+				$('#institution').val(json.institution);
+			}
+		});
+	});
 
 });

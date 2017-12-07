@@ -13,11 +13,16 @@
 					<div class="col-lg-3 col-md-3 col-sm-12">
 						<h4>User Details</h4>
 						<div th:replace="fragments/user :: usernameForNew" />
+						<div th:if="${ldap}">
+							<div th:replace="fragments/user :: ldapLookup" />
+						</div>
 						<div th:replace="fragments/user :: firstName" />
 						<div th:replace="fragments/user :: lastName" />
 						<div th:replace="fragments/user :: institution" />
 						<div th:replace="fragments/user :: email" />
-						<div th:replace="fragments/user :: password" />
+						<div th:if="${tableBased}">
+							<div th:replace="fragments/user :: password" />
+						</div>
 						<h4>User Roles</h4>
 						<div th:replace="fragments/user :: userRoles" />
 					</div>
