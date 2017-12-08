@@ -128,6 +128,13 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * @throws Exception
 	 */
 	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
+		if (!enableTableBased && !enableLdap) {
+			throw new IllegalStateException(
+					"The authentication_lib requires either table-based or LDAP authentication to be "
+							+ "enabled. Set one of: octri.authentication.enable-table-based, "
+							+ "octri.authentication.enable-ldap");
+		}
+
 		// Use table-based authentication by default
 		if (enableTableBased) {
 			auth.userDetailsService(userDetailsService).and()
