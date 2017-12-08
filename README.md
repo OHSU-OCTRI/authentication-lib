@@ -29,7 +29,7 @@ public class TestProjectApplication {
 }
 ```
 
-The authentication library provides security configuration options for a web-based application [FormSecurityConfiguration.java](src/main/java/org/octri/authentication/FormSecurityConfiguration.java) or a REST application [ApiSecurityConfiguration.java](src/main/java/org/octri/authentication/ApiSecurityConfiguration.java). Either can be enabled by simply extending the configuration you want to use and adding the @Configuration annotation:
+The authentication library provides security configuration options for a web-based application [`FormSecurityConfiguration.java`](src/main/java/org/octri/authentication/FormSecurityConfiguration.java) or a REST application [`ApiSecurityConfiguration.java`](src/main/java/org/octri/authentication/ApiSecurityConfiguration.java). Either can be enabled by simply extending the configuration you want to use and adding the `@Configuration` annotation:
 
 ```
 @Configuration
@@ -38,7 +38,7 @@ public class SecurityConfiguration extends FormSecurityConfiguration {
 }
 ```
 
-The example project has a few other pieces of configuration, including a sample landing page "home.html" and a controller to handle request mappings. These are not strictly necessary.
+The example project has a few other pieces of configuration, including a sample landing page `home.html` and a controller to handle request mappings. These are not strictly necessary.
 
 Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
 
@@ -70,20 +70,36 @@ octri.authentication.max-login-attempts=5
 
 ### User Roles
 
-The library sets up roles USER, ADMIN, and SUPER. The [UserController](src/main/java/org/octri/authentication/controller/UserController.java) restricts user management to the admin and super roles, and users cannot edit themselves.
+The library sets up roles USER, ADMIN, and SUPER. The [`UserController`](src/main/java/org/octri/authentication/controller/UserController.java) restricts user management to the admin and super roles, and users cannot edit themselves.
+
+#### Add Roles and Users
+
+The authentication library provides a sample [SQL script](setup/sql/add_roles_and_users.sql) for adding roles, and users with roles.
+
+You may execute this script manually,
+
+```
+mysql -u foo -p -h 127.0.0.1 my_db < setup/sql/add_roles_and_users.sql
+```
+
+or by running the [helper script](setup/add_roles_and_users.sh) that will prompt for connection details,
+
+```
+./setup/add_roles_and_users.sh
+```
 
 ### Web Application Authentication and UI
 
 Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures.
 
-The following methods are provided by the [BaseSecurityConfiguration](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
+The following methods are provided by the [`BaseSecurityConfiguration`](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
 
-* defaultSuccessUrl() - Where to redirect after successful login. By default "/admin/user/list".
-* loginFailureRedirectUrl() - Where to redirect after failed login. By default "/login?error"
-* logoutUrl() - The request mapping for logout. By default "/logout".
-* logoutSuccessUrl() - Where to redirect after successful logout. By default "/login".
+* `defaultSuccessUrl()` - Where to redirect after successful login. By default `/admin/user/list`.
+* `loginFailureRedirectUrl()` - Where to redirect after failed login. By default `/login?error`
+* `logoutUrl()` - The request mapping for logout. By default `/logout`.
+* `logoutSuccessUrl()` - Where to redirect after successful logout. By default `/login`.
 
-For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create "login.html" in the /templates directory.
+For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create `login.html` in the `src/main/resources/templates` directory.
 
 #### Webjars
 
