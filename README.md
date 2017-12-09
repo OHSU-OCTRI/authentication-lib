@@ -74,18 +74,31 @@ The library sets up roles USER, ADMIN, and SUPER. The [`UserController`](src/mai
 
 #### Add Roles and Users
 
-The authentication library provides a sample [SQL script](setup/sql/add_roles_and_users.sql) for adding roles, and users with roles.
+For default OCTRI users see the [auth_default_users](https://octriinternal.ohsu.edu/stash/projects/OC/repos/auth_default_users/browse) project. It provides scripts for creating roles and users.
 
-You may execute this script manually,
-
-```
-mysql -u foo -p -h 127.0.0.1 my_db < setup/sql/add_roles_and_users.sql
-```
-
-or by running the [helper script](setup/add_roles_and_users.sh) that will prompt for connection details,
+If you want roles and users other than what's in the auth_default_users project following this process to add roles, and users with roles.
 
 ```
-./setup/add_roles_and_users.sh
+-- Add a couple roles
+INSERT INTO user_role (id, description, role_name)
+VALUES (1, 'Basic User', 'ROLE_USER'),
+	   (2, 'Administrator', 'ROLE_ADMIN');
+
+```
+-- Add a new user
+INSERT INTO user (account_expiration_date, account_expired, account_locked,
+				  consecutive_login_failures, credentials_expiration_date,
+				  credentials_expired, email, enabled, first_name, institution, last_name,
+				  password, username)
+VALUES
+	(NULL, 0, 0, 0, NULL, 0, 'foobar@example.com', 1, 'Foo', 'OHSU', 'Bar', NULL, 'foobar');
+SET @user_id = (SELECT last_insert_id());
+
+-- Give the user the USER and ADMIN roles.
+INSERT INTO user_user_role (user, user_role)
+VALUES
+	(@user_id, 1),
+    (@user_id, 2);
 ```
 
 ### Web Application Authentication and UI
