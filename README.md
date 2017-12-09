@@ -76,16 +76,17 @@ The library sets up roles USER, ADMIN, and SUPER. The [`UserController`](src/mai
 
 For default OCTRI users see the [auth_default_users](https://octriinternal.ohsu.edu/stash/projects/OC/repos/auth_default_users/browse) project. It provides scripts for creating roles and users.
 
-If you want roles and users other than what's in the auth_default_users project following this process to add roles, and users with roles.
+The authentication_lib provides the default roles via Flyway. Those roles are: `ROLE_USER`, `ROLE_ADMIN`, and `ROLE_SUPER`.
+
+If you want roles and users other than what's in the auth_default_users project follow this process to add roles, and users with roles.
 
 ```
--- Add a couple roles
+-- Add a role
 INSERT INTO user_role (id, description, role_name)
-VALUES (1, 'Basic User', 'ROLE_USER'),
-	   (2, 'Administrator', 'ROLE_ADMIN');
+VALUES (4, 'Manager', 'ROLE_MANAGER');
 
 ```
--- Add a new user
+-- Add a user
 INSERT INTO user (account_expiration_date, account_expired, account_locked,
 				  consecutive_login_failures, credentials_expiration_date,
 				  credentials_expired, email, enabled, first_name, institution, last_name,
@@ -94,11 +95,10 @@ VALUES
 	(NULL, 0, 0, 0, NULL, 0, 'foobar@example.com', 1, 'Foo', 'OHSU', 'Bar', NULL, 'foobar');
 SET @user_id = (SELECT last_insert_id());
 
--- Give the user the USER and ADMIN roles.
+-- Link the role and user
 INSERT INTO user_user_role (user, user_role)
 VALUES
-	(@user_id, 1),
-    (@user_id, 2);
+	(@user_id, 4);
 ```
 
 ### Web Application Authentication and UI
