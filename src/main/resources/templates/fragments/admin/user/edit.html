@@ -2,6 +2,11 @@
 	<body>
 		<div class="container-fluid" th:fragment="edit">
 			<h3 th:text="${'Edit User ' + user.username}">...</h3>
+			<div th:if="${error} == true">
+				<div class="alert alert-danger">
+					There has been an unexpected problem saving this user.
+				</div>
+			</div>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/edit/' + ${user.id}}" th:object="${user}">
 				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">
@@ -16,6 +21,7 @@
 						<div th:replace="fragments/user :: usernameForEdit"/>
 						<div th:replace="fragments/user :: firstName"/>
 						<div th:replace="fragments/user :: lastName"/>
+						<div th:replace="fragments/user :: hiddenPassword"/>
 						<div th:replace="fragments/user :: institution"/>
 						<div th:replace="fragments/user :: email"/>
 						<h4>User Roles</h4>

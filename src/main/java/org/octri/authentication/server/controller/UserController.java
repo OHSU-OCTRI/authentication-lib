@@ -1,25 +1,35 @@
-package org.octri.authentication.controller;
+package org.octri.authentication.server.controller;
 
+import java.sql.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
+import org.octri.authentication.server.security.password.PasswordGenerator;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for managing {@link User}.
@@ -27,7 +37,10 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @author sams
  */
 @Controller
+@Scope("session")
 public class UserController {
+
+	private static final Log log = LogFactory.getLog(UserController.class);
 
 	@Autowired
 	private UserService userService;
@@ -42,7 +55,7 @@ public class UserController {
 
 	@Autowired
 	private Boolean tableBasedEnabled;
-	
+
 	/**
 	 * Returns view for displaying a list of all users.
 	 * 
@@ -65,10 +78,8 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/new")
-	public String newUser(Model model, HttpServletRequest request) {
+	public String newUser(Model model) {
 		model.addAttribute("user", new User());
-		model.addAttribute("ldap", ldapEnabled);
-		model.addAttribute("tableBased", tableBasedEnabled);
 		return "admin/user/new";
 	}
 
@@ -82,11 +93,17 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@ModelAttribute User user, final ModelMap model) {
+	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model) {
 		Assert.notNull(user, "User must not be null");
-		if (user.getPassword() != null) {
-			user.setPassword(encoder.encode(user.getPassword()));
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("error", true);
+			return "admin/user/new";
 		}
+		// Set a random password, user will be forced to reset their password
+		// TODO: We could expose the password in the UI for providing to new users since they will be forced to change
+		// their passwords on the next login.
+		final String password = PasswordGenerator.generate();
+		user.setPassword(encoder.encode(password));
 		userService.save(user);
 		model.clear();
 		return "redirect:/admin/user/list";
@@ -112,9 +129,14 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@PostMapping("admin/user/edit/{id}")
-	public String edit(@PathVariable("id") long id, @ModelAttribute User user, final ModelMap model) {
+	public String edit(@PathVariable("id") long id, @Valid @ModelAttribute User user, BindingResult bindingResult,
+			final ModelMap model) {
 		Assert.notNull(id, "User id must not be null");
 		Assert.notNull(user, "User must not be null");
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("error", true);
+			return "admin/user/new";
+		}
 		// Must retrieve existing password otherwise it is overwritten.
 		// Cannot edit password with the edit form, however the field is bound and will
 		// be persisted as null.
@@ -125,6 +147,71 @@ public class UserController {
 		userService.save(user);
 		model.clear();
 		return "redirect:/admin/user/list";
+	}
+
+	/**
+	 * Present a form for changing a password when credentials are expired.
+	 * 
+	 * @return change template
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@GetMapping("user/password/change")
+	public String changePassword() {
+		return "user/password/change";
+	}
+
+	/**
+	 * Persist changed password.
+	 * 
+	 * @return Redirects to /login
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@PostMapping("user/password/change")
+	public String changePassword(@ModelAttribute("currentPassword") String currentPassword,
+			@ModelAttribute("newPassword") String newPassword, @ModelAttribute("password") String password,
+			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
+			HttpServletRequest request, Model model) {
+		final String username = (String) request.getSession().getAttribute("lastUsername");
+		final User user = userService.findByUsername(username);
+		if (user == null) {
+			return "redirect:/login";
+		} else {
+			if (newPassword.equals(confirmPassword) && encoder.matches(currentPassword, user.getPassword())) {
+				// Rule: Prevents a password from containing username. TODO: Can this be a rule in the password
+				// constraint validator? Not sure how to get the username and userService wired up.
+				if (newPassword.contains(user.getUsername())) {
+					model.addAttribute("error", true);
+					return "user/password/change";
+				}
+
+				// Rule: Prevents using a previous password.
+				if (encoder.matches(newPassword, user.getPassword())) {
+					model.addAttribute("error", true);
+					return "user/password/change";
+				}
+
+				user.setPassword(encoder.encode(newPassword));
+				user.setCredentialsExpired(false);
+
+				Instant now = Instant.now();
+				// TODO: 180 could be configurable
+				user.setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
+
+				try {
+					userService.save(user);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					model.addAttribute("error", true);
+					return "user/password/change";
+				}
+
+				redirectAttributes.addFlashAttribute("passwordChanged", true);
+				return "redirect:/login";
+			} else {
+				model.addAttribute("error", false);
+				return "user/password/change";
+			}
+		}
 	}
 
 	/**
@@ -145,6 +232,19 @@ public class UserController {
 	@ModelAttribute("allUsers")
 	public List<User> users() {
 		return userService.findAll();
+	}
+
+	/**
+	 * @return Boolean indicating LDAP is enabled or disabled.
+	 */
+	@ModelAttribute("ldap")
+	public Boolean getLdapEnabled() {
+		return ldapEnabled;
+	}
+
+	@ModelAttribute("tableBased")
+	public Boolean getTableBasedEnabled() {
+		return tableBasedEnabled;
 	}
 
 }

@@ -25,3 +25,7 @@ table.center-all td,th{
 	visibility:none;
 	display:none;
 }
+
+.error-text {
+	color:#a94442;
+}

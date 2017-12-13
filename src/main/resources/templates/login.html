@@ -10,7 +10,7 @@
     <body>
 		<nav th:replace="fragments/navbar :: navbar"/>
 		<nav th:replace="fragments/login :: login"/>
-		<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.js}"></script>
+		<div th:replace="fragments/assets :: javascript" />
         <script type="text/javascript">
         		$(function() {
         			$('#username').focus();

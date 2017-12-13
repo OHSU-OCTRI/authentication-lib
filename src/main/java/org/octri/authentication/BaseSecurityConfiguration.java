@@ -45,6 +45,7 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 @EnableConfigurationProperties
 @EnableAspectJAutoProxy
 @EnableJpaAuditing
+@Configuration
 public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
@@ -95,7 +96,8 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return enableTableBased;
 	}
 	
-	@Bean String ldapOrganization() {
+	@Bean
+	public String ldapOrganization() {
 		return ldapOrganization;
 	}
 
