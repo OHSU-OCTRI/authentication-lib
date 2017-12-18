@@ -40,7 +40,6 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
 	@Override
 	public boolean isValid(String password, ConstraintValidatorContext context) {
-		System.out.println("siam: validate: password: " + password);
 		// Require at least one capital letter
 		CharacterRule capitalLetter = new CharacterRule(EnglishCharacterData.UpperCase, 1);
 
