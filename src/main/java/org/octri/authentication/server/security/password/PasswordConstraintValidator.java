@@ -1,7 +1,8 @@
 package org.octri.authentication.server.security.password;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import javax.validation.ConstraintValidator;
@@ -57,8 +58,11 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 		// Use DictionaryRule() to define exact matches.
 		DictionarySubstringRule dictionary;
 		try {
+			// Cannot use resource.getFile() when the resource is in a JAR. Use resource.getInputStream() instead.
+			// https://stackoverflow.com/questions/25869428/classpath-resource-not-found-when-running-as-jar
 			Resource blackList = new ClassPathResource("password-blacklist.txt");
-			FileReader[] readers = new FileReader[] { new FileReader(blackList.getFile()) };
+			BufferedReader[] readers = new BufferedReader[] {
+					new BufferedReader(new InputStreamReader(blackList.getInputStream())) };
 			ArrayWordList wordList = WordLists.createFromReader(readers, false, new ArraysSort());
 			dictionary = new DictionarySubstringRule(new WordListDictionary(wordList));
 		} catch (IOException e) {

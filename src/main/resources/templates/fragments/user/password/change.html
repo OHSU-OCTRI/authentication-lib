@@ -24,19 +24,19 @@
 					
 					<div class="form-group">
 						<label th:text="'Current Password'" for="currentPassword">...</label>
-						<input id="currentPassword" name="currentPassword" class="form-control" type="text" autofocus="true" />
+						<input id="currentPassword" name="currentPassword" class="form-control" type="password" autofocus="true" />
 					</div>
 					
 					<div class="form-group">
 						<label th:text="'New Password'" for="newPassword">...</label>
 						<!--/* TODO: We could use something like http://plugins.jquery.com/pwstrength-bootstrap/ to validate the password inline with JavaScript. */-->
 						<span th:replace="fragments/user/password/requirements :: passwordInfo"></span>
-						<input id="newPassword" name="newPassword" class="form-control" type="text"/>
+						<input id="newPassword" name="newPassword" class="form-control" type="password"/>
 					</div>
 	
 					<div class="form-group">
 						<label th:text="'Confirm New Password'" for="confirmPassword">...</label>
-						<input id="confirmPassword" name="confirmPassword" class="form-control" type="text" />
+						<input id="confirmPassword" name="confirmPassword" class="form-control" type="password" />
 					</div>
 	
 					<div class="form-group">
