@@ -135,7 +135,7 @@ public class UserController {
 		Assert.notNull(user, "User must not be null");
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
-			return "admin/user/new";
+			return "admin/user/edit";
 		}
 		// Must retrieve existing password otherwise it is overwritten.
 		// Cannot edit password with the edit form, however the field is bound and will
