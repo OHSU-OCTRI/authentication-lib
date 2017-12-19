@@ -1,4 +1,4 @@
-package org.octri.authentication.controller;
+package org.octri.authentication.server.controller;
 
 import java.util.EnumSet;
 
@@ -37,12 +37,12 @@ public class ErrorController extends BasicErrorController {
 	 */
 	@Bean
 	public FilterRegistrationBean getSpringSecurityFilterChainBindedToError(
-	                @Qualifier("springSecurityFilterChain") Filter springSecurityFilterChain) {
+			@Qualifier("springSecurityFilterChain") Filter springSecurityFilterChain) {
 
-	        FilterRegistrationBean registration = new FilterRegistrationBean();
-	        registration.setFilter(springSecurityFilterChain);
-	        registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-	        return registration;
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(springSecurityFilterChain);
+		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+		return registration;
 	}
 
 	@Autowired

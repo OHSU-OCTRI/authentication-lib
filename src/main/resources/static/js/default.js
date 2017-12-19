@@ -67,9 +67,20 @@ $(function() {
 	$("input[name=accountExpirationDate]").datepicker();
 	$("input[name=credentialsExpirationDate]").datepicker();
 	
+	$('[data-action="popover"]').popover({
+		trigger: "click hover",
+		html: true
+	});
+	
 	let url = $("meta[name='ctx']").attr("content") + "admin/user/taken";
 	
-	$('#username').on('keydown blur change', debounce(function() {
+	/**
+	 * Username type-ahead lookup
+	 * <input id="username" class="lookup-user" />
+	 * Add the `lookup-user` class and after typing a username a lookup
+	 * will be made. A div will be appended with a message about the username.
+	 */
+	$('#username.lookup-user').on('keydown blur change', debounce(function() {
 		let username = $('#username').val();
 		if (username != null && username != '') {
 			$.get(url + '/' + encodeURIComponent(username), function(json) {
@@ -77,12 +88,12 @@ $(function() {
 				if (json.taken) {
 					disableSave(true);
 					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv('This username is taken.', 'username-taken'));
+						$('#username').after(mutedDiv(username + ' is taken', 'username-taken mark bg-danger'));
 					}
 				} else {
 					disableSave(false);
 					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv('Username available.', 'username-taken'));
+						$('#username').after(mutedDiv(username + ' is available', 'username-taken mark bg-success'));
 					}
 				}
 			});

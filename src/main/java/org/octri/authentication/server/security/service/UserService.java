@@ -20,7 +20,7 @@ import org.springframework.util.Assert;
 @Service
 public class UserService {
 
-	@Value("${octri.authentication.max-login-attempts:3}")
+	@Value("${octri.authentication.max-login-attempts:7}")
 	private int maxLoginAttempts;
 
 	@Resource

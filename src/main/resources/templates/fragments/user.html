@@ -1,85 +1,98 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<body>
-		<input th:fragment="userId" class="form-control" type="hidden" th:field="*{id}" th:required="required" />
-		<div th:fragment="usernameForNew" class="form-group">
+		<input th:fragment="userId" class="form-control" type="hidden" th:field="*{id}" />
+		<div th:fragment="usernameForNew" class="form-group" th:classappend="${#fields.hasErrors('username')} ? has-error : ''">
 			<label>Username*</label>
-			<input class="form-control" autocomplete="off" type="text" th:field="*{username}" th:required="required" />
+			<input class="form-control lookup-user" autocomplete="off" type="text" th:field="*{username}" />
+			<p class="error-text" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">...</p>
 		</div>
 		<div th:fragment="ldapLookup" class="form-group">
 			<button id="ldapLookup" class="btn btn-default">LDAP Lookup</button>
 		</div>
-		<div th:fragment="usernameForEdit" class="form-group">
+		<div th:fragment="usernameForEdit" class="form-group" th:classappend="${#fields.hasErrors('username')} ? has-error : ''">
 			<label>Username*</label>
 			<input class="form-control" th:value="${user.username}" type="text" th:disabled="disabled" />
 			<input type="hidden" th:field="*{username}" />
 		</div>
-		<div th:fragment="firstName" class="form-group">
+		<div th:fragment="firstName" class="form-group" th:classappend="${#fields.hasErrors('firstName')} ? has-error : ''">
 			<label>First Name*</label>
-			<input class="form-control" type="text" th:field="*{firstName}" th:required="required" />
+			<input class="form-control" type="text" th:field="*{firstName}" />
+			<p class="error-text" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">...</p>
 		</div>
-		<div th:fragment="lastName" class="form-group">
+		<div th:fragment="lastName" class="form-group" th:classappend="${#fields.hasErrors('lastName')} ? has-error : ''">
 			<label>Last Name*</label>
-			<input class="form-control" type="text" th:field="*{lastName}" th:required="required" />
+			<input class="form-control" type="text" th:field="*{lastName}" />
+			<p class="error-text" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">...</p>
 		</div>
-		<div th:fragment="institution" class="form-group">
+		<div th:fragment="institution" class="form-group" th:classappend="${#fields.hasErrors('institution')} ? has-error : ''">
 			<label>Institution*</label>
-			<input class="form-control" type="text" th:field="*{institution}" th:required="required" />
+			<input class="form-control" type="text" th:field="*{institution}" />
+			<p class="error-text" th:if="${#fields.hasErrors('institution')}" th:errors="*{institution}">...</p>
 		</div>
-		<div th:fragment="email" class="form-group">
+		<div th:fragment="email" class="form-group" th:classappend="${#fields.hasErrors('email')} ? has-error : ''">
 			<label>Email*</label>
-			<input class="form-control" type="text" th:field="*{email}" th:required="required" />
+			<input class="form-control" type="text" th:field="*{email}" />
+			<p class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">...</p>
 		</div>
-		<div th:fragment="password" class="form-group">
+		<div th:fragment="password" class="form-group" th:classappend="${#fields.hasErrors('password')} ? has-error : ''">
 			<label>Password</label>
 			<input class="form-control" type="password" th:field="*{password}" />
-			<p class="text-muted">Leave empty for LDAP</p>
+			<p class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">...</p>
 		</div>
+		<input th:fragment="hiddenPassword" type="hidden" id="password" name="password" value="Passw0rd" />
 		<div th:fragment="userRoles" class="form-group">
-			<p th:each="userRole : ${allUserRoles}">
+			<p th:each="userRole : ${allUserRoles}" th:classappend="${#fields.hasErrors('userRoles')} ? has-error : ''">
 				<input type="checkbox" th:field="*{userRoles}" th:value="${userRole.id}" />
 				<span th:text="${userRole.description}">...</span>
 			</p>
+			<p class="error-text" th:if="${#fields.hasErrors('userRoles')}" th:errors="*{userRoles}">...</p>
 		</div>
-		<div th:fragment="enabled" class="form-group">
+		<div th:fragment="enabled" class="form-group" th:classappend="${#fields.hasErrors('enabled')} ? has-error : ''">
 			<label>Enabled*</label>
-			<select class="form-control" th:field="*{enabled}" th:required="required">
+			<select class="form-control" th:field="*{enabled}">
 				<option value="true">Yes</option>
 				<option value="false">No</option>
 			</select>
+			<p class="error-text" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}">...</p>
 		</div>
-		<div th:fragment="accountLocked" class="form-group">
+		<div th:fragment="accountLocked" class="form-group" th:classappend="${#fields.hasErrors('accountLocked')} ? has-error : ''">
 			<label>Account Locked*</label>
-			<select class="form-control" th:field="*{accountLocked}" th:required="required">
+			<select class="form-control" th:field="*{accountLocked}">
 				<option value="true">Yes</option>
 				<option value="false">No</option>
 			</select>
-			
+			<p class="error-text" th:if="${#fields.hasErrors('accountLocked')}" th:errors="*{accountLocked}">...</p>	
 		</div>
-		<div th:fragment="accountExpired" class="form-group">
+		<div th:fragment="accountExpired" class="form-group" th:classappend="${#fields.hasErrors('accountExpired')} ? has-error : ''">
 			<label>Account Expired*</label>
-			<select class="form-control" th:field="*{accountExpired}" th:required="required">
+			<select class="form-control" th:field="*{accountExpired}">
 				<option value="true">Yes</option>
 				<option value="false">No</option>
 			</select>			
+			<p class="error-text" th:if="${#fields.hasErrors('accountExpired')}" th:errors="*{accountExpired}">...</p>
 		</div>
-		<div th:fragment="credentialsExpired" class="form-group">
+		<div th:fragment="credentialsExpired" class="form-group" th:classappend="${#fields.hasErrors('credentialsExpired')} ? has-error : ''">
 			<label>Credentials Expired*</label>
-			<select class="form-control" th:field="*{credentialsExpired}" th:required="required">
+			<select class="form-control" th:field="*{credentialsExpired}">
 				<option value="true">Yes</option>
 				<option value="false">No</option>
 			</select>
+			<p class="error-text" th:if="${#fields.hasErrors('credentialsExpired')}" th:errors="*{credentialsExpired}">...</p>
 		</div>
-		<div th:fragment="consecutiveLoginFailures" class="form-group">
+		<div th:fragment="consecutiveLoginFailures" class="form-group" th:classappend="${#fields.hasErrors('consecutiveLoginFailures')} ? has-error : ''">
 			<label>Consecutive Login Failures*</label>
-			<input class="form-control" type="text" readonly="readonly" th:field="*{consecutiveLoginFailures}" th:required="required" />
+			<input class="form-control" type="text" readonly="readonly" th:field="*{consecutiveLoginFailures}" />
+			<p class="error-text" th:if="${#fields.hasErrors('consecutiveLoginFailures')}" th:errors="*{consecutiveLoginFailures}">...</p>
 		</div>
-		<div th:fragment="accountExpirationDate" class="form-group">
+		<div th:fragment="accountExpirationDate" class="form-group" th:classappend="${#fields.hasErrors('accountExpirationDate')} ? has-error : ''">
 			<label>Account Expiration Date</label>
-			<input class="form-control" type="text" placeholder="e.g. 11/3/17" th:field="*{accountExpirationDate}" />
+			<input class="form-control" type="text" placeholder="e.g. 1/3/17" th:field="*{accountExpirationDate}" />
+			<p class="error-text" th:if="${#fields.hasErrors('accountExpirationDate')}" th:errors="*{accountExpirationDate}">...</p>
 		</div>
-		<div th:fragment="credentialsExpirationDate" class="form-group">
+		<div th:fragment="credentialsExpirationDate" class="form-group" th:classappend="${#fields.hasErrors('credentialsExpirationDate')} ? has-error : ''">
 			<label>Credentials Expiration Date</label>
 			<input class="form-control" type="text" placeholder="e.g. 11/3/17" th:field="*{credentialsExpirationDate}" />
+			<p class="error-text" th:if="${#fields.hasErrors('credentialsExpirationDate')}" th:errors="*{credentialsExpirationDate}">...</p>
 		</div>
 	</body>
 </html>

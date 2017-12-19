@@ -65,8 +65,24 @@ octri.authentication.enable-table-based=true
 Users will be locked out after 3 login attempts. This limit can be configured as well:
 
 ```
-octri.authentication.max-login-attempts=5
+octri.authentication.max-login-attempts=7
 ```
+
+### Password Requirements
+
+Passwords are validated by the `PasswordConstraintValidator.java` and the `UserController#changePassword()` `POST` method. They follow OHSU password standards. See `ValidPassword.java`.
+
+Users and System Administrators shall employ the following minimum password attributes:
+
+* 8 character minimum
+* Inclusion of all of the following elements:
+  * An alpha character (e.g., zyxwvut);
+  * A numeric character (e.g., 12345);
+  * A capitalized letter or punctuation or non-alphanumeric character (e.g., !@#*+)
+  * An initial or temporary password that will expire following the first successful login to an account;
+  * An account lockout mechanism that is triggered after seven (7) unsuccessful account login attempts (TODO: within thirty (30) minutes).
+  * Avoid words found in any dictionary (including medical, foreign language) (TODO: provide more words)
+  * Shall not contain the user login-name (UserID).
 
 ### User Roles
 

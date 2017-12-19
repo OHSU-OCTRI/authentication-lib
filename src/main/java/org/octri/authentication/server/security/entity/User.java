@@ -14,6 +14,8 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Email;
+import org.octri.authentication.server.security.annotation.ValidPassword;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -64,42 +66,48 @@ public class User extends AbstractEntity {
 	}
 
 	@Column(unique = true)
-	@NotNull
-	@Size(max = 50, min = 1)
+	@NotNull(message = "Username is required")
+	@Size(max = 50, min = 1, message = "Username must be 1-50 characters")
 	private String username;
 
-	@Size(max = 128)
+	@ValidPassword(message = "This password does not meet all of the requirements")
 	private String password;
 
-	@NotNull
+	@NotNull(message = "Enabled must be Yes or No")
 	private Boolean enabled;
 
-	@NotNull
+	@NotNull(message = "Account locked must be Yes or No")
 	private Boolean accountLocked;
 
-	@NotNull
+	@NotNull(message = "Account expired must be Yes or No")
 	private Boolean accountExpired;
 
-	@NotNull
+	@NotNull(message = "Credentials expired must be Yes or No")
 	private Boolean credentialsExpired;
 
-	@NotNull
-	@Size(max = 50, min = 1)
+	@NotNull(message = "First name is required")
+	@Size(max = 50, min = 1, message = "First name must be 1-50 characters")
 	protected String firstName;
 
-	@NotNull
-	@Size(max = 50, min = 1)
+	@NotNull(message = "Last name is required")
+	@Size(max = 50, min = 1, message = "Last name must be 1-50 characters")
 	protected String lastName;
 
-	@NotNull
-	@Size(max = 100)
+	@NotNull(message = "Institution is required")
+	@Size(max = 100, min = 1, message = "Instituition must be 1-50 characters")
 	private String institution;
 
-	@NotNull
-	@Size(max = 100, min = 1)
+	/**
+	 * We can add additional email constraints if required.
+	 * 
+	 * @see http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
+	 */
+	@Email(message = "Provide a valid email address")
+	@NotNull(message = "Email is required")
+	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters")
 	private String email;
 
-	@NotNull
+	@NotNull(message = "Consecutive login failures is required")
 	private Integer consecutiveLoginFailures;
 
 	@Temporal(TemporalType.TIMESTAMP)

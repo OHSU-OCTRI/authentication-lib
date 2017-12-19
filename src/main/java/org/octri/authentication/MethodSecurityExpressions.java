@@ -31,6 +31,11 @@ public class MethodSecurityExpressions {
 	public static final String NOT_PRINCIPAL = "#id != principal.userId";
 
 	/**
+	 * 
+	 */
+	public static final String ANONYMOUS = "isAnonymous()";
+
+	/**
 	 * Requires ADMIN or SUPER role.
 	 */
 	public static final String ADMIN_OR_SUPER = ADMIN + " or " + SUPER;

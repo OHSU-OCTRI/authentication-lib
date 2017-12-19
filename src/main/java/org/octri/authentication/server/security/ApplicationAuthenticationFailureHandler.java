@@ -6,7 +6,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationAuthenticationFailureHandler extends AuditLoginAuthenticationFailureHandler {
 
+	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
@@ -28,7 +33,12 @@ public class ApplicationAuthenticationFailureHandler extends AuditLoginAuthentic
 		recordLoginFailure(username, exception.getMessage(), request);
 		recordUserFailedAttempts(username, exception);
 		
-		super.onAuthenticationFailure(request, response, exception);
+		if (exception instanceof CredentialsExpiredException) {
+			request.getSession().setAttribute("lastUsername", username);
+			redirectStrategy.sendRedirect(request, response, "/user/password/change");
+		} else {
+			super.onAuthenticationFailure(request, response, exception);
+		}
 	}
 
 }
