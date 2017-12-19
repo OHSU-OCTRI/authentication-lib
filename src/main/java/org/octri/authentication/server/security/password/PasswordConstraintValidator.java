@@ -1,8 +1,5 @@
 package org.octri.authentication.server.security.password;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import javax.validation.ConstraintValidator;
@@ -11,18 +8,11 @@ import javax.validation.ConstraintValidatorContext;
 import org.octri.authentication.server.security.annotation.ValidPassword;
 import org.passay.CharacterCharacteristicsRule;
 import org.passay.CharacterRule;
-import org.passay.DictionarySubstringRule;
 import org.passay.EnglishCharacterData;
 import org.passay.LengthRule;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
-import org.passay.dictionary.ArrayWordList;
-import org.passay.dictionary.WordListDictionary;
-import org.passay.dictionary.WordLists;
-import org.passay.dictionary.sort.ArraysSort;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,30 +44,13 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 		capsOrSpecial.getRules().add(capitalLetter);
 		capsOrSpecial.getRules().add(specialCharacter);
 
-		// This prevents words found in the password-blacklist.txt from being in passwords.
-		// Use DictionaryRule() to define exact matches.
-		DictionarySubstringRule dictionary;
-		try {
-			// Cannot use resource.getFile() when the resource is in a JAR. Use resource.getInputStream() instead.
-			// https://stackoverflow.com/questions/25869428/classpath-resource-not-found-when-running-as-jar
-			Resource blackList = new ClassPathResource("password-blacklist.txt");
-			BufferedReader[] readers = new BufferedReader[] {
-					new BufferedReader(new InputStreamReader(blackList.getInputStream())) };
-			ArrayWordList wordList = WordLists.createFromReader(readers, false, new ArraysSort());
-			dictionary = new DictionarySubstringRule(new WordListDictionary(wordList));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
 		// Add all rules to the validator
 		PasswordValidator validator = new PasswordValidator(
 				Arrays.asList(
 						new LengthRule(8, Integer.MAX_VALUE),
 						new CharacterRule(EnglishCharacterData.Alphabetical, 1),
 						new CharacterRule(EnglishCharacterData.Digit, 1),
-						capsOrSpecial,
-						dictionary));
+						capsOrSpecial));
 
 		// Validate password
 		RuleResult result = validator.validate(new PasswordData(password));

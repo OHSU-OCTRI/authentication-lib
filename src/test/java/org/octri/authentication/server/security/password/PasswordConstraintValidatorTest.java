@@ -66,8 +66,6 @@ public class PasswordConstraintValidatorTest {
 		testForInvalidPassword("8characs42");
 		testForInvalidPassword("8characs");
 		testForInvalidPassword("manycharactersl0ngpassw0rdbutn0special0rcaps");
-		// Must not contain words found in password-blacklist.txt
-		testForInvalidPassword("8cha$acs_password");
 	}
 
 	@Test
