@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 /**
  * A password constraint validator. Validates passwords against OHSU standards.
  * 
+ * @see https://ozone.ohsu.edu/cc/sec/isp/00004.pdf
  * @see http://www.passay.org/reference/
  * @see http://www.baeldung.com/registration-password-strength-and-rules
  * @author sams
@@ -37,7 +38,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 		// Require at least one special character (catches punctuation)
 		CharacterRule specialCharacter = new CharacterRule(EnglishCharacterData.Special, 1);
 
-		// Require one of: captial letter, punctuation/special character
+		// Require one of: capital letter, punctuation/special character
 		// CharacterCharacteristicsRule allows x out of n rules to be matched
 		CharacterCharacteristicsRule capsOrSpecial = new CharacterCharacteristicsRule();
 		capsOrSpecial.setNumberOfCharacteristics(1);
