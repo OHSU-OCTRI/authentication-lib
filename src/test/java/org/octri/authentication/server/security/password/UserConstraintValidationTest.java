@@ -16,7 +16,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.octri.authentication.server.security.entity.User;
 
-public class PasswordConstraintValidatorTest {
+/**
+ * Tests {@link User} contraint validations.<br>
+ * <br>
+ * Note, there isn't a "UserConstraintValidation" class - this class tests the
+ * integration between {@link User} and {@link PasswordContraintValidator}.
+ * 
+ * @author sams
+ */
+public class UserConstraintValidationTest {
 
 	private static Validator validator;
 

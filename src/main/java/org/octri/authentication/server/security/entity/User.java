@@ -107,7 +107,6 @@ public class User extends AbstractEntity {
 	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters")
 	private String email;
 
-	@NotNull(message = "Consecutive login failures is required")
 	private Integer consecutiveLoginFailures;
 
 	@Temporal(TemporalType.TIMESTAMP)
