@@ -1,0 +1,37 @@
+pipeline {
+  agent any
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '3'))
+  }
+  environment {
+    GIT_URL = 'ssh://git@octriapp01.acc.ohsu.edu:7999/oc/authentication_lib.git'
+  }
+  parameters {
+    string(name: 'VERSION', description: 'The version of the authentication_lib to release.')
+  }
+  tools {
+    maven '3.5.0'
+    jdk 'JDK8'
+  }
+  stages {
+    stage('Check Parameters') {
+      steps {
+        deleteDir()
+        checkParams(params)
+      }
+    }
+    stage('Release') {
+      steps {
+        checkoutMaster(env.GIT_URL)
+        artifactoryReleasePrep(env.VERSION)
+        artifactoryMavenBuild('master')
+      }
+    }
+    stage('Next Version') {
+      steps {
+        nextDevelopmentVersion()
+        artifactoryMavenBuild('master')
+      }
+    }
+  }
+}
