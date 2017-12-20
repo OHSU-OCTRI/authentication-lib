@@ -208,7 +208,7 @@ public class UserController {
 				redirectAttributes.addFlashAttribute("passwordChanged", true);
 				return "redirect:/login";
 			} else {
-				model.addAttribute("error", false);
+				model.addAttribute("error", true);
 				return "user/password/change";
 			}
 		}
