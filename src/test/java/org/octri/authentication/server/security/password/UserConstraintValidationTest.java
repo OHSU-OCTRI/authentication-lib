@@ -146,7 +146,7 @@ public class UserConstraintValidationTest {
 	 */
 	public void assertInvalid(final User user, final String expectedMessage) {
 		messages = getMessages(user);
-		assertTrue(messages.size() == 1);
+		assertTrue(messages.size() > 0);
 		assertTrue(messages.contains(expectedMessage));
 	}
 
