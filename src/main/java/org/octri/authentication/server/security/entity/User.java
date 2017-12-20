@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
 @Entity
 public class User extends AbstractEntity {
 
+	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";
+
 	public User() {
 		super();
 		setDefaults();
@@ -102,7 +104,7 @@ public class User extends AbstractEntity {
 	 * 
 	 * @see http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
 	 */
-	@Email(message = "Provide a valid email address")
+	@Email(message = INVALID_EMAIL_MESSAGE, regexp = ".+@.+\\..+")
 	@NotNull(message = "Email is required")
 	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters")
 	private String email;
