@@ -1,8 +1,5 @@
 package org.octri.authentication.server.controller;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,13 +10,14 @@ import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
+import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.PasswordGenerator;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -48,13 +46,14 @@ public class UserController {
 	@Autowired
 	private UserRoleService userRoleService;
 
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
 	@Autowired
 	private Boolean ldapEnabled;
 
 	@Autowired
 	private Boolean tableBasedEnabled;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -103,7 +102,7 @@ public class UserController {
 		// TODO: We could expose the password in the UI for providing to new users since they will be forced to change
 		// their passwords on the next login.
 		final String password = PasswordGenerator.generate();
-		user.setPassword(encoder.encode(password));
+		user.setPassword(passwordEncoder.encode(password));
 		userService.save(user);
 		model.clear();
 		return "redirect:/admin/user/list";
@@ -172,45 +171,23 @@ public class UserController {
 			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
 			HttpServletRequest request, Model model) {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
+		Assert.notNull(username, "Could not find username in session");
+
 		final User user = userService.findByUsername(username);
-		if (user == null) {
+		Assert.notNull(user, "Could not find an existing user");
+
+		try {
+			userService.changePassword(user, currentPassword, newPassword, confirmPassword);
+			redirectAttributes.addFlashAttribute("passwordChanged", true);
 			return "redirect:/login";
-		} else {
-			if (newPassword.equals(confirmPassword) && encoder.matches(currentPassword, user.getPassword())) {
-				// Rule: Prevents a password from containing username. TODO: Can this be a rule in the password
-				// constraint validator? Not sure how to get the username and userService wired up.
-				if (newPassword.contains(user.getUsername())) {
-					model.addAttribute("error", true);
-					return "user/password/change";
-				}
-
-				// Rule: Prevents using a previous password.
-				if (encoder.matches(newPassword, user.getPassword())) {
-					model.addAttribute("error", true);
-					return "user/password/change";
-				}
-
-				user.setPassword(encoder.encode(newPassword));
-				user.setCredentialsExpired(false);
-
-				Instant now = Instant.now();
-				// TODO: 180 could be configurable
-				user.setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
-
-				try {
-					userService.save(user);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					model.addAttribute("error", true);
-					return "user/password/change";
-				}
-
-				redirectAttributes.addFlashAttribute("passwordChanged", true);
-				return "redirect:/login";
-			} else {
-				model.addAttribute("error", true);
-				return "user/password/change";
-			}
+		} catch (InvalidPasswordException ex) {
+			log.error("Invalid password", ex);
+			model.addAttribute("error", true);
+			return "user/password/change";
+		} catch (RuntimeException ex) {
+			log.error("Unexpected runtime exception while changing password", ex);
+			model.addAttribute("error", true);
+			return "user/password/change";
 		}
 	}
 
