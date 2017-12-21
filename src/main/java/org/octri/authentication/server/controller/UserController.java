@@ -181,11 +181,11 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("passwordChanged", true);
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
-			log.error("Invalid password", ex);
+			log.error(username + " submitted an invalid password", ex);
 			model.addAttribute("error", true);
 			return "user/password/change";
 		} catch (RuntimeException ex) {
-			log.error("Unexpected runtime exception while changing password", ex);
+			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
 			model.addAttribute("error", true);
 			return "user/password/change";
 		}
