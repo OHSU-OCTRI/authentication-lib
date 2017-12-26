@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
+import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -92,7 +94,8 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model) {
+	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap modelMap,
+			final Model model) {
 		Assert.notNull(user, "User must not be null");
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
@@ -104,7 +107,7 @@ public class UserController {
 		final String password = PasswordGenerator.generate();
 		user.setPassword(passwordEncoder.encode(password));
 		userService.save(user);
-		model.clear();
+		modelMap.clear();
 		return "redirect:/admin/user/list";
 	}
 
@@ -169,7 +172,7 @@ public class UserController {
 	public String changePassword(@ModelAttribute("currentPassword") String currentPassword,
 			@ModelAttribute("newPassword") String newPassword, @ModelAttribute("password") String password,
 			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
-			HttpServletRequest request, Model model) {
+			HttpServletRequest request, Model model, ModelMap modelMap) {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
 		Assert.notNull(username, "Could not find username in session");
 
@@ -179,6 +182,7 @@ public class UserController {
 		try {
 			userService.changePassword(user, currentPassword, newPassword, confirmPassword);
 			redirectAttributes.addFlashAttribute("passwordChanged", true);
+			modelMap.clear();
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error(username + " submitted an invalid password", ex);
@@ -188,6 +192,73 @@ public class UserController {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
 			model.addAttribute("error", true);
 			return "user/password/change";
+		}
+	}
+
+	/**
+	 * A form for initiating a password reset.
+	 * 
+	 * @return forgot template
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@GetMapping("user/password/forgot")
+	public String forgotPassword() {
+		return "user/password/forgot";
+	}
+
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@PostMapping("user/password/forgot")
+	public String forgotPassword(@ModelAttribute("email") String email, Model model, HttpServletRequest request) {
+		try {
+			PasswordResetToken token = userService.generatePasswordResetToken(email);
+			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
+		} catch (Exception ex) {
+			log.error("Error while processing password reset request for email address " + email, ex);
+		}
+		model.addAttribute("confirmation", true);
+		return "user/password/forgot";
+	}
+
+	/**
+	 * A form for reseting a password.
+	 * 
+	 * @return forgot template
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@GetMapping("user/password/reset")
+	public String resetPassword(@RequestParam("token") String token, Model model) {
+		// Check to see if there is a valid token.
+		// A record should exist in the database and be not expired.
+		if (!userService.isValidPasswordResetToken(token)) {
+			model.addAttribute("invalidToken", true);
+		}
+		model.addAttribute("token", token);
+		return "user/password/reset";
+	}
+
+	/**
+	 * Persist reset password.
+	 * 
+	 * @return Redirects to /login
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
+	@PostMapping("user/password/reset")
+	public String resetPassword(@ModelAttribute("password") String password, @ModelAttribute("token") String token,
+			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model, ModelMap modelMap) {
+		try {
+			userService.resetPassword(password, token);
+			userService.sendPasswordResetEmailConfirmation(token, request, false);
+			redirectAttributes.addFlashAttribute("passwordReset", true);
+			modelMap.clear();
+			return "redirect:/login";
+		} catch (InvalidPasswordException ex) {
+			log.error("Validation error while saving password", ex);
+			model.addAttribute("invalidPassword", true);
+			return "user/password/reset";
+		} catch (Exception ex) {
+			log.error("Unexpected error while saving password", ex);
+			model.addAttribute("error", true);
+			return "user/password/reset";
 		}
 	}
 

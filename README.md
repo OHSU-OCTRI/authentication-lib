@@ -53,6 +53,26 @@ ldap.contextSource.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
 
+### Email Configuration
+
+Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
+
+```
+spring.mail.enabled: ${SPRING_MAIL_ENABLED:false}
+spring.mail.from: ${SPRING_MAIL_FROM:octrihlp@ohsu.edu}
+spring.mail.default-encoding: ${SPRING_MAIL_DEFAULT_ENCODING:UTF-8}
+spring.mail.host: ${SPRING_MAIL_HOST:smtpout.ohsu.edu}
+spring.mail.port: ${SPRING_MAIL_PORT:25}
+spring.mail.protocol: ${SPRING_MAIL_PROTOCOL:smtp}
+spring.mail.test-connection: ${SPRING_MAIL_TEST_CONNECTION:false}
+spring.mail.username: ${SPRING_MAIL_USERNAME:octrihlp@ohsu.edu}
+spring.mail.password: ${SPRING_MAIL_PASSWORD:secret}
+spring.mail.properties.mail.smtp.auth: ${SPRING_MAIL_SMTP_AUTH:false}
+spring.mail.properties.mail.smtp.starttls.enable: ${SPRING_MAIL_SMTP_STARTTLS_ENABLE:false}
+spring.mail.properties.mail.smtp.starttls.required: ${SPRING_MAIL_SMTP_STARTTLS_REQUIRED:false}
+```
+
+
 ## Default Behavior
 
 The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties:

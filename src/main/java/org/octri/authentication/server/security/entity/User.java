@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.entity;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +17,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
-import org.octri.authentication.server.security.annotation.ValidPassword;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -29,6 +30,9 @@ import org.springframework.util.Assert;
 public class User extends AbstractEntity {
 
 	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";
+
+	// TODO: This could be configurable.
+	public static final Integer EXPIRE_CREDENTIALS_IN_DAYS = 180;
 
 	public User() {
 		super();
@@ -72,7 +76,6 @@ public class User extends AbstractEntity {
 	@Size(max = 50, min = 1, message = "Username must be 1-50 characters")
 	private String username;
 
-	@ValidPassword(message = "This password does not meet all of the requirements")
 	private String password;
 
 	@NotNull(message = "Enabled must be Yes or No")
@@ -104,6 +107,7 @@ public class User extends AbstractEntity {
 	 * 
 	 * @see http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
 	 */
+	@Column(unique = true)
 	@Email(message = INVALID_EMAIL_MESSAGE, regexp = ".+@.+\\..+")
 	@NotNull(message = "Email is required")
 	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters")
@@ -239,7 +243,17 @@ public class User extends AbstractEntity {
 		return this.password;
 	}
 
+	/**
+	 * Also marks credentials as not expired and sets credentials expiration date 180 days into the future.
+	 * 
+	 * @param password
+	 */
 	public void setPassword(String password) {
+		setCredentialsExpired(false);
+
+		Instant now = Instant.now();
+		// TODO: 180 could be configurable
+		setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
 		this.password = password;
 	}
 
