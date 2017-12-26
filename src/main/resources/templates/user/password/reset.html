@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Reset Password</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="ctx" th:content="@{~/}"/>
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.theme.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
+	</head>
+	<body>
+		<nav th:replace="fragments/navbar :: navbar" />
+		<div th:replace="fragments/user/password/reset :: resetPassword" />
+		<div th:replace="fragments/assets :: javascript" />
+        <script type="text/javascript">
+        		$(function() {
+        			var password = $('#password');
+        			password.focus();
+				var show = $('input[data-action="show-password"]');
+        			show.on('click', function() {
+        				if (show.is(':checked')) {
+        					password.attr('type', 'text');	
+        				} else {
+        					password.attr('type', 'password');
+        				}
+        				password.focus();
+        			});
+        		});
+        </script>
+	</body>
+</html>

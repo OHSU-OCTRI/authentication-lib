@@ -59,7 +59,7 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 				.and()
 				.authorizeRequests()
 				.antMatchers("/", "/index.html", "/login/**", "/login*", "/login*/**", "/assets/**",
-						"/user/password/change")
+						"/user/password/change", "/user/password/forgot", "/user/password/reset")
 				.permitAll()
 				.antMatchers(HttpMethod.POST).authenticated()
 				.antMatchers(HttpMethod.PUT).authenticated()
