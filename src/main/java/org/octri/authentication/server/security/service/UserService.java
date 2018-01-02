@@ -289,8 +289,8 @@ public class UserService {
 					+ " about " + body);
 		} else {
 			mailSender.send(email);
+			log.info("Password reset confirmation email sent to " + user.getEmail());
 		}
-		log.info("Password reset confirmation email sent to " + user.getEmail());
 	}
 
 	/**
@@ -401,8 +401,8 @@ public class UserService {
 					+ body);
 		} else {
 			mailSender.send(email);
+			log.info("Password reset confirmation email sent to " + userEmail);
 		}
-		log.info("Password reset confirmation email sent to " + userEmail);
 	}
 
 }
