@@ -163,7 +163,7 @@ public class UserServiceTest {
 
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
 
-		User saved = spyUserService.resetPassword(password, token);
+		User saved = spyUserService.resetPassword(password, password, token);
 
 		verify(passwordResetTokenService).save(any(PasswordResetToken.class));
 		assertTrue("User's password should match the hashed password on the User record",

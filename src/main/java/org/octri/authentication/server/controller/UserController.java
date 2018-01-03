@@ -299,10 +299,11 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/reset")
-	public String resetPassword(@ModelAttribute("password") String password, @ModelAttribute("token") String token,
+	public String resetPassword(@ModelAttribute("newPassword") String newPassword,
+			@ModelAttribute("confirmPassword") String confirmPassword, @ModelAttribute("token") String token,
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 		try {
-			userService.resetPassword(password, token);
+			userService.resetPassword(newPassword, confirmPassword, token);
 			userService.sendPasswordResetEmailConfirmation(token, request, false);
 			redirectAttributes.addFlashAttribute("passwordReset", true);
 			model.clear();

@@ -354,14 +354,16 @@ public class UserService {
 	 * @return User with updated password.
 	 * @throws InvalidPasswordException
 	 */
-	public User resetPassword(final String password, final String token) throws InvalidPasswordException {
-		Assert.notNull(password, "Password is required");
+	public User resetPassword(final String newPassword, final String confirmPassword, final String token)
+			throws InvalidPasswordException {
+		Assert.notNull(newPassword, "Password is required");
+		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");
 		PasswordResetToken existingToken = passwordResetTokenService.findByToken(token);
 		Assert.notNull(existingToken, "Could not find existing token");
 		User user = existingToken.getUser();
-		validatePassword(user, null, password, password);
-		user.setPassword(passwordEncoder.encode(password));
+		validatePassword(user, null, newPassword, confirmPassword);
+		user.setPassword(passwordEncoder.encode(newPassword));
 		User saved = this.save(user);
 		// Expire token to enforce one time use.
 		existingToken.setExpiryDate(new Date());
