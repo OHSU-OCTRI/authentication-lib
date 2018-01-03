@@ -60,6 +60,7 @@ public class UserController {
 	 * Returns view for displaying a list of all users.
 	 * 
 	 * @param model
+	 *            Object holding view data
 	 * @return List view
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
@@ -74,6 +75,7 @@ public class UserController {
 	 * Returns view for creating a new user.
 	 * 
 	 * @param model
+	 *            Object holding view data
 	 * @return New user view.
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
@@ -88,8 +90,12 @@ public class UserController {
 	 * an existing {@link User}.
 	 * 
 	 * @param user
+	 *            User being created
+	 * @param bindingResult
+	 *            Binding result for 'user' parameter
 	 * @param model
-	 * @return
+	 *            Object holding view data
+	 * @return new user template on error, or redirects to user list
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
@@ -109,6 +115,15 @@ public class UserController {
 		return "redirect:/admin/user/list";
 	}
 
+	/**
+	 * Presents a page for editing a user.
+	 * 
+	 * @param id
+	 *            User id
+	 * @param model
+	 *            Object holding view data
+	 * @return Edit user template
+	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@GetMapping("admin/user/edit/{id}")
 	public String editUser(@PathVariable("id") long id, ModelMap model) {
@@ -123,9 +138,15 @@ public class UserController {
 	 * Persists changes to {@link User}. See {@link #newUser(User, ModelMap)} for
 	 * persisting a new {@link User}.
 	 * 
+	 * @param id
+	 *            User id
 	 * @param user
+	 *            User being edited
+	 * @param bindingResult
+	 *            Binding result for user parameter
 	 * @param model
-	 * @return Redirects to list of all users.
+	 *            Object holding view data
+	 * @return Redirects to list of all users, or returns to current page and displays an error message.
 	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@PostMapping("admin/user/edit/{id}")
@@ -163,12 +184,24 @@ public class UserController {
 	/**
 	 * Persist changed password.
 	 * 
+	 * @param currentPassword
+	 *            The user's current password
+	 * @param newPassword
+	 *            The user's new password
+	 * @param confirmPassword
+	 *            Confirming the user's new password
+	 * @param redirectAttributes
+	 *            Used to hold attributes for a redirect.
+	 * @param request
+	 *            The {@link HttpServletRequest}
+	 * @param model
+	 *            Object holding view data
 	 * @return Redirects to /login
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/change")
 	public String changePassword(@ModelAttribute("currentPassword") String currentPassword,
-			@ModelAttribute("newPassword") String newPassword, @ModelAttribute("password") String password,
+			@ModelAttribute("newPassword") String newPassword,
 			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
 			HttpServletRequest request, ModelMap model) {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
@@ -204,6 +237,17 @@ public class UserController {
 		return "user/password/forgot";
 	}
 
+	/**
+	 * Handles generating and sending a password reset token.
+	 * 
+	 * @param email
+	 *            The users email address.
+	 * @param model
+	 *            Object holding view data
+	 * @param request
+	 *            The {@link HttpServletRequest}
+	 * @return Returns to the same forgot template and presents a confirmation message.
+	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/forgot")
 	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request) {
@@ -218,9 +262,13 @@ public class UserController {
 	}
 
 	/**
-	 * A form for reseting a password.
+	 * A form for resetting a password.
 	 * 
-	 * @return forgot template
+	 * @param token
+	 *            The user's password reset token.
+	 * @param model
+	 *            Object holding view data
+	 * @return Password reset template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/reset")
@@ -237,6 +285,16 @@ public class UserController {
 	/**
 	 * Persist reset password.
 	 * 
+	 * @param password
+	 *            The user's new password
+	 * @param token
+	 *            The user's password reset token.
+	 * @param redirectAttributes
+	 *            Used to hold attributes for a redirect.
+	 * @param request
+	 *            The {@link HttpServletRequest}
+	 * @param model
+	 *            Object holding view data
 	 * @return Redirects to /login
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
@@ -288,6 +346,9 @@ public class UserController {
 		return ldapEnabled;
 	}
 
+	/**
+	 * @return Boolean indicating table-based authentication is enabled or disabled.
+	 */
 	@ModelAttribute("tableBased")
 	public Boolean getTableBasedEnabled() {
 		return tableBasedEnabled;
