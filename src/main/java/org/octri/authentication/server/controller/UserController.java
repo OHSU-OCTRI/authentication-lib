@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
@@ -65,7 +64,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/list")
-	public String listUsers(Model model) {
+	public String listUsers(ModelMap model) {
 		List<User> users = userService.findAll();
 		model.addAttribute("users", users);
 		return "admin/user/list";
@@ -79,7 +78,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/new")
-	public String newUser(Model model) {
+	public String newUser(ModelMap model) {
 		model.addAttribute("user", new User());
 		return "admin/user/new";
 	}
@@ -94,8 +93,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap modelMap,
-			final Model model) {
+	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model) {
 		Assert.notNull(user, "User must not be null");
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
@@ -107,13 +105,13 @@ public class UserController {
 		final String password = PasswordGenerator.generate();
 		user.setPassword(passwordEncoder.encode(password));
 		userService.save(user);
-		modelMap.clear();
+		model.clear();
 		return "redirect:/admin/user/list";
 	}
 
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@GetMapping("admin/user/edit/{id}")
-	public String editUser(@PathVariable("id") long id, Model model) {
+	public String editUser(@PathVariable("id") long id, ModelMap model) {
 		Assert.notNull(id, "id must not be null");
 		User user = userService.find(id);
 		Assert.notNull(user, "Could not find a user for id " + id);
@@ -172,7 +170,7 @@ public class UserController {
 	public String changePassword(@ModelAttribute("currentPassword") String currentPassword,
 			@ModelAttribute("newPassword") String newPassword, @ModelAttribute("password") String password,
 			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
-			HttpServletRequest request, Model model, ModelMap modelMap) {
+			HttpServletRequest request, ModelMap model) {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
 		Assert.notNull(username, "Could not find username in session");
 
@@ -182,7 +180,7 @@ public class UserController {
 		try {
 			userService.changePassword(user, currentPassword, newPassword, confirmPassword);
 			redirectAttributes.addFlashAttribute("passwordChanged", true);
-			modelMap.clear();
+			model.clear();
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error(username + " submitted an invalid password", ex);
@@ -208,7 +206,7 @@ public class UserController {
 
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/forgot")
-	public String forgotPassword(@ModelAttribute("email") String email, Model model, HttpServletRequest request) {
+	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request) {
 		try {
 			PasswordResetToken token = userService.generatePasswordResetToken(email);
 			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
@@ -226,7 +224,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/reset")
-	public String resetPassword(@RequestParam("token") String token, Model model) {
+	public String resetPassword(@RequestParam("token") String token, ModelMap model) {
 		// Check to see if there is a valid token.
 		// A record should exist in the database and be not expired.
 		if (!userService.isValidPasswordResetToken(token)) {
@@ -244,12 +242,12 @@ public class UserController {
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/reset")
 	public String resetPassword(@ModelAttribute("password") String password, @ModelAttribute("token") String token,
-			RedirectAttributes redirectAttributes, HttpServletRequest request, Model model, ModelMap modelMap) {
+			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 		try {
 			userService.resetPassword(password, token);
 			userService.sendPasswordResetEmailConfirmation(token, request, false);
 			redirectAttributes.addFlashAttribute("passwordReset", true);
-			modelMap.clear();
+			model.clear();
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error("Validation error while saving password", ex);
