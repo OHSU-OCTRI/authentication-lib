@@ -1,10 +1,7 @@
 package org.octri.authentication.server.security.service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -247,25 +244,6 @@ public class UserService {
 	}
 
 	/**
-	 * Generates a password reset token for a user. Tokens are persisted in the database.
-	 * 
-	 * @param email
-	 * @param request
-	 */
-	public PasswordResetToken generatePasswordResetToken(final String email) {
-		Assert.notNull(email, "Email address cannot be null");
-		User user = findByEmail(email);
-		Assert.notNull(user, "Could not find user for password reset for email " + email);
-		final String uuid = UUID.randomUUID().toString();
-		Instant now = Instant.now();
-		PasswordResetToken token = new PasswordResetToken();
-		token.setToken(uuid);
-		token.setExpiryDate(Date.from(now.plus(PasswordResetToken.EXPIRE_IN_MINUTES, ChronoUnit.MINUTES)));
-		token.setUser(user);
-		return passwordResetTokenService.save(token);
-	}
-
-	/**
 	 * Send email confirmation to user.
 	 * 
 	 * @param user
@@ -327,22 +305,6 @@ public class UserService {
 		final String fullUrl = UrlUtils.buildFullRequestUrl(request);
 		final String urlPath = UrlUtils.buildRequestUrl(request);
 		return fullUrl.substring(0, fullUrl.indexOf(urlPath));
-	}
-
-	/**
-	 * Checks to ensure a token exists and has not expired.
-	 * 
-	 * @param token
-	 * @return
-	 */
-	public boolean isValidPasswordResetToken(final String token) {
-		PasswordResetToken existing = passwordResetTokenService.findByToken(token);
-		if (existing == null) {
-			return false;
-		}
-		Date now = new Date();
-		// Valid if: Now is not after the expiration date.
-		return !now.after(existing.getExpiryDate());
 	}
 
 	/**

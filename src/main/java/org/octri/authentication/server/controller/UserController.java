@@ -13,6 +13,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.PasswordGenerator;
+import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class UserController {
 
 	@Autowired
 	private UserRoleService userRoleService;
+
+	@Autowired
+	private PasswordResetTokenService passwordResetTokenService;
 
 	@Autowired
 	private Boolean ldapEnabled;
@@ -252,7 +256,7 @@ public class UserController {
 	@PostMapping("user/password/forgot")
 	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request) {
 		try {
-			PasswordResetToken token = userService.generatePasswordResetToken(email);
+			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(email);
 			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
 		} catch (Exception ex) {
 			log.error("Error while processing password reset request for email address " + email, ex);
@@ -275,7 +279,7 @@ public class UserController {
 	public String resetPassword(@RequestParam("token") String token, ModelMap model) {
 		// Check to see if there is a valid token.
 		// A record should exist in the database and be not expired.
-		if (!userService.isValidPasswordResetToken(token)) {
+		if (!passwordResetTokenService.isValidPasswordResetToken(token)) {
 			model.addAttribute("invalidToken", true);
 		}
 		model.addAttribute("token", token);
