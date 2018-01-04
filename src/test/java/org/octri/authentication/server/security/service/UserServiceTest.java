@@ -30,7 +30,6 @@ import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
@@ -53,7 +52,7 @@ public class UserServiceTest {
 	private HttpServletRequest request;
 
 	@Mock
-	private JavaMailSender mailSender = new JavaMailSenderImpl();
+	private JavaMailSender mailSender;
 
 	@Mock
 	private EmailConfiguration emailConfig;
