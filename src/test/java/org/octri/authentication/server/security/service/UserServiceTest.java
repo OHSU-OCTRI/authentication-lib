@@ -183,9 +183,6 @@ public class UserServiceTest {
 
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
 
-		PasswordResetToken token = passwordResetTokenService.findByToken(TOKEN);
-		System.out.println("siam: token before reset: " + token.getExpiryDate().toString());
-
 		spyUserService.resetPassword(password, password, TOKEN);
 		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
 	}
