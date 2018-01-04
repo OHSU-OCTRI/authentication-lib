@@ -1,6 +1,9 @@
 package org.octri.authentication.server.security.entity;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +17,8 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Holds a random token (UUID) generated at the time of the request, the {@link User} that requested the password reset,
- * and an expiration date for the request.
+ * and an expiration date for the request. A token is generated automatically when constructing a new
+ * {@link PasswordResetToken} using {@link #PasswordResetToken(User)} as well as an expiry date.
  * 
  * @author sams
  */
@@ -41,6 +45,23 @@ public class PasswordResetToken {
 	@NotNull
 	@Column(name = "expiry_date")
 	private Date expiryDate;
+
+	/**
+	 * Default contructor, no fields are set.
+	 */
+	public PasswordResetToken() {
+	}
+
+	/**
+	 * This constructor sets all required fields based on the passed in {@link User}.
+	 * 
+	 * @param user
+	 */
+	public PasswordResetToken(User user) {
+		this.token = UUID.randomUUID().toString();
+		this.expiryDate = Date.from(Instant.now().plus(PasswordResetToken.EXPIRE_IN_MINUTES, ChronoUnit.MINUTES));
+		this.user = user;
+	}
 
 	public Long getId() {
 		return id;

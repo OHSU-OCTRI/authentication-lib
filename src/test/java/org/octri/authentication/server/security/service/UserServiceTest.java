@@ -9,8 +9,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
@@ -139,10 +137,7 @@ public class UserServiceTest {
 		final String token = "9465565b-7150-4f95-9855-7997a2f6124a";
 		UserService spyUserService = spy(userService);
 
-		PasswordResetToken passwordResetToken = new PasswordResetToken();
-		passwordResetToken.setUser(user);
-		passwordResetToken.setToken(token);
-		passwordResetToken.setExpiryDate(new Date());
+		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
 
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
 

@@ -1,10 +1,7 @@
 package org.octri.authentication.server.security.service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -68,13 +65,7 @@ public class PasswordResetTokenService {
 		Assert.notNull(email, "Email address cannot be null");
 		User user = userService.findByEmail(email);
 		Assert.notNull(user, "Could not find user for password reset for email " + email);
-		final String uuid = UUID.randomUUID().toString();
-		Instant now = Instant.now();
-		PasswordResetToken token = new PasswordResetToken();
-		token.setToken(uuid);
-		token.setExpiryDate(Date.from(now.plus(PasswordResetToken.EXPIRE_IN_MINUTES, ChronoUnit.MINUTES)));
-		token.setUser(user);
-		return save(token);
+		return save(new PasswordResetToken(user));
 	}
 
 	/**

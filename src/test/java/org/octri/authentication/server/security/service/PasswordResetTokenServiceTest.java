@@ -61,11 +61,7 @@ public class PasswordResetTokenServiceTest {
 
 	@Test
 	public void testForValidPasswordResetToken() {
-		Instant now = Instant.now();
-		PasswordResetToken validToken = new PasswordResetToken();
-		// Set a date far in the future for this test to pass.
-		validToken.setExpiryDate(Date.from(now.plus(1000, ChronoUnit.MINUTES)));
-
+		PasswordResetToken validToken = new PasswordResetToken(user);
 		when(passwordResetTokenService.findByToken("secret-token")).thenReturn(validToken);
 		assertTrue("Token must be valid", passwordResetTokenService.isValidPasswordResetToken("secret-token"));
 	}
@@ -73,7 +69,7 @@ public class PasswordResetTokenServiceTest {
 	@Test
 	public void testForInvalidPasswordResetTokenWhenExpired() {
 		Instant now = Instant.now();
-		PasswordResetToken invalidToken = new PasswordResetToken();
+		PasswordResetToken invalidToken = new PasswordResetToken(user);
 		// Set a date far in the past for this test to pass.
 		invalidToken.setExpiryDate(Date.from(now.minus(1000, ChronoUnit.MINUTES)));
 
