@@ -258,11 +258,13 @@ public class UserController {
 		try {
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(email);
 			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
+			model.addAttribute("confirmation", true);
+			return "user/password/forgot";
 		} catch (Exception ex) {
 			log.error("Error while processing password reset request for email address " + email, ex);
+			model.addAttribute("error", true);
+			return "user/password/forgot";
 		}
-		model.addAttribute("confirmation", true);
-		return "user/password/forgot";
 	}
 
 	/**
