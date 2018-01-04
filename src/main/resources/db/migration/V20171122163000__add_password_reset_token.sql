@@ -8,5 +8,6 @@ CREATE TABLE `password_reset_token` (
   `expiry_date` datetime NOT NULL,
   `user` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `password_reset_token_token_uk` (`token`),
   CONSTRAINT `user_password_reset_token_fk` FOREIGN KEY (`user`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

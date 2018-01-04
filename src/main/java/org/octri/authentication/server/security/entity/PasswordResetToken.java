@@ -30,7 +30,7 @@ public class PasswordResetToken {
 	private Long id;
 
 	@NotNull
-	@Column(name = "token")
+	@Column(name = "token", unique = true)
 	private String token;
 
 	@NotNull

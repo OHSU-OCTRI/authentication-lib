@@ -24,6 +24,11 @@
 							again or contact your system administrator.
 						</div>
 					</div>
+					<div th:if="${error} == true">
+						<div class="alert alert-danger">
+							There was an unexpected error processing your request. Please try again or contact your system administrator if this persists.
+						</div>
+					</div>
 					<div th:if="${confirmation} != true">
 						<div class="form-group">
 							<label th:text="'Enter an email address'" for="email">...</label>
