@@ -83,4 +83,17 @@ public class PasswordResetTokenServiceTest {
 		assertFalse("Token must exist in the database",
 				passwordResetTokenService.isValidPasswordResetToken("secret-token"));
 	}
+
+	@Test
+	public void testExpireToken() throws InterruptedException {
+		// 'now' is the time this test started
+		Date now = new Date();
+
+		PasswordResetToken token = new PasswordResetToken(user);
+		assertTrue("Tokens are generated with an expiration date in the future - should be greater than 'now'",
+				token.getExpiryDate().after(now));
+
+		passwordResetTokenService.expireToken(token);
+		assertTrue("A token is expired when the expiryDate is before 'now'", token.getExpiryDate().before(now));
+	}
 }

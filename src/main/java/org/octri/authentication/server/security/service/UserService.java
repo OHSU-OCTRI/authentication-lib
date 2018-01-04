@@ -1,6 +1,5 @@
 package org.octri.authentication.server.security.service;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -213,7 +212,7 @@ public class UserService {
 	 */
 	private void validatePassword(final User user, final String currentPassword, final String newPassword,
 			final String confirmPassword) throws InvalidPasswordException {
-		// Current password much match existing password in the database if set.
+		// Current password must match existing password in the database if set.
 		if (currentPassword != null && !passwordEncoder.matches(currentPassword, user.getPassword())) {
 			throw new InvalidPasswordException("Current password doesn't match existing password");
 		}
@@ -308,7 +307,7 @@ public class UserService {
 	}
 
 	/**
-	 * Update user's password.
+	 * Update a user's password per reset request.
 	 * 
 	 * @param password
 	 * @param token
@@ -327,9 +326,7 @@ public class UserService {
 		validatePassword(user, null, newPassword, confirmPassword);
 		user.setPassword(passwordEncoder.encode(newPassword));
 		User saved = this.save(user);
-		// Expire token to enforce one time use.
-		existingToken.setExpiryDate(new Date());
-		passwordResetTokenService.save(existingToken);
+		passwordResetTokenService.expireToken(existingToken);
 		return saved;
 	}
 

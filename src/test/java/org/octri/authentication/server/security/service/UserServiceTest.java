@@ -60,7 +60,7 @@ public class UserServiceTest {
 
 	@Mock
 	private PasswordResetToken passwordResetToken;
-
+	
 	private User user;
 	private static final String USERNAME = "foo";
 	private static final String CURRENT_PASSWORD = "currentPassword";
@@ -70,6 +70,7 @@ public class UserServiceTest {
 	private static final String APP_URL = "http://localhost:8080/app";
 	private static final String RESET_PASSWORD_URL = APP_URL + "/user/password/reset?token=secret-token";
 	private static final String LOGIN_URL = APP_URL + "/login";
+	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@Before
 	public void beforeEach() {
@@ -134,18 +135,59 @@ public class UserServiceTest {
 	@Test
 	public void testResetPassword() throws InvalidPasswordException {
 		final String password = "Abcdefg.1";
-		final String token = "9465565b-7150-4f95-9855-7997a2f6124a";
 		UserService spyUserService = spy(userService);
 
 		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
 
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
 
-		User saved = spyUserService.resetPassword(password, password, token);
+		User saved = spyUserService.resetPassword(password, password, TOKEN);
 
-		verify(passwordResetTokenService).save(any(PasswordResetToken.class));
+		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
 		assertTrue("User's password should match the hashed password on the User record",
 				passwordEncoder.matches(password, saved.getPassword()));
+		assertTrue("Returned user should have encoded password",
+				passwordEncoder.matches(password, saved.getPassword()));
+	}
+
+	@Test
+	public void testResetPasswordWithInvalidConfirmPassword() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		final String confirmPassword = "Abcdefg.2";
+		UserService spyUserService = spy(userService);
+
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+
+		expectedException.expect(InvalidPasswordException.class);
+		expectedException.expectMessage("New and confirm new password values do not match");
+		spyUserService.resetPassword(password, confirmPassword, TOKEN);
+	}
+
+	@Test
+	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		UserService spyUserService = spy(userService);
+
+		// Ensures the token will not be found.
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(null);
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Could not find existing token");
+		spyUserService.resetPassword(password, password, TOKEN);
+	}
+
+	@Test
+	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		UserService spyUserService = spy(userService);
+
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+
+		PasswordResetToken token = passwordResetTokenService.findByToken(TOKEN);
+		System.out.println("siam: token before reset: " + token.getExpiryDate().toString());
+
+		spyUserService.resetPassword(password, password, TOKEN);
+		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
 	}
 
 	@Test
