@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +55,17 @@ public class PasswordResetTokenService {
 		if (passwordResetToken != null) {
 			passwordResetTokenRepository.delete(id);
 		}
+	}
+
+	/**
+	 * Expires token by setting an expiry date in the past.
+	 * @param token The token to expire.
+	 * @return Persisted token
+	 */
+	@Transactional
+	public PasswordResetToken expireToken(final PasswordResetToken token) {
+		token.setExpiryDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+		return save(token);
 	}
 
 	/**
