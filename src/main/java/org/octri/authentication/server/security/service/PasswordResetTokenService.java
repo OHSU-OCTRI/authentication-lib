@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.repository.PasswordResetTokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -22,9 +21,6 @@ import org.springframework.util.Assert;
  */
 @Service
 public class PasswordResetTokenService {
-
-	@Autowired
-	private UserService userService;
 
 	@Resource
 	private PasswordResetTokenRepository passwordResetTokenRepository;
@@ -74,10 +70,8 @@ public class PasswordResetTokenService {
 	 * @param email
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
 	 */
-	public PasswordResetToken generatePasswordResetToken(final String email) {
-		Assert.notNull(email, "Email address cannot be null");
-		User user = userService.findByEmail(email);
-		Assert.notNull(user, "Could not find user for password reset for email " + email);
+	public PasswordResetToken generatePasswordResetToken(final User user) {
+		Assert.notNull(user, "User cannot be null");
 		return save(new PasswordResetToken(user));
 	}
 

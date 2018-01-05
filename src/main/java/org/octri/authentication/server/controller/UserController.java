@@ -256,7 +256,8 @@ public class UserController {
 	@PostMapping("user/password/forgot")
 	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request) {
 		try {
-			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(email);
+			User user = userService.findByEmail(email);
+			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
 			model.addAttribute("confirmation", true);
 			return "user/password/forgot";
