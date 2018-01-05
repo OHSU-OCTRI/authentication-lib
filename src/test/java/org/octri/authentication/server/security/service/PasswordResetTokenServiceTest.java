@@ -37,7 +37,6 @@ public class PasswordResetTokenServiceTest {
 
 	private User user;
 	private static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-	private static final String EMAIL = "foo@example.com";
 
 	@Before
 	public void beforeEach() {
@@ -50,8 +49,7 @@ public class PasswordResetTokenServiceTest {
 
 	@Test
 	public void testGeneratePasswordResetToken() {
-		when(userService.findByEmail(EMAIL)).thenReturn(user);
-		PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(EMAIL);
+		PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 		assertTrue("Token matches expected scheme", token.getToken().matches(UUID_REGEX));
 		assertEquals("Linked with correct User", user, token.getUser());
 		assertNotNull("There should be an expiration date", token.getExpiryDate());
