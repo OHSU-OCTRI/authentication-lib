@@ -6,8 +6,12 @@
 			<input class="form-control lookup-user" autocomplete="off" type="text" th:field="*{username}" />
 			<p class="error-text" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">...</p>
 		</div>
+		<div th:fragment="ldapUser" class="form-group">
+			<input id="ldapUser" type="checkbox"/>
+			<span>OHSU User</span>
+		</div>
 		<div th:fragment="ldapLookup" class="form-group">
-			<button id="ldapLookup" class="btn btn-default">LDAP Lookup</button>
+			<button id="ldapLookup" class="btn btn-default" disabled="true">LDAP Lookup</button>
 		</div>
 		<div th:fragment="usernameForEdit" class="form-group" th:classappend="${#fields.hasErrors('username')} ? has-error : ''">
 			<label>Username*</label>

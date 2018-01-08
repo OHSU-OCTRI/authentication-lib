@@ -349,7 +349,7 @@ public class UserController {
 	/**
 	 * @return Boolean indicating LDAP is enabled or disabled.
 	 */
-	@ModelAttribute("ldap")
+	@ModelAttribute("ldapEnabled")
 	public Boolean getLdapEnabled() {
 		return ldapEnabled;
 	}
@@ -357,7 +357,7 @@ public class UserController {
 	/**
 	 * @return Boolean indicating table-based authentication is enabled or disabled.
 	 */
-	@ModelAttribute("tableBased")
+	@ModelAttribute("tableBasedEnabled")
 	public Boolean getTableBasedEnabled() {
 		return tableBasedEnabled;
 	}

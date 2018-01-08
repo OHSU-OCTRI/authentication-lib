@@ -102,6 +102,17 @@ $(function() {
 		}
 	}, 500));
 	
+	// Enable/disable LDAP Lookup based on whether ldapUser is checked
+	$('#ldapUser').on('click', function(e) {
+		if ($(this).is(':checked')) {
+			$('#ldapLookup').prop("disabled",false);
+		} else {
+			$('#ldapLookup').prop("disabled",true);
+		}
+				
+	});
+	
+	// Look up by username in LDAP and prepopulate user fields
 	$('#ldapLookup').on('click', function(e) {
 		e.preventDefault();
 		let token =  $('input[name="_csrf"]').attr('value');
