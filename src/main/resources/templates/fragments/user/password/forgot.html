@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Forgot Password</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="ctx" th:content="@{~/}"/>
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.theme.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
+	</head>
+	<body>
+		<nav th:replace="fragments/navbar :: navbar" />
+		<div class="container-fluid" th:fragment="forgotPassword">
+		 	<div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
+				<h3>Initiate a Password Reset</h3>
+				<form class="form" th:action="@{/user/password/forgot}" method="POST">
+					<div th:if="${confirmation} == true">
+						<div class="alert alert-success">
+							An email was sent to your address containing instructions to 
+							change your password. This request will expire in <span th:text="${T(org.octri.authentication.server.security.entity.PasswordResetToken).EXPIRE_IN_MINUTES}">...</span> minutes.
+							If you do not receive an email within <span th:text="${T(org.octri.authentication.server.security.entity.PasswordResetToken).EXPIRE_IN_MINUTES}">...</span> minutes please try 
+							again or contact your system administrator.
+						</div>
+					</div>
+					<div th:if="${error} == true">
+						<div class="alert alert-danger">
+							There was an unexpected error processing your request. Please try again or contact your system administrator if this persists.
+						</div>
+					</div>
+					<div th:if="${confirmation} != true">
+						<div class="form-group">
+							<label th:text="'Enter an email address'" for="email">...</label>
+							<input id="email" name="email" class="form-control" type="email" autofocus="true" />
+						</div>
+						
+						<div class="form-group">
+							<button class="btn btn-primary" type="submit">Submit</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div th:replace="fragments/assets :: javascript" />
+        <script type="text/javascript">
+        		$(function() {
+        			$('#currentPassword').focus();
+        		});
+        </script>
+	</body>
+</html>

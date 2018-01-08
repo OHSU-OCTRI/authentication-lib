@@ -14,7 +14,8 @@ CREATE TABLE `user` (
   `password` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_username` (`username`)
+  UNIQUE KEY `user_username` (`username`),
+  UNIQUE KEY `user_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `user_role` (

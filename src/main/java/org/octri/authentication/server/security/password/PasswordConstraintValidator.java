@@ -5,6 +5,8 @@ import java.util.Arrays;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.server.security.annotation.ValidPassword;
 import org.passay.CharacterCharacteristicsRule;
 import org.passay.CharacterRule;
@@ -13,6 +15,7 @@ import org.passay.LengthRule;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
+import org.passay.RuleResultDetail;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +28,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
+
+	private static final Log log = LogFactory.getLog(PasswordConstraintValidator.class);
 
 	@Override
 	public void initialize(ValidPassword arg0) {
@@ -53,8 +58,12 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 						new CharacterRule(EnglishCharacterData.Digit, 1),
 						capsOrSpecial));
 
+
 		// Validate password
 		RuleResult result = validator.validate(new PasswordData(password));
+		for (RuleResultDetail detail : result.getDetails()) {
+			log.warn("Password failed validation for reason: " + detail.getErrorCode());
+		}
 		if (result.isValid()) {
 			return true;
 		}

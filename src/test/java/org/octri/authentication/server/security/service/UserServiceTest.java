@@ -1,7 +1,15 @@
 package org.octri.authentication.server.security.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,13 +18,16 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
@@ -35,17 +46,53 @@ public class UserServiceTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
+	@Mock
+	private HttpServletRequest request;
+
+	@Mock
+	private JavaMailSender mailSender;
+
+	@Mock
+	private EmailConfiguration emailConfig;
+
+	@Mock
+	private PasswordResetTokenService passwordResetTokenService;
+
+	@Mock
+	private PasswordResetToken passwordResetToken;
+	
 	private User user;
 	private static final String USERNAME = "foo";
 	private static final String CURRENT_PASSWORD = "currentPassword";
-	private static final String VALID_PASSWORD = "Abcdefg.";
+	private static final String VALID_PASSWORD = "Abcdefg.1";
 	private static final String INVALID_PASSWORD_WITH_USERNAME = "Abcdefg." + USERNAME;
+
+	private static final String APP_URL = "http://localhost:8080/app";
+	private static final String RESET_PASSWORD_URL = APP_URL + "/user/password/reset?token=secret-token";
+	private static final String LOGIN_URL = APP_URL + "/login";
+	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@Before
 	public void beforeEach() {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
-		Mockito.when(userService.save(user)).thenReturn(user);
+		when(userService.save(user)).thenReturn(user);
+		when(request.getScheme()).thenReturn("http");
+		when(request.getServerName()).thenReturn("localhost");
+		when(request.getServerPort()).thenReturn(8080);
+		when(request.getRequestURI()).thenReturn("/app");
+		when(request.getContextPath()).thenReturn("/app");
+		when(request.getQueryString()).thenReturn("");
+		when(userService.buildAppUrl(request)).thenReturn(APP_URL);
+		when(emailConfig.getFrom()).thenReturn("foo@example.com");
+		when(userService.save(any(User.class)))
+				.then(i -> i.getArgumentAt(0, User.class));
+		// This is the trick that causes save() to return whatever is passed to it inside userService.
+		// generatePasswordResetToken() creates a PasswordResetToken and sets a UUID on the token property.
+		// generatePasswordResetToken() returns save(PasswordResetToken) which is why this techinque is used.
+		when(passwordResetTokenService.save(any(PasswordResetToken.class)))
+				.then(i -> i.getArgumentAt(0, PasswordResetToken.class));
+		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 	}
 
 	@Test
@@ -85,4 +132,90 @@ public class UserServiceTest {
 		userService.changePassword(user, CURRENT_PASSWORD, CURRENT_PASSWORD, CURRENT_PASSWORD);
 	}
 
+	@Test
+	public void testResetPassword() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		UserService spyUserService = spy(userService);
+
+		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
+
+		User saved = spyUserService.resetPassword(password, password, TOKEN);
+
+		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
+		assertTrue("User's password should match the hashed password on the User record",
+				passwordEncoder.matches(password, saved.getPassword()));
+		assertTrue("Returned user should have encoded password",
+				passwordEncoder.matches(password, saved.getPassword()));
+	}
+
+	@Test
+	public void testResetPasswordWithInvalidConfirmPassword() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		final String confirmPassword = "Abcdefg.2";
+		UserService spyUserService = spy(userService);
+
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+
+		expectedException.expect(InvalidPasswordException.class);
+		expectedException.expectMessage("New and confirm new password values do not match");
+		spyUserService.resetPassword(password, confirmPassword, TOKEN);
+	}
+
+	@Test
+	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		UserService spyUserService = spy(userService);
+
+		// Ensures the token will not be found.
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(null);
+
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Could not find existing token");
+		spyUserService.resetPassword(password, password, TOKEN);
+	}
+
+	@Test
+	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException {
+		final String password = "Abcdefg.1";
+		UserService spyUserService = spy(userService);
+
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+
+		spyUserService.resetPassword(password, password, TOKEN);
+		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
+	}
+
+	@Test
+	public void testSendPasswordResetTokenEmail() {
+		userService.sendPasswordResetTokenEmail(user, "mock token", request, false);
+		verify(mailSender).send(any(SimpleMailMessage.class));
+	}
+
+	@Test
+	public void testSendPasswordResetEmailConfirmation() {
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
+		when(passwordResetToken.getUser()).thenReturn(user);
+		userService.sendPasswordResetEmailConfirmation("mock token", request, false);
+		verify(mailSender).send(any(SimpleMailMessage.class));
+	}
+
+	@Test
+	public void testBuildAppUrl() {
+		final String appUrl = userService.buildAppUrl(request);
+		assertEquals("Builds correct app URL", APP_URL, appUrl);
+	}
+
+	@Test
+	public void testBuildResetPasswordUrl() {
+		final String resetPasswordUrl = userService.buildResetPasswordUrl("secret-token", request);
+		assertEquals("Builds correct reset password URL", RESET_PASSWORD_URL, resetPasswordUrl);
+	}
+
+	@Test
+	public void testBuildLoginUrl() {
+		final String loginUrl = userService.buildLoginUrl(request);
+		assertEquals("Builds correct login URL", LOGIN_URL, loginUrl);
+	}
 }

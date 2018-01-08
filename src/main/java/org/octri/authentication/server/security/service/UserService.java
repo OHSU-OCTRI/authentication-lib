@@ -1,18 +1,24 @@
 package org.octri.authentication.server.security.service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
+import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -26,6 +32,8 @@ import org.springframework.util.Assert;
 @Service
 public class UserService {
 
+	private static final Log log = LogFactory.getLog(UserService.class);
+
 	@Value("${octri.authentication.max-login-attempts:7}")
 	private int maxLoginAttempts;
 
@@ -33,7 +41,16 @@ public class UserService {
 	private UserRepository userRepository;
 
 	@Autowired
-	public PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private PasswordResetTokenService passwordResetTokenService;
+
+	@Autowired
+	private JavaMailSender mailSender;
+
+	@Autowired
+	private EmailConfiguration emailConfig;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -76,6 +93,18 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User findByUsername(String username) {
 		return userRepository.findByUsername(username);
+	}
+
+	/**
+	 * Get the user account with the given email address.
+	 *
+	 * @param email
+	 *            the email of the user to find
+	 * @return the user with the given email address if it exists, otherwise null
+	 */
+	@Transactional(readOnly = true)
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 	/**
@@ -161,14 +190,36 @@ public class UserService {
 	 */
 	public User changePassword(final User user, final String currentPassword, final String newPassword,
 			final String confirmPassword) throws InvalidPasswordException {
+		validatePassword(user, currentPassword, newPassword, confirmPassword);
+
+		user.setPassword(passwordEncoder.encode(newPassword));
+
+		return this.save(user);
+	}
+
+	/**
+	 * Validates a password using the {@link PasswordConstraintValidator} as well as some other checks.
+	 * 
+	 * @param user
+	 * @param currentPassword
+	 *            null or the current password. If the currentPassword is null, this indicates the user is resetting
+	 *            their password and this validation step should be skipped.
+	 * @param newPassword
+	 *            The new pasword.
+	 * @param confirmPassword
+	 *            Confirm the new password.
+	 * @throws InvalidPasswordException
+	 */
+	private void validatePassword(final User user, final String currentPassword, final String newPassword,
+			final String confirmPassword) throws InvalidPasswordException {
+		// Current password must match existing password in the database if set.
+		if (currentPassword != null && !passwordEncoder.matches(currentPassword, user.getPassword())) {
+			throw new InvalidPasswordException("Current password doesn't match existing password");
+		}
+
 		// New password must equal password confirmation
 		if (!newPassword.equals(confirmPassword)) {
 			throw new InvalidPasswordException("New and confirm new password values do not match");
-		}
-		
-		// Current password much match existing password in the database.
-		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-			throw new InvalidPasswordException("Current password doesn't match existing password");
 		}
 
 		// Rule: Prevents a password from containing username.
@@ -183,14 +234,136 @@ public class UserService {
 			throw new InvalidPasswordException("Must not use current password");
 		}
 
+		// Manually validate the password instead of using the @ValidPassword annotation.
+		// This will allow us to set a null password in order to distinguish LDAP users.
+		PasswordConstraintValidator validator = new PasswordConstraintValidator();
+		if (!validator.isValid(newPassword, null)) {
+			throw new InvalidPasswordException("This password does not meet all of the requirements");
+		}
+	}
+
+	/**
+	 * Send email confirmation to user.
+	 * 
+	 * @param user
+	 * @param token
+	 * @param request
+	 * @param dryRun
+	 *            Will only print email contents to console if true
+	 */
+	public void sendPasswordResetTokenEmail(final User user, final String token, final HttpServletRequest request,
+			final boolean dryRun) {
+		SimpleMailMessage email = new SimpleMailMessage();
+		email.setSubject("Reset your password request");
+		final String resetPath = buildResetPasswordUrl(token, request);
+		final String body = "Hello " + user.getFirstName() + ", to reset your password please follow this link: "
+				+ resetPath;
+		email.setText(body);
+		email.setTo(user.getEmail());
+		email.setFrom(emailConfig.getFrom());
+		if (dryRun) {
+			log.info("DRY RUN, would have sent email to " + user.getEmail() + " from " + emailConfig.getFrom()
+					+ " about " + body);
+		} else {
+			mailSender.send(email);
+			log.info("Password reset confirmation email sent to " + user.getEmail());
+		}
+	}
+
+	/**
+	 * Builds a full URL for resetting a password.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return URL for resetting password including token.
+	 */
+	protected String buildResetPasswordUrl(final String token, final HttpServletRequest request) {
+		final String appUrl = buildAppUrl(request);
+		return appUrl + "/user/password/reset?token=" + token;
+	}
+
+	/**
+	 * Builds a full URL for the login page.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return URL for resetting password including token.
+	 */
+	protected String buildLoginUrl(final HttpServletRequest request) {
+		final String appUrl = buildAppUrl(request);
+		return appUrl + "/login";
+	}
+
+	/**
+	 * Builds full app URL including context path. No trailing slash.
+	 * 
+	 * @param request
+	 * @return Full application URL with context path.
+	 */
+	protected String buildAppUrl(final HttpServletRequest request) {
+		final String fullUrl = UrlUtils.buildFullRequestUrl(request);
+		final String urlPath = UrlUtils.buildRequestUrl(request);
+		return fullUrl.substring(0, fullUrl.indexOf(urlPath));
+	}
+
+	/**
+	 * Update a user's password per reset request.
+	 * 
+	 * @param password
+	 * @param token
+	 * @param sendEmail
+	 * @return User with updated password.
+	 * @throws InvalidPasswordException
+	 */
+	public User resetPassword(final String newPassword, final String confirmPassword, final String token)
+			throws InvalidPasswordException {
+		Assert.notNull(newPassword, "Password is required");
+		Assert.notNull(confirmPassword, "Password confirmation is required");
+		Assert.notNull(token, "Password reset token is required");
+		PasswordResetToken existingToken = passwordResetTokenService.findByToken(token);
+		Assert.notNull(existingToken, "Could not find existing token");
+		User user = existingToken.getUser();
+		validatePassword(user, null, newPassword, confirmPassword);
 		user.setPassword(passwordEncoder.encode(newPassword));
-		user.setCredentialsExpired(false);
+		User saved = this.save(user);
+		passwordResetTokenService.expireToken(existingToken);
+		return saved;
+	}
 
-		Instant now = Instant.now();
-		// TODO: 180 could be configurable
-		user.setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
+	/**
+	 * Send email confirmation to user.
+	 * 
+	 * @param user
+	 * @param request
+	 * @param dryRun
+	 *            Will only print email contents to console if true
+	 */
+	public void sendPasswordResetEmailConfirmation(final String token, final HttpServletRequest request,
+			final boolean dryRun) {
+		Assert.notNull(token, "Must provide a token");
+		Assert.notNull(request, "Must provide an HttpServletRequest");
 
-		return this.save(user);
+		PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
+		Assert.notNull(passwordResetToken, "Could not find a user for the provided token");
+
+		final String userEmail = passwordResetToken.getUser().getEmail();
+
+		SimpleMailMessage email = new SimpleMailMessage();
+		email.setSubject("Your password was reset");
+		final String body = "You may now log into the application, your password has been reset. "
+				+ buildLoginUrl(request);
+		email.setText(body);
+		email.setTo(userEmail);
+		email.setFrom(emailConfig.getFrom());
+
+		if (dryRun) {
+			log.info("DRY RUN, would have sent email to " + userEmail + " from " + emailConfig.getFrom()
+					+ " about "
+					+ body);
+		} else {
+			mailSender.send(email);
+			log.info("Password reset confirmation email sent to " + userEmail);
+		}
 	}
 
 }

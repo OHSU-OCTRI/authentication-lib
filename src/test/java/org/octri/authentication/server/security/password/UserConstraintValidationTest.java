@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security.password;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -28,10 +29,10 @@ import org.octri.authentication.server.security.entity.User;
 public class UserConstraintValidationTest {
 
 	private static Validator validator;
+	PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 
 	private static String LAST_NAME_REQUIRED = "Last name is required";
 	private static String INSTITUTION_REQUIRED = "Institution is required";
-	private static String INVALID_PASSWORD = "This password does not meet all of the requirements";
 	private static String INVALID_EMAIL = "Please provide a valid email address";
 	private static String EMAIL_REQUIRED = "Email is required";
 	private static String USERNAME_REQUIRED = "Username is required";
@@ -81,35 +82,31 @@ public class UserConstraintValidationTest {
 		testUser.setLastName("Bar");
 		testUser.setInstitution("OHSU");
 		testUser.setEmail("foo.bar@example.com");
-		testUser.setPassword("Foo42Bar");
+		testUser.setPassword(null);
 	}
 
 	@Test
 	public void testSaveWithNulls() {
 		User user = new User();
-		user.setPassword("foo42");
 		messages = getMessages(user);
 		assertTrue(USERNAME_REQUIRED, messages.contains(USERNAME_REQUIRED));
 		assertTrue(EMAIL_REQUIRED, messages.contains(EMAIL_REQUIRED));
 		assertTrue(FIRSTNAME_REQUIRED, messages.contains(FIRSTNAME_REQUIRED));
 		assertTrue(LAST_NAME_REQUIRED, messages.contains(LAST_NAME_REQUIRED));
 		assertTrue(INSTITUTION_REQUIRED, messages.contains(INSTITUTION_REQUIRED));
-		assertTrue(INVALID_PASSWORD, messages.contains(INVALID_PASSWORD));
 	}
 
 	@Test
 	public void testForValidPasswords() {
 		for (String password : VALID_PASSWORDS) {
-			testUser.setPassword(password);
-			assertValid(testUser);
+			assertTrue(password + " should be valid", passwordConstraintValidator.isValid(password, null));
 		}
 	}
 
 	@Test
 	public void testForInvalidPasswords() {
 		for (String password : INVALID_PASSWORDS) {
-			testUser.setPassword(password);
-			assertInvalid(testUser, INVALID_PASSWORD);
+			assertFalse(password + " should not be valid", passwordConstraintValidator.isValid(password, null));
 		}
 	}
 
