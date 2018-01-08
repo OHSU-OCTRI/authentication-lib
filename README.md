@@ -82,10 +82,10 @@ octri.authentication.enable-ldap=false
 octri.authentication.enable-table-based=true
 ```
 
-Users will be locked out after 3 login attempts. This limit can be configured as well:
+Users will be locked out after 7 login attempts. This limit can be configured as well:
 
 ```
-octri.authentication.max-login-attempts=7
+octri.authentication.max-login-attempts=3
 ```
 
 ### Password Requirements
