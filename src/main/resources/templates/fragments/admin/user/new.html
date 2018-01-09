@@ -7,7 +7,7 @@
 					There has been an unexpected problem saving this user.
 				</div>
 			</div>
-			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${user}">
+			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${userForm}">
 				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">
 					<div class="col-lg-4 col-md-6 col-sm-12">
@@ -19,7 +19,9 @@
 						<h4>User Details</h4>
 						<div th:replace="fragments/user :: usernameForNew" />
 						<div th:if="${ldapEnabled}">
-							<div th:replace="fragments/user :: ldapUser"/>
+							<div th:if="${tableBasedEnabled}">
+								<div th:replace="fragments/user :: ldapUser" />
+							</div>
 							<div th:replace="fragments/user :: ldapLookup" />
 						</div>
 						<div th:replace="fragments/user :: firstName" />

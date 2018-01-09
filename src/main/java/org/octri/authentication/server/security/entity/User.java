@@ -99,7 +99,7 @@ public class User extends AbstractEntity {
 	protected String lastName;
 
 	@NotNull(message = "Institution is required")
-	@Size(max = 100, min = 1, message = "Instituition must be 1-50 characters")
+	@Size(max = 100, min = 1, message = "Institution must be 1-50 characters")
 	private String institution;
 
 	/**

@@ -102,14 +102,12 @@ $(function() {
 		}
 	}, 500));
 	
-	// Enable/disable LDAP Lookup based on whether ldapUser is checked
+	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
+	let ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
+	$('#ldapLookup').prop("disabled", ldapNotChecked);
+	
 	$('#ldapUser').on('click', function(e) {
-		if ($(this).is(':checked')) {
-			$('#ldapLookup').prop("disabled",false);
-		} else {
-			$('#ldapLookup').prop("disabled",true);
-		}
-				
+		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));				
 	});
 	
 	// Look up by username in LDAP and prepopulate user fields

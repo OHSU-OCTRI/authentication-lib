@@ -12,14 +12,13 @@ import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
-import org.octri.authentication.server.security.password.PasswordGenerator;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
+import org.octri.authentication.server.security.wrapper.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -57,9 +56,6 @@ public class UserController {
 	@Autowired
 	private Boolean tableBasedEnabled;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
 	/**
 	 * Returns view for displaying a list of all users.
 	 * 
@@ -85,7 +81,7 @@ public class UserController {
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/new")
 	public String newUser(ModelMap model) {
-		model.addAttribute("user", new User());
+		model.addAttribute("userForm", new UserForm());
 		return "admin/user/new";
 	}
 
@@ -103,17 +99,21 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model) {
-		Assert.notNull(user, "User must not be null");
+	public String newUser(@Valid UserForm userForm, BindingResult bindingResult, final ModelMap model) {
+		Assert.notNull(userForm.getUser(), "User must not be null");		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			return "admin/user/new";
 		}
-		// Set a random password, user will be forced to reset their password
-		// TODO: We could expose the password in the UI for providing to new users since they will be forced to change
-		// their passwords on the next login.
-		final String password = PasswordGenerator.generate();
-		user.setPassword(passwordEncoder.encode(password));
+		User user = userForm.getUser();
+		
+		Boolean ldapUser = !getTableBasedEnabled() || userForm.getLdapUser();		
+		if (!ldapUser) {
+			//TODO: We can use form.getLdapUser() to determine whether to send an email if the user is not LDAP
+			// userService.sendWelcomeEmail();
+			log.info("Sending welcome to newly created non-LDAP user " + user.getEmail());
+		}
+		
 		userService.save(user);
 		model.clear();
 		return "redirect:/admin/user/list";
@@ -134,7 +134,7 @@ public class UserController {
 		Assert.notNull(id, "id must not be null");
 		User user = userService.find(id);
 		Assert.notNull(user, "Could not find a user for id " + id);
-		model.addAttribute("user", user);
+		model.addAttribute("userForm", new UserForm(user));
 		return "admin/user/edit";
 	}
 
@@ -154,10 +154,10 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@PostMapping("admin/user/edit/{id}")
-	public String edit(@PathVariable("id") long id, @Valid @ModelAttribute User user, BindingResult bindingResult,
+	public String edit(@PathVariable("id") long id, @Valid UserForm userForm, BindingResult bindingResult,
 			final ModelMap model) {
 		Assert.notNull(id, "User id must not be null");
-		Assert.notNull(user, "User must not be null");
+		Assert.notNull(userForm.getUser(), "User must not be null");
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			return "admin/user/edit";
@@ -165,6 +165,7 @@ public class UserController {
 		// Must retrieve existing password otherwise it is overwritten.
 		// Cannot edit password with the edit form, however the field is bound and will
 		// be persisted as null.
+		User user = userForm.getUser();
 		User existing = userService.find(id);
 		if (existing.getPassword() != null) {
 			user.setPassword(existing.getPassword());
