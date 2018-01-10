@@ -102,6 +102,15 @@ $(function() {
 		}
 	}, 500));
 	
+	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
+	let ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
+	$('#ldapLookup').prop("disabled", ldapNotChecked);
+	
+	$('#ldapUser').on('click', function(e) {
+		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));				
+	});
+	
+	// Look up by username in LDAP and prepopulate user fields
 	$('#ldapLookup').on('click', function(e) {
 		e.preventDefault();
 		let token =  $('input[name="_csrf"]').attr('value');
