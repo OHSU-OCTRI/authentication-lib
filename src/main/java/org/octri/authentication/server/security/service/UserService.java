@@ -251,11 +251,13 @@ public class UserService {
 	 * @param dryRun
 	 *            Will only print email contents to console if true
 	 */
-	public void sendPasswordResetTokenEmail(final User user, final String token, final HttpServletRequest request,
+	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
 			final boolean dryRun) {
+		
+		User user = token.getUser();
 		SimpleMailMessage email = new SimpleMailMessage();
 		email.setSubject("Reset your password request");
-		final String resetPath = buildResetPasswordUrl(token, request);
+		final String resetPath = buildResetPasswordUrl(token.getToken(), request);
 		final String body = "Hello " + user.getFirstName() + ", to reset your password please follow this link: "
 				+ resetPath;
 		email.setText(body);
