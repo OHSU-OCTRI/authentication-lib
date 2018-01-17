@@ -99,22 +99,23 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@Valid UserForm userForm, BindingResult bindingResult, final ModelMap model) {
+	public String newUser(@Valid UserForm userForm, BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
 		Assert.notNull(userForm.getUser(), "User must not be null");		
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			return "admin/user/new";
 		}
-		User user = userForm.getUser();
+
+		User newUser = userService.save(userForm.getUser());
 		
+		// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 		Boolean ldapUser = !getTableBasedEnabled() || userForm.getLdapUser();		
 		if (!ldapUser) {
-			//TODO: We can use form.getLdapUser() to determine whether to send an email if the user is not LDAP
-			// userService.sendWelcomeEmail();
-			log.info("Sending welcome to newly created non-LDAP user " + user.getEmail());
+			//TODO: In the future this should be more sophisticated - probably a welcome email for the new user.
+			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(newUser);
+			userService.sendPasswordResetTokenEmail(token, request, false);
 		}
 		
-		userService.save(user);
 		model.clear();
 		return "redirect:/admin/user/list";
 	}
@@ -259,7 +260,7 @@ public class UserController {
 		try {
 			User user = userService.findByEmail(email);
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
-			userService.sendPasswordResetTokenEmail(token.getUser(), token.getToken(), request, false);
+			userService.sendPasswordResetTokenEmail(token, request, false);
 			model.addAttribute("confirmation", true);
 			return "user/password/forgot";
 		} catch (Exception ex) {
