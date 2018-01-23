@@ -88,6 +88,19 @@ Users will be locked out after 7 login attempts. This limit can be configured as
 octri.authentication.max-login-attempts=3
 ```
 
+### Session Timeout
+
+Session timeout is managed by these three properties that should be placed in your `application.properties` file. See the full [list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
+
+```
+# Session timeout in minutes
+server.session.timeout=${SERVER_SESSION_TIMEOUT:20}
+# Cookie max-age in seconds
+server.session.cookie.max-age=${SERVER_SESSION_COOKIE_MAX_AGE:1200}
+# Set to true for production. false by default for development environments.
+server.session.cookie.secure=${SERVER_SESSION_COOKIE_SECURE:false}
+```
+
 ### Password Requirements
 
 Passwords are validated by the `PasswordConstraintValidator.java` and the `UserController#changePassword()` `POST` method. They follow OHSU password standards. See `ValidPassword.java`.
