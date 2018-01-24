@@ -17,6 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -46,6 +47,7 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 @EnableConfigurationProperties
 @EnableAspectJAutoProxy
 @EnableJpaAuditing
+@PropertySource("classpath:authlib.properties")
 @Configuration
 public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
