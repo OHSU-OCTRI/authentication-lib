@@ -95,8 +95,8 @@ Session timeout is managed by the three properties shown below. See the [full li
 To override any of these values set the corresponding environment variable (e.g. `server.session.cookie.max-age` becomes `SERVER_SESSION_COOKIE_MAX_AGE`), or define them in your own `application.properties` file. The order in which external configuration is loaded may be found [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
 
 ```
-# Session timeout in minutes
-server.session.timeout=20
+# Session timeout in seconds
+server.session.timeout=1200
 
 # Cookie max-age in seconds
 server.session.cookie.max-age=1200
