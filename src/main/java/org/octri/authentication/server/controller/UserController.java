@@ -121,7 +121,7 @@ public class UserController {
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not add new user", ex);
 			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", ex.getMessage());
+			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
 			return "admin/user/new";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
@@ -194,7 +194,7 @@ public class UserController {
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not edit user", ex);
 			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", ex.getMessage());
+			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
 			return "admin/user/edit";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
@@ -262,11 +262,11 @@ public class UserController {
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not change password", ex);
 			model.addAttribute("error", true);
-			return "admin/user/change";
+			return "user/password/change";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
 			model.addAttribute("error", true);
-			return "admin/user/change";
+			return "user/password/change";
 		}
 	}
 

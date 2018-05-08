@@ -128,15 +128,10 @@ public class UserService {
 	public User save(User user) throws InvalidLdapUserDetailsException {
 		if (!tableBasedEnabled) {
 			DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
-			final String ldapFirstName = ldapUser.getStringAttribute("givenName");
-			final String ldapLastName = ldapUser.getStringAttribute("sn");
 			final String ldapEmail = ldapUser.getStringAttribute("mail");
-			final boolean firstNameMatch = ldapFirstName.equalsIgnoreCase(user.getFirstName());
-			final boolean lastNameMatch = ldapLastName.equalsIgnoreCase(user.getLastName());
-			final boolean emailMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
-			if (!firstNameMatch || !lastNameMatch || !emailMatch) {
-				throw new InvalidLdapUserDetailsException(
-						"The provided name or email does not match those found in LDAP. Please use the 'LDAP Lookup' button to populate the form.");
+			final boolean emailsMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
+			if (!emailsMatch) {
+				throw new InvalidLdapUserDetailsException(InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
 			}
 		}
 		return userRepository.save(user);
