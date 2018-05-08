@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<body>
+		<div th:fragment="userSaveError">
+			<div th:if="${error == true and #strings.isEmpty(errorMessage)}">
+				<div class="alert alert-danger">
+					<p>There has been an unexpected problem saving this user.</p>
+				</div>
+			</div>
+			<div th:if="${error == true and not #strings.isEmpty(errorMessage)}">
+				<div class="alert alert-danger">
+					<p th:text="${errorMessage}">...</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
