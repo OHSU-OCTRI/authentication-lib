@@ -27,9 +27,11 @@ import org.octri.authentication.server.security.exception.InvalidLdapUserDetails
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
@@ -61,7 +63,13 @@ public class UserServiceTest {
 
 	@Mock
 	private PasswordResetToken passwordResetToken;
-	
+
+	@Mock
+	private DirContextOperations ldapUser;
+
+	@Mock
+	private FilterBasedLdapUserSearch ldapSearch;
+
 	private User user;
 	private static final String USERNAME = "foo";
 	private static final String CURRENT_PASSWORD = "currentPassword";
@@ -77,7 +85,11 @@ public class UserServiceTest {
 	public void beforeEach() throws InvalidLdapUserDetailsException {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
-		when(userService.save(user)).thenReturn(user);
+		user.setEmail("foo@example.com");
+		userService.setTableBasedEnabled(true);
+
+		// when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
+		// when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
 		when(request.getScheme()).thenReturn("http");
 		when(request.getServerName()).thenReturn("localhost");
 		when(request.getServerPort()).thenReturn(8080);

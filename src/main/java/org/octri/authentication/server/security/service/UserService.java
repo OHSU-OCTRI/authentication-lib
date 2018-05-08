@@ -387,4 +387,8 @@ public class UserService {
 		}
 	}
 
+	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
+		this.tableBasedEnabled = tableBasedEnabled;
+	}
+
 }
