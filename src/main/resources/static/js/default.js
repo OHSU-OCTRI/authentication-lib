@@ -72,7 +72,7 @@ $(function() {
 		html: true
 	});
 	
-	let url = $("meta[name='ctx']").attr("content") + "admin/user/taken";
+	let contextPath = $("meta[name='ctx']").attr("content");
 	
 	/**
 	 * Username type-ahead lookup
@@ -83,7 +83,7 @@ $(function() {
 	$('#username.lookup-user').on('keydown blur change', debounce(function() {
 		let username = $('#username').val();
 		if (username != null && username != '') {
-			$.get(url + '/' + encodeURIComponent(username), function(json) {
+			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(username), function(json) {
 				$('.username-taken').remove();
 				if (json.taken) {
 					disableSave(true);
@@ -123,7 +123,7 @@ $(function() {
 		let username = $('#username').val();
 		let obj = {username: username};
 
-		$.post( "/admin/user/ldapLookup", obj, function(json) {
+		$.post(contextPath + "admin/user/ldapLookup", obj, function(json) {
 			$('.ldap-error').remove();
 			if (json.ldapLookupError) {
 				$('#ldapLookup').before(mutedDiv(json.ldapLookupError, 'ldap-error text-danger'));
