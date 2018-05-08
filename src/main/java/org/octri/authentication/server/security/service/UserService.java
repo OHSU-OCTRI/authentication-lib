@@ -10,14 +10,17 @@ import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +54,12 @@ public class UserService {
 
 	@Autowired
 	private EmailConfiguration emailConfig;
+
+	@Autowired
+	private FilterBasedLdapUserSearch ldapSearch;
+
+	@Autowired
+	private Boolean tableBasedEnabled;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -113,9 +122,23 @@ public class UserService {
 	 * @param user
 	 *            the user model to save
 	 * @return the saved user model
+	 * @throws InvalidLdapUserDetailsException
 	 */
 	@Transactional
-	public User save(User user) {
+	public User save(User user) throws InvalidLdapUserDetailsException {
+		if (!tableBasedEnabled) {
+			DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
+			final String ldapFirstName = ldapUser.getStringAttribute("givenName");
+			final String ldapLastName = ldapUser.getStringAttribute("sn");
+			final String ldapEmail = ldapUser.getStringAttribute("mail");
+			final boolean firstNameMatch = ldapFirstName.equalsIgnoreCase(user.getFirstName());
+			final boolean lastNameMatch = ldapLastName.equalsIgnoreCase(user.getLastName());
+			final boolean emailMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
+			if (!firstNameMatch || !lastNameMatch || !emailMatch) {
+				throw new InvalidLdapUserDetailsException(
+						"The provided name or email does not match those found in LDAP. Please use the 'LDAP Lookup' button to populate the form.");
+			}
+		}
 		return userRepository.save(user);
 	}
 
@@ -189,7 +212,7 @@ public class UserService {
 	 * @throws InvalidPasswordException
 	 */
 	public User changePassword(final User user, final String currentPassword, final String newPassword,
-			final String confirmPassword) throws InvalidPasswordException {
+			final String confirmPassword) throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		validatePassword(user, currentPassword, newPassword, confirmPassword);
 
 		user.setPassword(passwordEncoder.encode(newPassword));
@@ -316,9 +339,10 @@ public class UserService {
 	 * @param sendEmail
 	 * @return User with updated password.
 	 * @throws InvalidPasswordException
+	 * @throws InvalidLdapUserDetailsException
 	 */
 	public User resetPassword(final String newPassword, final String confirmPassword, final String token)
-			throws InvalidPasswordException {
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		Assert.notNull(newPassword, "Password is required");
 		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");

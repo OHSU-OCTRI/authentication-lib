@@ -2,9 +2,14 @@
 	<body>
 		<div class="container-fluid" th:fragment="new">
 			<h3>New User</h3>
-			<div th:if="${error} == true">
+			<div th:if="${error == true and #strings.isEmpty(errorMessage)}">
 				<div class="alert alert-danger">
-					There has been an unexpected problem saving this user.
+					<p>There has been an unexpected problem saving this user.</p>
+				</div>
+			</div>
+			<div th:if="${error == true and not #strings.isEmpty(errorMessage)}">
+				<div class="alert alert-danger">
+					<p th:text="${errorMessage}">...</p>
 				</div>
 			</div>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/new'}" th:object="${userForm}">

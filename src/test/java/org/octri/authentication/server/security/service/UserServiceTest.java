@@ -23,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.octri.authentication.EmailConfiguration;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,7 +74,7 @@ public class UserServiceTest {
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@Before
-	public void beforeEach() {
+	public void beforeEach() throws InvalidLdapUserDetailsException {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		when(userService.save(user)).thenReturn(user);
@@ -96,7 +97,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSuccessfulPasswordChange() throws InvalidPasswordException {
+	public void testSuccessfulPasswordChange() throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		User saved = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD, VALID_PASSWORD);
 		assertNotNull("User must not be null", saved);
 		assertTrue("newPassword set correctly on User", passwordEncoder.matches(VALID_PASSWORD,
@@ -104,21 +105,24 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewAndConfirmPasswordsMustMatchOnChange() throws InvalidPasswordException {
+	public void testNewAndConfirmPasswordsMustMatchOnChange()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		expectedException.expect(InvalidPasswordException.class);
 		expectedException.expectMessage("New and confirm new password values do not match");
 		userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD, "invalid_confirm_password");
 	}
 
 	@Test
-	public void testCurrentPasswordMustMatchExistingOnChange() throws InvalidPasswordException {
+	public void testCurrentPasswordMustMatchExistingOnChange()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		expectedException.expect(InvalidPasswordException.class);
 		expectedException.expectMessage("Current password doesn't match existing password");
 		userService.changePassword(user, "not_current_password", CURRENT_PASSWORD, CURRENT_PASSWORD);
 	}
 
 	@Test
-	public void testNewPasswordMustNotContainUsernameOnChange() throws InvalidPasswordException {
+	public void testNewPasswordMustNotContainUsernameOnChange()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		expectedException.expect(InvalidPasswordException.class);
 		expectedException.expectMessage("Password must not include username");
 		userService.changePassword(user, CURRENT_PASSWORD, INVALID_PASSWORD_WITH_USERNAME,
@@ -126,14 +130,15 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewPasswordMustNotBePreviousPasswordOnChange() throws InvalidPasswordException {
+	public void testNewPasswordMustNotBePreviousPasswordOnChange()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		expectedException.expect(InvalidPasswordException.class);
 		expectedException.expectMessage("Must not use current password");
 		userService.changePassword(user, CURRENT_PASSWORD, CURRENT_PASSWORD, CURRENT_PASSWORD);
 	}
 
 	@Test
-	public void testResetPassword() throws InvalidPasswordException {
+	public void testResetPassword() throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -151,7 +156,8 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidConfirmPassword() throws InvalidPasswordException {
+	public void testResetPasswordWithInvalidConfirmPassword()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		final String password = "Abcdefg.1";
 		final String confirmPassword = "Abcdefg.2";
 		UserService spyUserService = spy(userService);
@@ -164,7 +170,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException {
+	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -177,7 +183,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException {
+	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
