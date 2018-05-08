@@ -10,6 +10,7 @@ public class InvalidLdapUserDetailsException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
+	// This message is presented to users.
 	public static final String INVALID_USER_DETAILS_MESSAGE = "The provided email does not match the one in LDAP. You may use the 'LDAP Lookup' button to populate the user details.";
 
 	public InvalidLdapUserDetailsException() {
