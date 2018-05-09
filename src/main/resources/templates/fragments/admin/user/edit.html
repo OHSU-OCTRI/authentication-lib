@@ -2,11 +2,7 @@
 	<body>
 		<div class="container-fluid" th:fragment="edit">
 			<h3 th:text="${'Edit User ' + userForm.user.username}">...</h3>
-			<div th:if="${error} == true">
-				<div class="alert alert-danger">
-					There has been an unexpected problem saving this user.
-				</div>
-			</div>
+			<div th:replace="fragments/errors :: userSaveError">...</div>
 			<form role="form" class="form" method="post" th:action="@{'/admin/user/edit/' + ${userForm.user.id}}" th:object="${userForm}">
 				<input type="hidden" id="contextPath" th:value="@{/admin/user/list}" />
 				<div class="row">

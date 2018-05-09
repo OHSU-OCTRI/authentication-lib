@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.service.LoginAttemptService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 		loginAttemptService.save(attempt);
 	}
 
-	protected void resetUserFailedAttempts(Authentication auth) {
+	protected void resetUserFailedAttempts(Authentication auth) throws InvalidLdapUserDetailsException {
 		User user = userService.findByUsername(auth.getName());
 		if (user == null || !(user.getConsecutiveLoginFailures() > 0)) {
 			return;

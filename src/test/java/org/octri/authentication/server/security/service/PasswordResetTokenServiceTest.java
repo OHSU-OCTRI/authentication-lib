@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.repository.PasswordResetTokenRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -39,7 +40,7 @@ public class PasswordResetTokenServiceTest {
 	private static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
 	@Before
-	public void beforeEach() {
+	public void beforeEach() throws InvalidLdapUserDetailsException {
 		user = new User("foo", "Foo", "Bar", "OHSU", "foo@example.com");
 		when(passwordResetTokenRepository.save(any(PasswordResetToken.class)))
 				.then(i -> i.getArgumentAt(0, PasswordResetToken.class));

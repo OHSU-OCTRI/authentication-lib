@@ -11,6 +11,7 @@ import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
+import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
@@ -19,6 +20,7 @@ import org.octri.authentication.server.security.wrapper.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -106,16 +108,32 @@ public class UserController {
 			return "admin/user/new";
 		}
 
-		User newUser = userService.save(userForm.getUser());
-		
-		// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
-		Boolean ldapUser = !getTableBasedEnabled() || userForm.getLdapUser();		
-		if (!ldapUser) {
-			//TODO: In the future this should be more sophisticated - probably a welcome email for the new user.
-			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(newUser);
-			userService.sendPasswordResetTokenEmail(token, request, false);
+		try {
+			User newUser = userService.save(userForm.getUser());
+
+			// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
+			Boolean ldapUser = !getTableBasedEnabled() || userForm.getLdapUser();
+			if (!ldapUser) {
+				// TODO: In the future this should be more sophisticated - probably a welcome email for the new user.
+				PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(newUser);
+				userService.sendPasswordResetTokenEmail(token, request, false);
+			}
+		} catch (InvalidLdapUserDetailsException ex) {
+			log.error("Could not add new user", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
+			return "admin/user/new";
+		} catch (UsernameNotFoundException ex) {
+			log.error("User not found", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
+			return "admin/user/new";
+		} catch (RuntimeException ex) {
+			log.error("Unexpected runtime exception while adding new user", ex);
+			model.addAttribute("error", true);
+			return "admin/user/new";
 		}
-		
+
 		model.clear();
 		return "redirect:/admin/user/list";
 	}
@@ -171,7 +189,23 @@ public class UserController {
 		if (existing.getPassword() != null) {
 			user.setPassword(existing.getPassword());
 		}
-		userService.save(user);
+		try {
+			userService.save(user);
+		} catch (InvalidLdapUserDetailsException ex) {
+			log.error("Could not edit user", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
+			return "admin/user/edit";
+		} catch (UsernameNotFoundException ex) {
+			log.error("User not found", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
+			return "admin/user/edit";
+		} catch (RuntimeException ex) {
+			log.error("Unexpected runtime exception while editing user", ex);
+			model.addAttribute("error", true);
+			return "admin/user/edit";
+		}
 		model.clear();
 		return "redirect:/admin/user/list";
 	}
@@ -223,6 +257,10 @@ public class UserController {
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error(username + " submitted an invalid password", ex);
+			model.addAttribute("error", true);
+			return "user/password/change";
+		} catch (InvalidLdapUserDetailsException ex) {
+			log.error("Could not change password", ex);
 			model.addAttribute("error", true);
 			return "user/password/change";
 		} catch (RuntimeException ex) {
