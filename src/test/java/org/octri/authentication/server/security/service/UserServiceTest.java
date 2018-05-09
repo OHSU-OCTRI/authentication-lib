@@ -88,8 +88,6 @@ public class UserServiceTest {
 		user.setEmail("foo@example.com");
 		userService.setTableBasedEnabled(true);
 
-		// when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
-		// when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
 		when(request.getScheme()).thenReturn("http");
 		when(request.getServerName()).thenReturn("localhost");
 		when(request.getServerPort()).thenReturn(8080);
@@ -235,5 +233,29 @@ public class UserServiceTest {
 	public void testBuildLoginUrl() {
 		final String loginUrl = userService.buildLoginUrl(request);
 		assertEquals("Builds correct login URL", LOGIN_URL, loginUrl);
+	}
+
+	@Test
+	public void testSuccessfulSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException {
+		userService.setTableBasedEnabled(false);
+		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
+		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
+
+		User user = new User("foo", "Foo", "Bar", "OHSU", "foo@example.com");
+		userService.save(user);
+
+		verify(userRepository).save(user);
+	}
+
+	@Test
+	public void testExceptionOnSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException {
+		userService.setTableBasedEnabled(false);
+		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
+		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
+
+		User user = new User("foo", "Foo", "Bar", "OHSU", "foobar@example.com");
+
+		expectedException.expect(InvalidLdapUserDetailsException.class);
+		userService.save(user);
 	}
 }
