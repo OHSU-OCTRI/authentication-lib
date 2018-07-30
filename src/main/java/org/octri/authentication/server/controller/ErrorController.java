@@ -7,10 +7,10 @@ import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.web.BasicErrorController;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +36,10 @@ public class ErrorController extends BasicErrorController {
 	 * @return
 	 */
 	@Bean
-	public FilterRegistrationBean getSpringSecurityFilterChainBindedToError(
+	public FilterRegistrationBean<Filter> getSpringSecurityFilterChainBindedToError(
 			@Qualifier("springSecurityFilterChain") Filter springSecurityFilterChain) {
 
-		FilterRegistrationBean registration = new FilterRegistrationBean();
+		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(springSecurityFilterChain);
 		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
 		return registration;

@@ -26,7 +26,7 @@ public class UserUserRoleService {
 
 	@Transactional(readOnly = true)
 	public UserUserRole find(Long id) {
-		return userUserRoleRepository.findOne(id);
+		return userUserRoleRepository.findById(id).get();
 	}
 
 	@Transactional(readOnly = true)
@@ -51,9 +51,9 @@ public class UserUserRoleService {
 
 	@Transactional
 	public void delete(Long id) {
-		UserUserRole userUserRole = userUserRoleRepository.findOne(id);
+		UserUserRole userUserRole = userUserRoleRepository.findById(id).orElse(null);
 		if (userUserRole != null) {
-			userUserRoleRepository.delete(id);
+			userUserRoleRepository.deleteById(id);
 		}
 	}
 
