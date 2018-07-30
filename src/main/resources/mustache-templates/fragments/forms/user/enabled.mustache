@@ -1,0 +1,7 @@
+<div class="form-group">
+	<label>Enabled*</label>
+	<select class="form-control" id="enabled" name="enabled">
+		<option value="true" {{#user.enabled}}selected="selected"{{/user.enabled}}>Yes</option>
+		<option value="false" {{^user.enabled}}selected="selected"{{/user.enabled}}>No</option>
+	</select>
+</div>

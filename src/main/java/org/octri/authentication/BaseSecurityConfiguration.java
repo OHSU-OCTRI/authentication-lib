@@ -59,16 +59,16 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${octri.authentication.enable-ldap:true}")
 	protected Boolean enableLdap;
 
-	@Value("${server.context-path}")
+	@Value("${server.servlet.context-path}")
 	protected String contextPath;
 
-	@Value("${ldap.contextSource.searchBase:#{null}}")
+	@Value("${ldap.context-source.search-base:#{null}}")
 	protected String ldapSearchBase;
 
-	@Value("${ldap.contextSource.searchFilter:#{null}}")
+	@Value("${ldap.context-source.search-filter:#{null}}")
 	protected String ldapSearchFilter;
 
-	@Value("${ldap.contextSource.organization:#{null}}")
+	@Value("${ldap.context-source.organization:#{null}}")
 	protected String ldapOrganization;
 
 	@Autowired
@@ -110,7 +110,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "ldap.contextSource")
+	@ConfigurationProperties(prefix = "ldap.context-source")
 	public BaseLdapPathContextSource contextSource() {
 		LdapContextSource contextSource = new LdapContextSource();
 		return contextSource;

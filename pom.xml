@@ -43,16 +43,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-            <!-- required per https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide but remove once mustache is in place! -->
-			<groupId>nz.net.ultraq.thymeleaf</groupId>
-			<artifactId>thymeleaf-layout-dialect</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+			<artifactId>spring-boot-starter-mustache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -98,7 +89,7 @@
 		<dependency>
 		    <groupId>org.webjars</groupId>
 		    <artifactId>webjars-locator</artifactId>
-		    <version>0.32-1</version>
+		    <version>0.34</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>

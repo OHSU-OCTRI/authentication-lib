@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Edit User</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/media/css/jquery.dataTables.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/media/css/dataTables.bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/css/default.css" />
+	</head>
+	<body>
+		{{>fragments/navbar}}
+		{{>fragments/admin/user/edit}}
+		{{>fragments/assets}}
+	</body>
+</html>

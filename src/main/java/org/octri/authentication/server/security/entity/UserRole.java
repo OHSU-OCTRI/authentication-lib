@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.Size;
 
+import org.octri.authentication.server.view.Labelled;
+
 /**
  * Represents a type of user / grouping of abilities in the system.
  * 
@@ -14,7 +16,7 @@ import javax.validation.constraints.Size;
  *
  */
 @Entity
-public class UserRole extends AbstractEntity{
+public class UserRole extends AbstractEntity implements Labelled, Comparable<UserRole> {
 
 	@Column(unique = true)
 	private String roleName;
@@ -47,6 +49,16 @@ public class UserRole extends AbstractEntity{
 
 	public void setUsers(List<User> users) {
 		this.users = users;
+	}
+
+	@Override
+	public int compareTo(UserRole role) {
+		return this.getRoleName().compareTo(role.getRoleName());
+	}
+
+	@Override
+	public String getLabel() {
+		return this.getDescription();
 	}
 
 }

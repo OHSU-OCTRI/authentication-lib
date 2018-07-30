@@ -1,0 +1,7 @@
+<div class="form-group">
+	<label>Account Expired*</label>
+	<select class="form-control" id="accountExpired" name="accountExpired">
+		<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
+		<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
+	</select>
+</div>

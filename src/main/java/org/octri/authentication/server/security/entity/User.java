@@ -1,6 +1,8 @@
 package org.octri.authentication.server.security.entity;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -13,10 +15,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -136,6 +139,9 @@ public class User extends AbstractEntity {
 		return false;
 	}
 
+	@Transient
+	private boolean ldapUser;
+
 	/**
 	 * NOTE the type has to match isEnabled which is considered a "getter" by the java bean world
 	 * In other words Springs BeanWrapper will not find this setter if the types don't match
@@ -227,6 +233,21 @@ public class User extends AbstractEntity {
 
 	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
 		setCredentialsNonExpired(!credentialsNonExpired);
+	}
+
+	/**
+	 * Method use to convert a {@link Date} into a date string of format "MM/dd/yyyy". This is used
+	 * where you need to display a date in the UI for Hibernate fields of type timestamp.
+	 * 
+	 * @param timestamp
+	 * @return Returns a string representation of Date, or empty string if timestamp is null.
+	 */
+	private String timestampToDateString(Date timestamp) {
+		if (timestamp == null) {
+			return "";
+		}
+		return Instant.ofEpochMilli(timestamp.getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
+				.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
 	}
 
 	///////////////////////////
@@ -325,12 +346,20 @@ public class User extends AbstractEntity {
 		return accountExpirationDate;
 	}
 
+	public String getAccountExpirationDateView() {
+		return timestampToDateString(accountExpirationDate);
+	}
+
 	public void setAccountExpirationDate(Date accountExpirationDate) {
 		this.accountExpirationDate = accountExpirationDate;
 	}
 
 	public Date getCredentialsExpirationDate() {
 		return credentialsExpirationDate;
+	}
+
+	public String getCredentialsExpirationDateView() {
+		return timestampToDateString(credentialsExpirationDate);
 	}
 
 	public void setCredentialsExpirationDate(Date credentialsExpirationDate) {
@@ -343,6 +372,24 @@ public class User extends AbstractEntity {
 
 	public void setUserRoles(List<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+
+	public boolean getLdapUser() {
+		return ldapUser;
+	}
+
+	public void setLdapUser(boolean ldapUser) {
+		this.ldapUser = ldapUser;
+	}
+
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password + ", enabled=" + enabled + ", accountLocked="
+				+ accountLocked + ", accountExpired=" + accountExpired + ", credentialsExpired=" + credentialsExpired
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", institution=" + institution + ", email="
+				+ email + ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
+				+ accountExpirationDate + ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles="
+				+ userRoles + ", ldapUser=" + ldapUser + ", id=" + id + "]";
 	}
 
 }

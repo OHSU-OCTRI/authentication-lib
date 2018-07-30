@@ -72,7 +72,7 @@ $(function() {
 		html: true
 	});
 	
-	let contextPath = $("meta[name='ctx']").attr("content");
+	var contextPath = $("meta[name='ctx']").attr("content");
 	
 	/**
 	 * Username type-ahead lookup
@@ -81,7 +81,7 @@ $(function() {
 	 * will be made. A div will be appended with a message about the username.
 	 */
 	$('#username.lookup-user').on('keydown blur change', debounce(function() {
-		let username = $('#username').val();
+		var username = $('#username').val();
 		if (username != null && username != '') {
 			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(username), function(json) {
 				$('.username-taken').remove();
@@ -103,25 +103,25 @@ $(function() {
 	}, 500));
 	
 	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
-	let ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
+	var ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
 	$('#ldapLookup').prop("disabled", ldapNotChecked);
 	
 	$('#ldapUser').on('click', function(e) {
-		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));				
+		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));
 	});
 	
 	// Look up by username in LDAP and prepopulate user fields
 	$('#ldapLookup').on('click', function(e) {
 		e.preventDefault();
-		let token =  $('input[name="_csrf"]').attr('value');
+		var token =  $('input[name="_csrf"]').attr('value');
 	    $.ajaxSetup({
 	        beforeSend: function(xhr) {
 	            xhr.setRequestHeader('X-CSRF-TOKEN', token);
 	        }
 	    });
 	    
-		let username = $('#username').val();
-		let obj = {username: username};
+		var username = $('#username').val();
+		var obj = {username: username};
 
 		$.post(contextPath + "admin/user/ldapLookup", obj, function(json) {
 			$('.ldap-error').remove();
@@ -135,5 +135,19 @@ $(function() {
 			}
 		});
 	});
+	
 
+	/**
+	 * Handle dislaying inline form validation errors.
+	 * UserController is responsible for sending the BindingResult in the model.
+	 * The mustache template renders hidden input fields with the correct keys 
+	 * and messages which are matched with the form element IDs using this JavaScript.
+	 */
+	$('[data-error]').each(function(i, el) {
+		var message = $(el).data('message');
+		$('#' + $(el).data('field'))
+			.parent('.form-group')
+			.addClass('has-error')
+			.append('<p class="error-text">' + message + '</p>');
+	})
 });

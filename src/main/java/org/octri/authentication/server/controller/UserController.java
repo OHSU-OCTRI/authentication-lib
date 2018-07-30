@@ -16,7 +16,7 @@ import org.octri.authentication.server.security.exception.InvalidPasswordExcepti
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
-import org.octri.authentication.server.security.wrapper.UserForm;
+import org.octri.authentication.server.view.OptionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +70,7 @@ public class UserController {
 	public String listUsers(ModelMap model) {
 		List<User> users = userService.findAll();
 		model.addAttribute("users", users);
+		model.addAttribute("userRoles", userRoles());
 		return "admin/user/list";
 	}
 
@@ -83,7 +84,8 @@ public class UserController {
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/new")
 	public String newUser(ModelMap model) {
-		model.addAttribute("userForm", new UserForm());
+		model.addAttribute("user", new User());
+		model.addAttribute("userRoles", userRoles());
 		return "admin/user/new";
 	}
 
@@ -101,18 +103,22 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/new")
-	public String newUser(@Valid UserForm userForm, BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
-		Assert.notNull(userForm.getUser(), "User must not be null");		
+	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+			HttpServletRequest request) {
+		Assert.notNull(user, "User must not be null");
+		model.addAttribute("user", user);
+		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
+			model.addAttribute("errors", bindingResult.getAllErrors());
 			return "admin/user/new";
 		}
 
 		try {
-			User newUser = userService.save(userForm.getUser());
+			User newUser = userService.save(user);
 
 			// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
-			Boolean ldapUser = !getTableBasedEnabled() || userForm.getLdapUser();
+			Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
 			if (!ldapUser) {
 				// TODO: In the future this should be more sophisticated - probably a welcome email for the new user.
 				PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(newUser);
@@ -131,6 +137,7 @@ public class UserController {
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
 			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
 			return "admin/user/new";
 		}
 
@@ -153,7 +160,8 @@ public class UserController {
 		Assert.notNull(id, "id must not be null");
 		User user = userService.find(id);
 		Assert.notNull(user, "Could not find a user for id " + id);
-		model.addAttribute("userForm", new UserForm(user));
+		model.addAttribute("user", user);
+		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		return "admin/user/edit";
 	}
 
@@ -173,18 +181,20 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
 	@PostMapping("admin/user/edit/{id}")
-	public String edit(@PathVariable("id") long id, @Valid UserForm userForm, BindingResult bindingResult,
+	public String edit(@PathVariable("id") long id, @Valid @ModelAttribute User user, BindingResult bindingResult,
 			final ModelMap model) {
 		Assert.notNull(id, "User id must not be null");
-		Assert.notNull(userForm.getUser(), "User must not be null");
+		Assert.notNull(user, "User must not be null");
+		model.addAttribute("user", user);
+		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
+			model.addAttribute("errors", bindingResult.getAllErrors());
 			return "admin/user/edit";
 		}
 		// Must retrieve existing password otherwise it is overwritten.
 		// Cannot edit password with the edit form, however the field is bound and will
 		// be persisted as null.
-		User user = userForm.getUser();
 		User existing = userService.find(id);
 		if (existing.getPassword() != null) {
 			user.setPassword(existing.getPassword());
@@ -204,6 +214,7 @@ public class UserController {
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while editing user", ex);
 			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
 			return "admin/user/edit";
 		}
 		model.clear();
@@ -300,6 +311,7 @@ public class UserController {
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 			userService.sendPasswordResetTokenEmail(token, request, false);
 			model.addAttribute("confirmation", true);
+			model.addAttribute("expire_in_minutes", PasswordResetToken.EXPIRE_IN_MINUTES);
 			return "user/password/forgot";
 		} catch (Exception ex) {
 			log.error("Error while processing password reset request for email address " + email, ex);
