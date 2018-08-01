@@ -21,7 +21,7 @@ public abstract class AbstractEntity {
 
 	@Id
 	@JsonApiId
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	protected Long id;
 
