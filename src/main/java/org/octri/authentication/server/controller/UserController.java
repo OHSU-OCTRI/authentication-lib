@@ -180,10 +180,9 @@ public class UserController {
 	 * @return Redirects to list of all users, or returns to current page and displays an error message.
 	 */
 	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
-	@PostMapping("admin/user/edit/{id}")
-	public String edit(@PathVariable("id") long id, @Valid @ModelAttribute User user, BindingResult bindingResult,
+	@PostMapping("admin/user/edit")
+	public String edit(@Valid @ModelAttribute User user, BindingResult bindingResult,
 			final ModelMap model) {
-		Assert.notNull(id, "User id must not be null");
 		Assert.notNull(user, "User must not be null");
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
@@ -191,13 +190,6 @@ public class UserController {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", bindingResult.getAllErrors());
 			return "admin/user/edit";
-		}
-		// Must retrieve existing password otherwise it is overwritten.
-		// Cannot edit password with the edit form, however the field is bound and will
-		// be persisted as null.
-		User existing = userService.find(id);
-		if (existing.getPassword() != null) {
-			user.setPassword(existing.getPassword());
 		}
 		try {
 			userService.save(user);

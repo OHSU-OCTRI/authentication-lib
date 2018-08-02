@@ -3,7 +3,6 @@ package org.octri.authentication.server.security.entity;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -265,16 +264,9 @@ public class User extends AbstractEntity {
 	}
 
 	/**
-	 * Also marks credentials as not expired and sets credentials expiration date 180 days into the future.
-	 * 
 	 * @param password
 	 */
 	public void setPassword(String password) {
-		setCredentialsExpired(false);
-
-		Instant now = Instant.now();
-		// TODO: 180 could be configurable
-		setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
 		this.password = password;
 	}
 
