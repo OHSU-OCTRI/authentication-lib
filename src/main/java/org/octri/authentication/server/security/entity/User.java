@@ -376,10 +376,10 @@ public class User extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", password=" + password + ", enabled=" + enabled + ", accountLocked="
-				+ accountLocked + ", accountExpired=" + accountExpired + ", credentialsExpired=" + credentialsExpired
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", institution=" + institution + ", email="
-				+ email + ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
+		return "User [username=" + username + ", enabled=" + enabled + ", accountLocked=" + accountLocked
+				+ ", accountExpired=" + accountExpired + ", credentialsExpired=" + credentialsExpired + ", firstName="
+				+ firstName + ", lastName=" + lastName + ", institution=" + institution + ", email=" + email
+				+ ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
 				+ accountExpirationDate + ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles="
 				+ userRoles + ", ldapUser=" + ldapUser + ", id=" + id + "]";
 	}
