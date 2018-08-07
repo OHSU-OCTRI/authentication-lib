@@ -43,12 +43,12 @@ The example project has a few other pieces of configuration, including a sample 
 Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
 
 ```
-ldap.contextSource.url=${LDAP_CONTEXTSOURCE_URL}
-ldap.contextSource.userDn=${LDAP_CONTEXTSOURCE_USERDN}
-ldap.contextSource.password=${LDAP_CONTEXTSOURCE_PASSWORD}
-ldap.contextSource.searchBase=${LDAP_CONTEXTSOURCE_SEARCHBASE}
-ldap.contextSource.searchFilter=${LDAP_CONTEXTSOURCE_SEARCHFILTER}
-ldap.contextSource.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
+ldap.context-source.url=${LDAP_CONTEXTSOURCE_URL}
+ldap.context-source.user-dn=${LDAP_CONTEXTSOURCE_USERDN}
+ldap.context-source.password=${LDAP_CONTEXTSOURCE_PASSWORD}
+ldap.context-source.search-base=${LDAP_CONTEXTSOURCE_SEARCHBASE}
+ldap.context-source.search-filter=${LDAP_CONTEXTSOURCE_SEARCHFILTER}
+ldap.context-source.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
 ```
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.

@@ -1,0 +1,11 @@
+{{#error}}
+<div class="alert alert-danger">
+	{{^errorMessage}}
+	<p>There has been an unexpected problem saving this user.</p>
+	{{/errorMessage}}
+
+	{{#errorMessage}}
+	<p>{{errorMessage}}</p>
+	{{/errorMessage}}
+</div>
+{{/error}}

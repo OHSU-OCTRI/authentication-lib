@@ -59,7 +59,6 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 	 * @param exception
 	 */
 	protected void recordUserFailedAttempts(String username, AuthenticationException exception) {
-
 		if (exception.getClass() == BadCredentialsException.class && userService.findByUsername(username) != null) {
 			userService.incrementFailedAttempts(username);
 		}

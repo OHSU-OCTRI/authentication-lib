@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Change Password</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="ctx" content="{{req.contextPath}}/"/>
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/css/default.css" />
+	</head>
+	<body>
+		{{>fragments/navbar}}
+		{{>fragments/user/password/change}}
+		{{>fragments/assets}}
+		<script type="text/javascript">
+				$(function() {
+					$('#currentPassword').focus();
+				});
+		</script>
+	</body>
+</html>
