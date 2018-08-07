@@ -35,6 +35,7 @@
 			
 			<div class="form-group">
 				<input id="token" name="token" type="hidden" value="{{token}}" />
+				{{>fragments/forms/csrf_input}}
 				<button class="btn btn-primary" type="submit">Submit</button>
 			</div>
 			{{/invalidToken}}
