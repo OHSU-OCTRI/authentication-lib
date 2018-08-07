@@ -99,8 +99,7 @@ public class UserServiceTest {
 		// This is the trick that causes save() to return whatever is passed to it inside userService.
 		// generatePasswordResetToken() creates a PasswordResetToken and sets a UUID on the token property.
 		// generatePasswordResetToken() returns save(PasswordResetToken) which is why this techinque is used.
-		when(userService.save(any(User.class)))
-				.then(i -> (User) i.getArgument(0));
+		when(userService.save(user)).thenReturn(user);
 		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 	}
 

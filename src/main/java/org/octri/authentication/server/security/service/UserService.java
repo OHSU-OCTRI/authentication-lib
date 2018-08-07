@@ -130,6 +130,7 @@ public class UserService {
 	 */
 	@Transactional
 	public User save(User user) throws InvalidLdapUserDetailsException {
+		Assert.notNull(user, "Must provide a user");
 		if (!tableBasedEnabled) {
 			DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
 			final String ldapEmail = ldapUser.getStringAttribute("mail");
