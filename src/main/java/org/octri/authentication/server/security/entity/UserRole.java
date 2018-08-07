@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.octri.authentication.server.view.Labelled;
@@ -18,9 +19,11 @@ import org.octri.authentication.server.view.Labelled;
 @Entity
 public class UserRole extends AbstractEntity implements Labelled, Comparable<UserRole> {
 
+	@NotNull
 	@Column(unique = true)
 	private String roleName;
 
+	@NotNull
 	@Size(max = 50)
 	private String description;
 	
