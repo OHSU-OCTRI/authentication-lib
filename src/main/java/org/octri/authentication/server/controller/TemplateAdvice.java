@@ -34,7 +34,7 @@ public class TemplateAdvice {
 		model.addAttribute("appVersion", appVersion);
 		model.addAttribute("displayName", displayName);
 
-		model.addAttribute("isLoggedIn", securityHelper.isAuthenticated() && !securityHelper.isAnonymous());
+		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
 	}

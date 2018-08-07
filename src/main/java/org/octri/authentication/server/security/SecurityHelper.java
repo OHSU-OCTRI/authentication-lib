@@ -37,18 +37,48 @@ public class SecurityHelper {
 		}
 	}
 
+	/**
+	 * Checks if the user is authenticated and not anonymous.
+	 *
+	 * @return
+	 */
+	public boolean isLoggedIn() {
+		return isAuthenticated() && !isAnonymous();
+	}
+
+	/**
+	 * Checks if the user is authenticated. The anonymous user is authenticated by default. Use {@link #isLoggedIn()} if
+	 * you want to ensure the user is authenticated but not anonymous.
+	 *
+	 * @return
+	 */
 	public boolean isAuthenticated() {
 		return authentication == null ? false : authentication.isAuthenticated();
 	}
 
+	/**
+	 * Checks if the user is an anonymously authenticated user.
+	 *
+	 * @return
+	 */
 	public boolean isAnonymous() {
 		return authentication == null ? true : authentication instanceof AnonymousAuthenticationToken;
 	}
 
+	/**
+	 * Get the authenticated username.
+	 *
+	 * @return
+	 */
 	public String username() {
 		return authentication == null ? "" : authentication.getName();
 	}
 
+	/**
+	 * Check if the user has at least one of the roles: ADMIN or SUPER.
+	 *
+	 * @return
+	 */
 	public boolean isAdminOrSuper() {
 		return hasAnyRole(Arrays.asList(Role.ROLE_ADMIN, Role.ROLE_SUPER));
 	}
