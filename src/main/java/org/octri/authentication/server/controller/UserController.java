@@ -1,5 +1,6 @@
 package org.octri.authentication.server.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
+import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
@@ -20,6 +22,7 @@ import org.octri.authentication.server.view.OptionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +30,6 @@ import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -75,23 +77,46 @@ public class UserController {
 	}
 
 	/**
-	 * Returns view for creating a new user.
+	 * User create/edit form.
 	 * 
+	 * @param request
+	 *            The {@link HttpServletRequest}
 	 * @param model
 	 *            Object holding view data
-	 * @return New user view.
+	 * @return User form template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@GetMapping("admin/user/new")
-	public String newUser(ModelMap model) {
-		model.addAttribute("user", new User());
-		model.addAttribute("userRoles", userRoles());
-		return "admin/user/new";
+	@GetMapping("admin/user/form")
+	public String userForm(HttpServletRequest request, ModelMap model) {
+		String id = request.getParameter("id");
+		if (id == null) {
+			model.addAttribute("user", new User());
+			model.addAttribute("userRoles", userRoles());
+			model.addAttribute("pageTitle", "New User");
+			model.addAttribute("newUser", true);
+		} else {
+			SecurityHelper securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
+			if (securityHelper.canEditUser(Long.valueOf(id))) {
+				User user = userService.find(Long.valueOf(id));
+				Assert.notNull(user, "Could not find a user for id " + id);
+				model.addAttribute("user", user);
+				model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+				model.addAttribute("pageTitle", "Edit User");
+				model.addAttribute("newUser", false);
+			} else {
+				log.error(securityHelper.username() + " does not have access to edit user " + id);
+				model.addAttribute("status", 403);
+				model.addAttribute("error", "Access Denied");
+				model.addAttribute("message", "You may not edit yourself.");
+				model.addAttribute("timestamp", new Date());
+				return "error";
+			}
+		}
+		return "admin/user/form";
 	}
 
 	/**
-	 * Persists a new user. See {@link #edit(User, ModelMap)} for saving changes to
-	 * an existing {@link User}.
+	 * Persists a new or existing user.
 	 * 
 	 * @param user
 	 *            User being created
@@ -99,119 +124,68 @@ public class UserController {
 	 *            Binding result for 'user' parameter
 	 * @param model
 	 *            Object holding view data
+	 * @param request
+	 *            The {@link HttpServletRequest} for the request
 	 * @return new user template on error, or redirects to user list
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@PostMapping("admin/user/new")
-	public String newUser(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+	@PostMapping("admin/user/form")
+	public String userForm(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
 			HttpServletRequest request) {
 		Assert.notNull(user, "User must not be null");
+
+		final boolean newUser = user.getId() == null;
+
+		if (newUser) {
+			model.addAttribute("pageTitle", "New User");
+		} else {
+			model.addAttribute("pageTitle", "Edit User");
+		}
+
+		model.addAttribute("newUser", newUser);
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", bindingResult.getAllErrors());
-			return "admin/user/new";
+			return "admin/user/form";
 		}
 
 		try {
-			User newUser = userService.save(user);
+			User savedUser = userService.save(user);
 
-			// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
-			Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
-			if (!ldapUser) {
-				// TODO: In the future this should be more sophisticated - probably a welcome email for the new user.
-				PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(newUser);
-				userService.sendPasswordResetTokenEmail(token, request, false);
+			if (newUser) {
+				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
+				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
+				if (!ldapUser) {
+					// TODO: In the future this should be more sophisticated - probably a welcome email for the new
+					// user.
+					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
+					userService.sendPasswordResetTokenEmail(token, request, false);
+				}
 			}
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not add new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
-			return "admin/user/new";
+			return "admin/user/form";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/new";
+			return "admin/user/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return "admin/user/new";
+			return "admin/user/form";
 		}
 
 		model.clear();
 		return "redirect:/admin/user/list";
 	}
 
-	/**
-	 * Presents a page for editing a user.
-	 * 
-	 * @param id
-	 *            User id
-	 * @param model
-	 *            Object holding view data
-	 * @return Edit user template
-	 */
-	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
-	@GetMapping("admin/user/edit/{id}")
-	public String editUser(@PathVariable("id") long id, ModelMap model) {
-		Assert.notNull(id, "id must not be null");
-		User user = userService.find(id);
-		Assert.notNull(user, "Could not find a user for id " + id);
-		model.addAttribute("user", user);
-		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
-		return "admin/user/edit";
-	}
-
-	/**
-	 * Persists changes to {@link User}. See {@link #newUser(User, ModelMap)} for
-	 * persisting a new {@link User}.
-	 * 
-	 * @param id
-	 *            User id
-	 * @param user
-	 *            User being edited
-	 * @param bindingResult
-	 *            Binding result for user parameter
-	 * @param model
-	 *            Object holding view data
-	 * @return Redirects to list of all users, or returns to current page and displays an error message.
-	 */
-	@PreAuthorize(MethodSecurityExpressions.EDIT_USER)
-	@PostMapping("admin/user/edit")
-	public String edit(@Valid @ModelAttribute User user, BindingResult bindingResult,
-			final ModelMap model) {
-		Assert.notNull(user, "User must not be null");
-		model.addAttribute("user", user);
-		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
-		if (bindingResult.hasErrors()) {
-			model.addAttribute("error", true);
-			model.addAttribute("errors", bindingResult.getAllErrors());
-			return "admin/user/edit";
-		}
-		try {
-			userService.save(user);
-		} catch (InvalidLdapUserDetailsException ex) {
-			log.error("Could not edit user", ex);
-			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
-			return "admin/user/edit";
-		} catch (UsernameNotFoundException ex) {
-			log.error("User not found", ex);
-			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/edit";
-		} catch (RuntimeException ex) {
-			log.error("Unexpected runtime exception while editing user", ex);
-			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return "admin/user/edit";
-		}
-		model.clear();
-		return "redirect:/admin/user/list";
-	}
 
 	/**
 	 * Present a form for changing a password when credentials are expired.

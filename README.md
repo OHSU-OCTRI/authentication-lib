@@ -88,6 +88,12 @@ Users will be locked out after 7 login attempts. This limit can be configured as
 octri.authentication.max-login-attempts=3
 ```
 
+The default is to set the credentials expiration date 180 days in the future when changing a password. To override this, set the following property:
+
+```
+octri.authentication.credentials-expiration-period=180
+```
+
 ### Session Timeout
 
 Session timeout is managed by the three properties shown below. See the [full list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
