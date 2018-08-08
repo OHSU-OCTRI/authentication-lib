@@ -58,6 +58,9 @@ public class UserController {
 	@Autowired
 	private Boolean tableBasedEnabled;
 
+	private static final String NEW_USER_MAPPING = "admin/user/new";
+	private static final String EDIT_USER_MAPPING = "admin/user/edit";
+
 	/**
 	 * Returns view for displaying a list of all users.
 	 * 
@@ -86,7 +89,10 @@ public class UserController {
 	public String newUser(ModelMap model) {
 		model.addAttribute("user", new User());
 		model.addAttribute("userRoles", userRoles());
-		return "admin/user/new";
+		model.addAttribute("pageTitle", "New User");
+		model.addAttribute("requestMapping", NEW_USER_MAPPING);
+		model.addAttribute("newUser", true);
+		return "admin/user/form";
 	}
 
 	/**
@@ -108,10 +114,13 @@ public class UserController {
 		Assert.notNull(user, "User must not be null");
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+		model.addAttribute("pageTitle", "New User");
+		model.addAttribute("requestMapping", NEW_USER_MAPPING);
+		model.addAttribute("newUser", true);
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", bindingResult.getAllErrors());
-			return "admin/user/new";
+			return "admin/user/form";
 		}
 
 		try {
@@ -128,17 +137,17 @@ public class UserController {
 			log.error("Could not add new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
-			return "admin/user/new";
+			return "admin/user/form";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/new";
+			return "admin/user/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return "admin/user/new";
+			return "admin/user/form";
 		}
 
 		model.clear();
@@ -162,7 +171,10 @@ public class UserController {
 		Assert.notNull(user, "Could not find a user for id " + id);
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
-		return "admin/user/edit";
+		model.addAttribute("pageTitle", "Edit User");
+		model.addAttribute("requestMapping", EDIT_USER_MAPPING);
+		model.addAttribute("newUser", false);
+		return "admin/user/form";
 	}
 
 	/**
@@ -186,10 +198,13 @@ public class UserController {
 		Assert.notNull(user, "User must not be null");
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+		model.addAttribute("pageTitle", "Edit User");
+		model.addAttribute("requestMapping", EDIT_USER_MAPPING);
+		model.addAttribute("newUser", false);
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", bindingResult.getAllErrors());
-			return "admin/user/edit";
+			return "admin/user/form";
 		}
 		try {
 			userService.save(user);
@@ -197,17 +212,17 @@ public class UserController {
 			log.error("Could not edit user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
-			return "admin/user/edit";
+			return "admin/user/form";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/edit";
+			return "admin/user/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while editing user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return "admin/user/edit";
+			return "admin/user/form";
 		}
 		model.clear();
 		return "redirect:/admin/user/list";
