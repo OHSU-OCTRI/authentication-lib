@@ -66,12 +66,33 @@ public class SecurityHelper {
 	}
 
 	/**
+	 * Checks if the currently authenticated user is allowed to edit a specific user. Currently a user must have the
+	 * ADMIN or SUPER role, and must not be editing themself.
+	 * 
+	 * @param testUserId
+	 *            The id of the user being edited.
+	 * @return True if the currently authenticated user can edit a user.
+	 */
+	public boolean canEditUser(Long testUserId) {
+		return isAdminOrSuper() && authenticationUserDetails().getUserId() != testUserId;
+	}
+
+	/**
 	 * Get the authenticated username.
 	 *
 	 * @return
 	 */
 	public String username() {
 		return authentication == null ? "" : authentication.getName();
+	}
+
+	/**
+	 * Get the current {@link AuthenticationUserDetails}.
+	 * 
+	 * @return
+	 */
+	public AuthenticationUserDetails authenticationUserDetails() {
+		return authentication == null ? null : (AuthenticationUserDetails) authentication.getPrincipal();
 	}
 
 	/**
