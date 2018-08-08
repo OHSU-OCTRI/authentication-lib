@@ -43,6 +43,9 @@ public class UserService {
 	@Value("${octri.authentication.max-login-attempts:7}")
 	private int maxLoginAttempts;
 
+	@Value("${octri.authentication.credentials-expiration-period:180}")
+	private int credentialsExpirationPeriod;
+
 	@Resource
 	private UserRepository userRepository;
 
@@ -378,8 +381,7 @@ public class UserService {
 	private void resetCredentialsExpired(User user) {
 		user.setCredentialsExpired(false);
 		Instant now = Instant.now();
-		// TODO: 180 could be configurable
-		user.setCredentialsExpirationDate(Date.from(now.plus(180, ChronoUnit.DAYS)));
+		user.setCredentialsExpirationDate(Date.from(now.plus(credentialsExpirationPeriod, ChronoUnit.DAYS)));
 	}
 
 	/**
