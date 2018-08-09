@@ -105,6 +105,7 @@ public class UserController {
 				model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 				model.addAttribute("pageTitle", "Edit User");
 				model.addAttribute("newUser", false);
+				model.addAttribute("jQueryUI", true);
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);
 				model.addAttribute("status", 403);
