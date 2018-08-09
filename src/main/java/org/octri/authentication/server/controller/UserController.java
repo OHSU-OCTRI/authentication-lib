@@ -73,6 +73,7 @@ public class UserController {
 		List<User> users = userService.findAll();
 		model.addAttribute("users", users);
 		model.addAttribute("userRoles", userRoles());
+		model.addAttribute("dataTables", true);
 		return "admin/user/list";
 	}
 
@@ -94,6 +95,7 @@ public class UserController {
 			model.addAttribute("userRoles", userRoles());
 			model.addAttribute("pageTitle", "New User");
 			model.addAttribute("newUser", true);
+			model.addAttribute("jQueryUI", true);
 		} else {
 			SecurityHelper securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
 			if (securityHelper.canEditUser(Long.valueOf(id))) {
@@ -145,6 +147,7 @@ public class UserController {
 		model.addAttribute("newUser", newUser);
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+		model.addAttribute("jQueryUI", true);
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);

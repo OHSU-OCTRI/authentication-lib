@@ -62,20 +62,24 @@ function disableSave(booleanValue) {
 }
 
 $(function() {
-	$('.users-table').DataTable({
-		responsive: true,
-		columnDefs: [{
-			targets: 0,
-			orderable: false
-		}],
-		order: [[ 1, "asc" ]],
-		dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
-	});
+	if (typeof $.DataTable !== 'undefined') {
+		$('.users-table').DataTable({
+			responsive: true,
+			columnDefs: [{
+				targets: 0,
+				orderable: false
+			}],
+			order: [[ 1, "asc" ]],
+			dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
+		});
+	}
 	
 	$('.btn.cancel').on('click', cancel);
 	
-	$("input[name=accountExpirationDate]").datepicker();
-	$("input[name=credentialsExpirationDate]").datepicker();
+	if (typeof $.datepicker !== 'undefined') {
+		$("input[name=accountExpirationDate]").datepicker();
+		$("input[name=credentialsExpirationDate]").datepicker();
+	}
 	
 	$('[data-action="popover"]').popover({
 		trigger: "click hover",
