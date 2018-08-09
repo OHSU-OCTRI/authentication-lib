@@ -173,32 +173,53 @@ The following methods are provided by the [`BaseSecurityConfiguration`](src/main
 
 For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create `login.html` in the `src/main/resources/templates` directory.
 
-#### Webjars
+#### Webjars (CSS and JavaScript dependencies)
 
-The authentication library uses bootstrap, jquery, and datatables libraries for styling and functionality. These are included as resources through webjars in the pom.xml file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
+The authentication library uses Bootstrap 4, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
 
-CSS:
+CSS is located in the `fragments/css.mustache` template. By default it includes the following files:
+
 ```
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/jquery.dataTables.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/dataTables.bootstrap.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.theme.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
-```
-Javascript:
-```
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" />
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.dataTables.min.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/dataTables.bootstrap.min.js}"></script>
-<script type="text/javascript" th:src="@{/js/default.js}"></script>
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/font-awesome/css/all.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/css/default.css" />
 ```
 
-If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables.
+If you provide the `formView` model property it will also include:
 
-TODO: Refactor so it is clear what each page needs instead of having all css loaded and the assets fragment loading all js on all pages.
+```
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.theme.min.css" />
+```
+
+If you provide the `listView` model property it will include:
+
+```
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap4.min.css" />
+```
+
+Likewise, JavaScript is included in the `fragments/assets.mustache` template. By default it includes the following:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/js/default.js"></script>
+```
+
+Similar to `css.mustache`, if you pass the `formView` model property it will include the corresponding JavaScript:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.js"></script>
+```
+
+And if you pass the `listView` model property it will include:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.bootstrap4.min.js"></script>
+```
+
+If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables. The `UserController.java` is responsible for setting the `formView` and `listView` model properties for User Management.
 
 ### API Authentication
 
