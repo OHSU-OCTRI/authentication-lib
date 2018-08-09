@@ -62,8 +62,8 @@ function disableSave(booleanValue) {
 }
 
 $(function() {
-	if (typeof $.DataTable !== 'undefined') {
-		$('.users-table').DataTable({
+	if (typeof $.fn.DataTable !== 'undefined') {
+		$('.authlib-user-list .users-table').DataTable({
 			responsive: true,
 			columnDefs: [{
 				targets: 0,
@@ -76,7 +76,7 @@ $(function() {
 	
 	$('.btn.cancel').on('click', cancel);
 	
-	if (typeof $.datepicker !== 'undefined') {
+	if (typeof $.fn.datepicker !== 'undefined') {
 		$("input[name=accountExpirationDate]").datepicker();
 		$("input[name=credentialsExpirationDate]").datepicker();
 	}
