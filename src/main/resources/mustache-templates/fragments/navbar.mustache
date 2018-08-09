@@ -1,29 +1,34 @@
-<nav class="navbar navbar-default navbar-fixed-top">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="{{req.contextPath}}"><span class="glyphicon glyphicon-home"></span> Home</a>
-		</div>
-		<div id="navbar" class="navbar-collapse collapse">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+	<a class="navbar-brand" href="#">{{displayName}}</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbar-content">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="{{req.contextPath}}">Home <span class="sr-only">(current)</span>
+			</a></li>
 			{{#isAdminOrSuper}}
-			<ul class="nav navbar-nav">
-				<li><a href="{{req.contextPath}}/admin/user/form"><span class="glyphicon glyphicon-user"></span> New User</a></li>
-				<li><a href="{{req.contextPath}}/admin/user/list"><span class="glyphicon glyphicon-list"></span> List of Users</a></li>
-			</ul>
+			<li class="nav-item">
+				<a class="nav-link" href="{{req.contextPath}}/admin/user/form"><span class="glyphicon glyphicon-user"></span> New User</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="{{req.contextPath}}/admin/user/list"><span class="glyphicon glyphicon-list"></span> List of Users</a>
+			</li>
 			{{/isAdminOrSuper}}
-			<ul class="nav navbar-nav navbar-right">
-				{{#isLoggedIn}}
-				<li><a href="{{req.contextPath}}/logout"><span class="glyphicon glyphicon-off"></span> Log Out ({{username}})</a></li>
-				{{/isLoggedIn}}
-				{{^isLoggedIn}}
-				<li><a href="{{req.contextPath}}/login"><span class="glyphicon glyphicon-off"></span> Log In</a></li>
-				{{/isLoggedIn}}
-			</ul>
-		</div>
+		</ul>
+		<ul class="navbar-nav">
+			{{#isLoggedIn}}
+			<li class="nav-item">
+				<a class="nav-link" href="{{req.contextPath}}/logout"><span class="glyphicon glyphicon-off"></span> Log Out ({{username}})</a>
+			</li>
+			{{/isLoggedIn}}
+			{{^isLoggedIn}}
+			<li class="nav-item">
+				<a class="nav-link" href="{{req.contextPath}}/login"><span class="glyphicon glyphicon-off"></span> Log In</a>
+			</li>
+			{{/isLoggedIn}}
+		</ul>
 	</div>
-	</nav>
+</nav>

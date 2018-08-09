@@ -28,6 +28,17 @@
 							<label>Username*</label>
 							<input id="username" class="form-control lookup-user" autocomplete="off" type="text" id="username" name="username" value="{{#user.username}}{{.}}{{/user.username}}" />
 						</div>
+							{{#ldapEnabled}}
+								{{#tableBasedEnabled}}
+								<div class="form-group">
+									<input type="checkbox" id="ldapUser" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
+									<span>OHSU User</span>
+								</div>
+								<div class="form-group">
+									<button id="ldapLookup" class="btn btn-primary">LDAP Lookup</button>
+								</div>
+								{{/tableBasedEnabled}}
+							{{/ldapEnabled}}
 						{{/newUser}}
 						
 						{{^newUser}}
@@ -39,17 +50,6 @@
 						</div>
 						{{/newUser}}
 
-						{{#ldapEnabled}}
-							{{#tableBasedEnabled}}
-								<div class="form-group">
-									<input type="checkbox" id="ldapUser" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
-									<span>OHSU User</span>
-								</div>
-								<div class="form-group">
-									<button id="ldapLookup" class="btn btn-primary">LDAP Lookup</button>
-								</div>
-							{{/tableBasedEnabled}}
-						{{/ldapEnabled}}
 
 						<div class="form-group">
 							<label>First Name*</label>
@@ -74,12 +74,15 @@
 						<h4>User Roles</h4>
 
 						<div class="form-group">
-							{{#userRoles}}
-							<p>
-								<label><input {{#selected}}checked='checked'{{/selected}} type="checkbox" id="userRoles" name="userRoles" value="{{id}}" />
-								{{label}}</label>
-							</p>
-							{{/userRoles}}
+							<ul class="list-unstyled">
+								{{#userRoles}}
+								<li>
+									<label><input {{#selected}}checked='checked'{{/selected}} type="checkbox" id="userRoles" name="userRoles" value="{{id}}" />
+										{{label}}
+									</label>
+								</li>
+								{{/userRoles}}
+							</ul>
 						</div>
 					</div>
 

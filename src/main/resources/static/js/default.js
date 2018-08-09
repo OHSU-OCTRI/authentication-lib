@@ -37,7 +37,17 @@ function debounce(func, wait, immediate) {
  * @returns HTML div with given text and classes.
  */
 function mutedDiv(text, classNames) {
-	return '<div class="text-muted ' + classNames + '">' + text + '</div>';
+	return div(text, classNames + ' text-muted');
+}
+
+/**
+ * Produces a div with the provided classes.
+ * @param text The text to display.
+ * @param classNames A space separated list of CSS class names.
+ * @returns HTML div with given text and classes.
+ */
+function div(text, classNames) {
+	return '<div class="' + classNames + '">' + text + '</div>';
 }
 
 /**
@@ -82,18 +92,22 @@ $(function() {
 	 */
 	$('#username.lookup-user').on('keydown blur change', debounce(function() {
 		var username = $('#username').val();
-		if (username != null && username != '') {
-			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(username), function(json) {
+		if (username !== null && typeof username !== 'undefined' && username !== '') {
+			// prevent xss - usernames must be lowercase
+			var filteredUsername = username.toLowerCase().replace(/[^a-z]/ig, '');
+			// replace username input with filtered username
+			$('#username').val(filteredUsername);
+			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(filteredUsername), function(json) {
 				$('.username-taken').remove();
 				if (json.taken) {
 					disableSave(true);
-					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv(username + ' is taken', 'username-taken mark bg-danger'));
+					if ($('.username-taken').length === 0) {
+						$('#username').after(div(filteredUsername + ' is taken', 'username-taken mark bg-danger text-light'));
 					}
 				} else {
 					disableSave(false);
-					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv(username + ' is available', 'username-taken mark bg-success'));
+					if ($('.username-taken').length === 0) {
+						$('#username').after(div(filteredUsername + ' is available', 'username-taken mark bg-success text-light'));
 					}
 				}
 			});
