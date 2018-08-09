@@ -14,7 +14,7 @@ The repo 'auth_example_project' in this project shows a minimal web application 
 	</dependency>
 ```
 
-The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
+The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up. You will also likely need to include your project's package in these annotations.
 
 ```
 @SpringBootApplication
@@ -43,12 +43,12 @@ The example project has a few other pieces of configuration, including a sample 
 Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
 
 ```
-ldap.context-source.url=${LDAP_CONTEXTSOURCE_URL}
-ldap.context-source.user-dn=${LDAP_CONTEXTSOURCE_USERDN}
-ldap.context-source.password=${LDAP_CONTEXTSOURCE_PASSWORD}
-ldap.context-source.search-base=${LDAP_CONTEXTSOURCE_SEARCHBASE}
-ldap.context-source.search-filter=${LDAP_CONTEXTSOURCE_SEARCHFILTER}
-ldap.context-source.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
+ldap.context-source.url=
+ldap.context-source.user-dn=
+ldap.context-source.password=
+ldap.context-source.search-base=
+ldap.context-source.search-filter=
+ldap.context-source.organization=
 ```
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
@@ -58,24 +58,23 @@ If using the standard Docker/MySQL setup, start the MySQL container first and cr
 Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
 
 ```
-spring.mail.enabled: ${SPRING_MAIL_ENABLED:false}
-spring.mail.from: ${SPRING_MAIL_FROM:octrihlp@ohsu.edu}
-spring.mail.default-encoding: ${SPRING_MAIL_DEFAULT_ENCODING:UTF-8}
-spring.mail.host: ${SPRING_MAIL_HOST:smtpout.ohsu.edu}
-spring.mail.port: ${SPRING_MAIL_PORT:25}
-spring.mail.protocol: ${SPRING_MAIL_PROTOCOL:smtp}
-spring.mail.test-connection: ${SPRING_MAIL_TEST_CONNECTION:false}
-spring.mail.username: ${SPRING_MAIL_USERNAME:octrihlp@ohsu.edu}
-spring.mail.password: ${SPRING_MAIL_PASSWORD:secret}
-spring.mail.properties.mail.smtp.auth: ${SPRING_MAIL_SMTP_AUTH:false}
-spring.mail.properties.mail.smtp.starttls.enable: ${SPRING_MAIL_SMTP_STARTTLS_ENABLE:false}
-spring.mail.properties.mail.smtp.starttls.required: ${SPRING_MAIL_SMTP_STARTTLS_REQUIRED:false}
+spring.mail.enabled=false
+spring.mail.from=octrihlp@ohsu.edu
+spring.mail.default-encoding=UTF-8
+spring.mail.host=smtpout.ohsu.edu
+spring.mail.port=25
+spring.mail.protocol=smtp
+spring.mail.test-connection=false
+spring.mail.username=octrihlp@ohsu.edu
+spring.mail.password=secret
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=false
+spring.mail.properties.mail.smtp.starttls.required=false
 ```
-
 
 ## Default Behavior
 
-The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties:
+The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties, but at least one must be enabled:
 
 ```
 octri.authentication.enable-ldap=false
@@ -225,3 +224,33 @@ If your application has its own navigation and is using the User Management frag
 
 This functionality has not yet been tested or used in an example project, but should provide JSON responses to authentication requests.
 
+## How to use Mustache fragments in your application
+
+The authentication library provides these pages: `admin/user/form.mustache`, `admin/user/list.mustache`, `error.mustache`, `login.mustache`, `user/password/change.mustache`, `user/password/forgot.mustache`, and `user/password/reset.mustache`. You'll likely need to implement these in your own project if you use a custom layout and navbar.
+
+See above in the "Webjars" section for how to include the required CSS and JavaScript. For all pages assume Bootstrap 4, Font Awesome, and jQuery 3 are required.
+
+Create `mustache-templates/login.mustache` and in the body include the fragment: `{{>fragments/login}}`.
+
+Create `mustache-templates/error.mustache` and in the body include the following HTML. The `UserController` will populate the model properties.
+
+```
+<div class="container-fluid">
+	<div class="alert alert-danger">
+		<p>Error {{status}}: {{error}} ({{message}})</p>
+		<p>{{timestamp}}</p>
+	</div>
+</div>
+```
+
+Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{fragments/css.mustache}}`.
+
+Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{fragments/css.mustache}}`.
+
+**If you want table-based authentication then you need to create three more templates.**
+
+Create `mustache-templates/user/password/change.mustache` and in the body include the fragment: `{{>fragments/user/password/change}}`.
+
+Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>fragments/user/password/forgot}}`.
+
+Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>fragments/user/password/reset}}`.
