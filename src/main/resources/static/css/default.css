@@ -1,31 +1,22 @@
-body {
+body.authlib {
 	/* Keeps the body below the fixed navbar */
-	padding-top:50px;
+	padding-top:4rem;
 }
 
-table.center-all td,th{
+.authlib-user-list .center-all td,th{
     text-align :center;
 }
 
-.dataTables_wrapper {
-	margin-top: 20px;
+.authlib-user-list .dataTables_wrapper {
+	margin-top: 1.2rem;
 }
 
 /* Swap the default positioning of search filter and length input */
-.dataTables_wrapper .dataTables_filter {
+.authlib-user-list .dataTables_wrapper .dataTables_filter {
 	float: left;
 	text-align: left;
 }
 
-.dataTables_wrapper .dataTables_length {
+.authlib-user-list .dataTables_wrapper .dataTables_length {
 	float: right;
-}
-
-.hidden {
-	visibility:none;
-	display:none;
-}
-
-.error-text {
-	color:#a94442;
 }

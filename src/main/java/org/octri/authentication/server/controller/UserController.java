@@ -36,7 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for managing {@link User}.
- * 
+ *
  * @author sams
  */
 @Controller
@@ -62,7 +62,7 @@ public class UserController {
 
 	/**
 	 * Returns view for displaying a list of all users.
-	 * 
+	 *
 	 * @param model
 	 *            Object holding view data
 	 * @return List view
@@ -73,12 +73,13 @@ public class UserController {
 		List<User> users = userService.findAll();
 		model.addAttribute("users", users);
 		model.addAttribute("userRoles", userRoles());
+		model.addAttribute("listView", true);
 		return "admin/user/list";
 	}
 
 	/**
 	 * User create/edit form.
-	 * 
+	 *
 	 * @param request
 	 *            The {@link HttpServletRequest}
 	 * @param model
@@ -94,6 +95,7 @@ public class UserController {
 			model.addAttribute("userRoles", userRoles());
 			model.addAttribute("pageTitle", "New User");
 			model.addAttribute("newUser", true);
+			model.addAttribute("formView", true);
 		} else {
 			SecurityHelper securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
 			if (securityHelper.canEditUser(Long.valueOf(id))) {
@@ -103,6 +105,7 @@ public class UserController {
 				model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 				model.addAttribute("pageTitle", "Edit User");
 				model.addAttribute("newUser", false);
+				model.addAttribute("formView", true);
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);
 				model.addAttribute("status", 403);
@@ -117,7 +120,7 @@ public class UserController {
 
 	/**
 	 * Persists a new or existing user.
-	 * 
+	 *
 	 * @param user
 	 *            User being created
 	 * @param bindingResult
@@ -145,6 +148,7 @@ public class UserController {
 		model.addAttribute("newUser", newUser);
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+		model.addAttribute("formView", true);
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("error", true);
@@ -189,7 +193,7 @@ public class UserController {
 
 	/**
 	 * Present a form for changing a password when credentials are expired.
-	 * 
+	 *
 	 * @return change template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
@@ -200,7 +204,7 @@ public class UserController {
 
 	/**
 	 * Persist changed password.
-	 * 
+	 *
 	 * @param currentPassword
 	 *            The user's current password
 	 * @param newPassword
@@ -249,7 +253,7 @@ public class UserController {
 
 	/**
 	 * A form for initiating a password reset.
-	 * 
+	 *
 	 * @return forgot template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
@@ -260,7 +264,7 @@ public class UserController {
 
 	/**
 	 * Handles generating and sending a password reset token.
-	 * 
+	 *
 	 * @param email
 	 *            The users email address.
 	 * @param model
@@ -288,7 +292,7 @@ public class UserController {
 
 	/**
 	 * A form for resetting a password.
-	 * 
+	 *
 	 * @param token
 	 *            The user's password reset token.
 	 * @param model
@@ -309,7 +313,7 @@ public class UserController {
 
 	/**
 	 * Persist reset password.
-	 * 
+	 *
 	 * @param password
 	 *            The user's new password
 	 * @param token
@@ -346,7 +350,7 @@ public class UserController {
 
 	/**
 	 * Model attribute that can be used in templates.
-	 * 
+	 *
 	 * @return Returns a list of all {@link UserRole}.
 	 */
 	@ModelAttribute("allUserRoles")
@@ -356,7 +360,7 @@ public class UserController {
 
 	/**
 	 * Model attribute that can be used in templates.
-	 * 
+	 *
 	 * @return Returns a list of all {@link User}.
 	 */
 	@ModelAttribute("allUsers")
