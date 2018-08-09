@@ -98,7 +98,7 @@ $(function() {
 		var username = $('#username').val();
 		if (username !== null && typeof username !== 'undefined' && username !== '') {
 			// prevent xss - usernames must be lowercase
-			var filteredUsername = username.toLowerCase().replace(/[^a-z]/ig, '');
+			var filteredUsername = username.toLowerCase().replace(/[^a-z]/g, '');
 			// replace username input with filtered username
 			$('#username').val(filteredUsername);
 			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(filteredUsername), function(json) {
