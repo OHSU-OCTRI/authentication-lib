@@ -14,7 +14,7 @@ The repo 'auth_example_project' in this project shows a minimal web application 
 	</dependency>
 ```
 
-The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up:
+The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up. You will also likely need to include your project's package in these annotations.
 
 ```
 @SpringBootApplication
@@ -43,12 +43,12 @@ The example project has a few other pieces of configuration, including a sample 
 Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
 
 ```
-ldap.contextSource.url=${LDAP_CONTEXTSOURCE_URL}
-ldap.contextSource.userDn=${LDAP_CONTEXTSOURCE_USERDN}
-ldap.contextSource.password=${LDAP_CONTEXTSOURCE_PASSWORD}
-ldap.contextSource.searchBase=${LDAP_CONTEXTSOURCE_SEARCHBASE}
-ldap.contextSource.searchFilter=${LDAP_CONTEXTSOURCE_SEARCHFILTER}
-ldap.contextSource.organization=${LDAP_CONTEXTSOURCE_ORGANIZATION}
+ldap.context-source.url=
+ldap.context-source.user-dn=
+ldap.context-source.password=
+ldap.context-source.search-base=
+ldap.context-source.search-filter=
+ldap.context-source.organization=
 ```
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
@@ -58,24 +58,23 @@ If using the standard Docker/MySQL setup, start the MySQL container first and cr
 Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
 
 ```
-spring.mail.enabled: ${SPRING_MAIL_ENABLED:false}
-spring.mail.from: ${SPRING_MAIL_FROM:octrihlp@ohsu.edu}
-spring.mail.default-encoding: ${SPRING_MAIL_DEFAULT_ENCODING:UTF-8}
-spring.mail.host: ${SPRING_MAIL_HOST:smtpout.ohsu.edu}
-spring.mail.port: ${SPRING_MAIL_PORT:25}
-spring.mail.protocol: ${SPRING_MAIL_PROTOCOL:smtp}
-spring.mail.test-connection: ${SPRING_MAIL_TEST_CONNECTION:false}
-spring.mail.username: ${SPRING_MAIL_USERNAME:octrihlp@ohsu.edu}
-spring.mail.password: ${SPRING_MAIL_PASSWORD:secret}
-spring.mail.properties.mail.smtp.auth: ${SPRING_MAIL_SMTP_AUTH:false}
-spring.mail.properties.mail.smtp.starttls.enable: ${SPRING_MAIL_SMTP_STARTTLS_ENABLE:false}
-spring.mail.properties.mail.smtp.starttls.required: ${SPRING_MAIL_SMTP_STARTTLS_REQUIRED:false}
+spring.mail.enabled=false
+spring.mail.from=octrihlp@ohsu.edu
+spring.mail.default-encoding=UTF-8
+spring.mail.host=smtpout.ohsu.edu
+spring.mail.port=25
+spring.mail.protocol=smtp
+spring.mail.test-connection=false
+spring.mail.username=octrihlp@ohsu.edu
+spring.mail.password=secret
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=false
+spring.mail.properties.mail.smtp.starttls.required=false
 ```
-
 
 ## Default Behavior
 
-The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties:
+The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties, but at least one must be enabled:
 
 ```
 octri.authentication.enable-ldap=false
@@ -86,6 +85,12 @@ Users will be locked out after 7 login attempts. This limit can be configured as
 
 ```
 octri.authentication.max-login-attempts=3
+```
+
+The default is to set the credentials expiration date 180 days in the future when changing a password. To override this, set the following property:
+
+```
+octri.authentication.credentials-expiration-period=180
 ```
 
 ### Session Timeout
@@ -167,34 +172,85 @@ The following methods are provided by the [`BaseSecurityConfiguration`](src/main
 
 For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create `login.html` in the `src/main/resources/templates` directory.
 
-#### Webjars
+#### Webjars (CSS and JavaScript dependencies)
 
-The authentication library uses bootstrap, jquery, and datatables libraries for styling and functionality. These are included as resources through webjars in the pom.xml file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
+The authentication library uses Bootstrap 4, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
 
-CSS:
+CSS is located in the `authlib_fragments/css.mustache` template. By default it includes the following files:
+
 ```
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/jquery.dataTables.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/media/css/dataTables.bootstrap.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/jquery-ui.theme.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" />
-```
-Javascript:
-```
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}" />
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/jquery.dataTables.min.js}"></script>
-<script type="text/javascript" th:src="@{/webjars/datatables/media/js/dataTables.bootstrap.min.js}"></script>
-<script type="text/javascript" th:src="@{/js/default.js}"></script>
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/font-awesome/css/all.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/css/default.css" />
 ```
 
-If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables.
+If you provide the `formView` model property it will also include:
 
-TODO: Refactor so it is clear what each page needs instead of having all css loaded and the assets fragment loading all js on all pages.
+```
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.theme.min.css" />
+```
+
+If you provide the `listView` model property it will include:
+
+```
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap4.min.css" />
+```
+
+Likewise, JavaScript is included in the `authlib_fragments/assets.mustache` template. By default it includes the following:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/js/default.js"></script>
+```
+
+Similar to `css.mustache`, if you pass the `formView` model property it will include the corresponding JavaScript:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.js"></script>
+```
+
+And if you pass the `listView` model property it will include:
+
+```
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.bootstrap4.min.js"></script>
+```
+
+If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables. The `UserController.java` is responsible for setting the `formView` and `listView` model properties for User Management.
 
 ### API Authentication
 
 This functionality has not yet been tested or used in an example project, but should provide JSON responses to authentication requests.
 
+## How to use Mustache fragments in your application
+
+The authentication library provides these pages: `admin/user/form.mustache`, `admin/user/list.mustache`, `error.mustache`, `login.mustache`, `user/password/change.mustache`, `user/password/forgot.mustache`, and `user/password/reset.mustache`. You'll likely need to implement these in your own project if you use a custom layout and navbar.
+
+See above in the "Webjars" section for how to include the required CSS and JavaScript. For all pages assume Bootstrap 4, Font Awesome, and jQuery 3 are required.
+
+Create `mustache-templates/login.mustache` and in the body include the fragment: `{{>authlib_fragments/login}}`.
+
+Create `mustache-templates/error.mustache` and in the body include the following HTML. The `UserController` will populate the model properties.
+
+```
+<div class="container-fluid">
+	<div class="alert alert-danger">
+		<p>Error {{status}}: {{error}} ({{message}})</p>
+		<p>{{timestamp}}</p>
+	</div>
+</div>
+```
+
+Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+
+Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+
+**If you want table-based authentication then you need to create three more templates.**
+
+Create `mustache-templates/user/password/change.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/change}}`.
+
+Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/forgot}}`.
+
+Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/reset}}`.

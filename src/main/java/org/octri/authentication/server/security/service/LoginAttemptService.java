@@ -30,7 +30,7 @@ public class LoginAttemptService {
 	 */
 	@Transactional(readOnly = true)
 	public LoginAttempt find(Long id) {
-		return loginAttemptRepository.findOne(id);
+		return loginAttemptRepository.findById(id).get();
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class LoginAttemptService {
 	 */
 	@Transactional
 	public void delete(Long id) {
-		loginAttemptRepository.delete(id);
+		loginAttemptRepository.deleteById(id);
 	}
 
 	/**

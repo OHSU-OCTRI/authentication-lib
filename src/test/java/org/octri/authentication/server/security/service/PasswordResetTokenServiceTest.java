@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
@@ -43,9 +43,7 @@ public class PasswordResetTokenServiceTest {
 	public void beforeEach() throws InvalidLdapUserDetailsException {
 		user = new User("foo", "Foo", "Bar", "OHSU", "foo@example.com");
 		when(passwordResetTokenRepository.save(any(PasswordResetToken.class)))
-				.then(i -> i.getArgumentAt(0, PasswordResetToken.class));
-		when(userService.save(any(User.class)))
-				.then(i -> i.getArgumentAt(0, User.class));
+				.then(i -> (PasswordResetToken) i.getArgument(0));
 	}
 
 	@Test

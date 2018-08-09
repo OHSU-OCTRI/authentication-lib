@@ -37,7 +37,17 @@ function debounce(func, wait, immediate) {
  * @returns HTML div with given text and classes.
  */
 function mutedDiv(text, classNames) {
-	return '<div class="text-muted ' + classNames + '">' + text + '</div>';
+	return div(text, classNames + ' text-muted');
+}
+
+/**
+ * Produces a div with the provided classes.
+ * @param text The text to display.
+ * @param classNames A space separated list of CSS class names.
+ * @returns HTML div with given text and classes.
+ */
+function div(text, classNames) {
+	return '<div class="' + classNames + '">' + text + '</div>';
 }
 
 /**
@@ -52,27 +62,31 @@ function disableSave(booleanValue) {
 }
 
 $(function() {
-	$('.users-table').DataTable({
-		responsive: true,
-		columnDefs: [{
-			targets: 0,
-			orderable: false
-		}],
-		order: [[ 1, "asc" ]],
-		dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
-	});
+	if (typeof $.fn.DataTable !== 'undefined') {
+		$('.authlib-user-list .users-table').DataTable({
+			responsive: true,
+			columnDefs: [{
+				targets: 0,
+				orderable: false
+			}],
+			order: [[ 1, "asc" ]],
+			dom: 'fltip' /* Switch default ordering of table elements so search filter is before length selector */
+		});
+	}
 	
 	$('.btn.cancel').on('click', cancel);
 	
-	$("input[name=accountExpirationDate]").datepicker();
-	$("input[name=credentialsExpirationDate]").datepicker();
+	if (typeof $.fn.datepicker !== 'undefined') {
+		$("input[name=accountExpirationDate]").datepicker();
+		$("input[name=credentialsExpirationDate]").datepicker();
+	}
 	
 	$('[data-action="popover"]').popover({
 		trigger: "click hover",
 		html: true
 	});
 	
-	let contextPath = $("meta[name='ctx']").attr("content");
+	var contextPath = $("meta[name='ctx']").attr("content");
 	
 	/**
 	 * Username type-ahead lookup
@@ -81,19 +95,23 @@ $(function() {
 	 * will be made. A div will be appended with a message about the username.
 	 */
 	$('#username.lookup-user').on('keydown blur change', debounce(function() {
-		let username = $('#username').val();
-		if (username != null && username != '') {
-			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(username), function(json) {
+		var username = $('#username').val();
+		if (username !== null && typeof username !== 'undefined' && username !== '') {
+			// prevent xss - usernames must be lowercase
+			var filteredUsername = username.toLowerCase().replace(/[^a-z]/g, '');
+			// replace username input with filtered username
+			$('#username').val(filteredUsername);
+			$.get(contextPath + 'admin/user/taken/' + encodeURIComponent(filteredUsername), function(json) {
 				$('.username-taken').remove();
 				if (json.taken) {
 					disableSave(true);
-					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv(username + ' is taken', 'username-taken mark bg-danger'));
+					if ($('.username-taken').length === 0) {
+						$('#username').after(div(filteredUsername + ' is taken', 'username-taken mark bg-danger text-light'));
 					}
 				} else {
 					disableSave(false);
-					if ($('.username-taken').size() === 0) {
-						$('#username').after(mutedDiv(username + ' is available', 'username-taken mark bg-success'));
+					if ($('.username-taken').length === 0) {
+						$('#username').after(div(filteredUsername + ' is available', 'username-taken mark bg-success text-light'));
 					}
 				}
 			});
@@ -103,25 +121,25 @@ $(function() {
 	}, 500));
 	
 	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
-	let ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
+	var ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
 	$('#ldapLookup').prop("disabled", ldapNotChecked);
 	
 	$('#ldapUser').on('click', function(e) {
-		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));				
+		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));
 	});
 	
 	// Look up by username in LDAP and prepopulate user fields
 	$('#ldapLookup').on('click', function(e) {
 		e.preventDefault();
-		let token =  $('input[name="_csrf"]').attr('value');
+		var token =  $('input[name="_csrf"]').attr('value');
 	    $.ajaxSetup({
 	        beforeSend: function(xhr) {
 	            xhr.setRequestHeader('X-CSRF-TOKEN', token);
 	        }
 	    });
 	    
-		let username = $('#username').val();
-		let obj = {username: username};
+		var username = $('#username').val();
+		var obj = {username: username};
 
 		$.post(contextPath + "admin/user/ldapLookup", obj, function(json) {
 			$('.ldap-error').remove();
@@ -135,5 +153,19 @@ $(function() {
 			}
 		});
 	});
+	
 
+	/**
+	 * Handle dislaying inline form validation errors.
+	 * UserController is responsible for sending the BindingResult in the model.
+	 * The mustache template renders hidden input fields with the correct keys 
+	 * and messages which are matched with the form element IDs using this JavaScript.
+	 */
+	$('[data-error]').each(function(i, el) {
+		var message = $(el).data('message');
+		$('#' + $(el).data('field'))
+			.parent('.form-group')
+			.addClass('has-error')
+			.append('<p class="error-text">' + message + '</p>');
+	})
 });

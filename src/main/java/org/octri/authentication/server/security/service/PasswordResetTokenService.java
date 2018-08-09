@@ -27,7 +27,7 @@ public class PasswordResetTokenService {
 
 	@Transactional(readOnly = true)
 	public PasswordResetToken find(Long id) {
-		return passwordResetTokenRepository.findOne(id);
+		return passwordResetTokenRepository.findById(id).get();
 	}
 
 	@Transactional(readOnly = true)
@@ -47,9 +47,9 @@ public class PasswordResetTokenService {
 
 	@Transactional
 	public void delete(Long id) {
-		PasswordResetToken passwordResetToken = passwordResetTokenRepository.findOne(id);
+		PasswordResetToken passwordResetToken = passwordResetTokenRepository.findById(id).orElse(null);
 		if (passwordResetToken != null) {
-			passwordResetTokenRepository.delete(id);
+			passwordResetTokenRepository.deleteById(id);
 		}
 	}
 

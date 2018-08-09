@@ -1,5 +1,8 @@
 package org.octri.authentication.server.security.service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -39,6 +42,9 @@ public class UserService {
 
 	@Value("${octri.authentication.max-login-attempts:7}")
 	private int maxLoginAttempts;
+
+	@Value("${octri.authentication.credentials-expiration-period:180}")
+	private int credentialsExpirationPeriod;
 
 	@Resource
 	private UserRepository userRepository;
@@ -89,7 +95,7 @@ public class UserService {
 	 */
 	@Transactional(readOnly = true)
 	public User find(Long id) {
-		return userRepository.findOne(id);
+		return userRepository.findById(id).get();
 	}
 
 	/**
@@ -117,7 +123,8 @@ public class UserService {
 	}
 
 	/**
-	 * Saves the given user account to the database.
+	 * Saves the given user account to the database. Handles logic for throwing an exception if the LDAP user doesn't
+	 * match the form input. Also handles not expiring passwords when a password changes.
 	 *
 	 * @param user
 	 *            the user model to save
@@ -126,6 +133,7 @@ public class UserService {
 	 */
 	@Transactional
 	public User save(User user) throws InvalidLdapUserDetailsException {
+		Assert.notNull(user, "Must provide a user");
 		if (!tableBasedEnabled) {
 			DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
 			final String ldapEmail = ldapUser.getStringAttribute("mail");
@@ -134,6 +142,15 @@ public class UserService {
 				throw new InvalidLdapUserDetailsException(InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
 			}
 		}
+
+		// Don't clobber existing passwords when editing a user.
+		if (user.getId() != null) {
+			User existing = find(user.getId());
+			if (existing.getPassword() != null) {
+				user.setPassword(existing.getPassword());
+			}
+		}
+
 		return userRepository.save(user);
 	}
 
@@ -155,9 +172,9 @@ public class UserService {
 	 */
 	@Transactional
 	public void delete(Long id) {
-		User user = userRepository.findOne(id);
+		User user = userRepository.findById(id).orElse(null);
 		if (user != null) {
-			userRepository.delete(id);
+			userRepository.deleteById(id);
 		}
 	}
 
@@ -211,6 +228,8 @@ public class UserService {
 		validatePassword(user, currentPassword, newPassword, confirmPassword);
 
 		user.setPassword(passwordEncoder.encode(newPassword));
+
+		resetCredentialsExpired(user);
 
 		return this.save(user);
 	}
@@ -346,9 +365,23 @@ public class UserService {
 		User user = existingToken.getUser();
 		validatePassword(user, null, newPassword, confirmPassword);
 		user.setPassword(passwordEncoder.encode(newPassword));
+
+		resetCredentialsExpired(user);
+
 		User saved = this.save(user);
 		passwordResetTokenService.expireToken(existingToken);
 		return saved;
+	}
+
+	/**
+	 * Sets credentials expired to false and sets a new credentials expiration date in the future.
+	 * 
+	 * @param user
+	 */
+	private void resetCredentialsExpired(User user) {
+		user.setCredentialsExpired(false);
+		Instant now = Instant.now();
+		user.setCredentialsExpirationDate(Date.from(now.plus(credentialsExpirationPeriod, ChronoUnit.DAYS)));
 	}
 
 	/**
