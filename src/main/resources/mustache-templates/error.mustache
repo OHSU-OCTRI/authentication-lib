@@ -3,16 +3,16 @@
 	<head>
 		<title>Error {{status}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		{{>fragments/css}}
+		{{>authlib_fragments/css}}
 	</head>
 	<body class="authlib">
-		{{>fragments/navbar}}
+		{{>authlib_fragments/navbar}}
 		<div class="container-fluid">
 			<div class="alert alert-danger">
 				<p>Error {{status}}: {{error}} ({{message}})</p>
 				<p>{{timestamp}}</p>
 			</div>
 		</div>
-		{{>fragments/assets}}
+		{{>authlib_fragments/assets}}
 	</body>
 </html>

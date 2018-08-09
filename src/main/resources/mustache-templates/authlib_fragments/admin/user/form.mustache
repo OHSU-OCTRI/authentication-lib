@@ -8,7 +8,7 @@
 				<input type="hidden" data-error="true" data-field="{{field}}" data-message="{{defaultMessage}}" />
 			{{/errors}}
 			
-			{{>fragments/forms/user/user_save_error}}
+			{{>authlib_fragments/forms/user/user_save_error}}
 
 			<div class="text-muted">
 				<p>* denotes a required field</p>
@@ -140,7 +140,7 @@
 				<div class="row">
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<div class="form-controls">
-							{{>fragments/forms/csrf_input}}
+							{{>authlib_fragments/forms/csrf_input}}
 							<button name="save" type="submit" class="btn btn-primary" value="save">Save</button>
 							<a class="btn btn-link cancel">Cancel</a>
 						</div>

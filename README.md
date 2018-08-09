@@ -176,7 +176,7 @@ For UI, the library provides a login page and navigation bar with links to "Home
 
 The authentication library uses Bootstrap 4, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
 
-CSS is located in the `fragments/css.mustache` template. By default it includes the following files:
+CSS is located in the `authlib_fragments/css.mustache` template. By default it includes the following files:
 
 ```
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
@@ -197,7 +197,7 @@ If you provide the `listView` model property it will include:
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap4.min.css" />
 ```
 
-Likewise, JavaScript is included in the `fragments/assets.mustache` template. By default it includes the following:
+Likewise, JavaScript is included in the `authlib_fragments/assets.mustache` template. By default it includes the following:
 
 ```
 <script type="text/javascript" src="{{req.contextPath}}/webjars/jquery/jquery.min.js"></script>
@@ -230,7 +230,7 @@ The authentication library provides these pages: `admin/user/form.mustache`, `ad
 
 See above in the "Webjars" section for how to include the required CSS and JavaScript. For all pages assume Bootstrap 4, Font Awesome, and jQuery 3 are required.
 
-Create `mustache-templates/login.mustache` and in the body include the fragment: `{{>fragments/login}}`.
+Create `mustache-templates/login.mustache` and in the body include the fragment: `{{>authlib_fragments/login}}`.
 
 Create `mustache-templates/error.mustache` and in the body include the following HTML. The `UserController` will populate the model properties.
 
@@ -243,14 +243,14 @@ Create `mustache-templates/error.mustache` and in the body include the following
 </div>
 ```
 
-Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
 
-Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
 
 **If you want table-based authentication then you need to create three more templates.**
 
-Create `mustache-templates/user/password/change.mustache` and in the body include the fragment: `{{>fragments/user/password/change}}`.
+Create `mustache-templates/user/password/change.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/change}}`.
 
-Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>fragments/user/password/forgot}}`.
+Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/forgot}}`.
 
-Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>fragments/user/password/reset}}`.
+Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/reset}}`.

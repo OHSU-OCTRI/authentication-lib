@@ -4,12 +4,12 @@
 		<title>Forgot Password</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta name="ctx" content="{{req.contextPath}}/"/>
-		{{>fragments/css}}
+		{{>authlib_fragments/css}}
 	</head>
 	<body class="authlib">
-		{{>fragments/navbar}}
-		{{>fragments/user/password/forgot}}
-		{{>fragments/assets}}
+		{{>authlib_fragments/navbar}}
+		{{>authlib_fragments/user/password/forgot}}
+		{{>authlib_fragments/assets}}
 		<script type="text/javascript">
 			$(function() {
 				$('#currentPassword').focus();
