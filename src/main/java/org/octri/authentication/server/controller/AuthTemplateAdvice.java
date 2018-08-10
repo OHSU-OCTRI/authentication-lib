@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * Provides model attributes that are used globally in page templates.
  */
 @ControllerAdvice
-public class TemplateAdvice {
+public class AuthTemplateAdvice {
 
 	@Value("${app.name}")
 	private String appName;

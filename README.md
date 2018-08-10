@@ -53,6 +53,14 @@ ldap.context-source.organization=
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
 
+### JavaScript
+
+`default.js` needs access to the application context path. To provide the application context add the following meta tag to your pages. The trailing slash is required.
+
+```
+<meta name="ctx" content="{{req.contextPath}}/" />
+```
+
 ### Email Configuration
 
 Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
@@ -242,9 +250,9 @@ Create `mustache-templates/error.mustache` and in the body include the following
 </div>
 ```
 
-Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css}}`.
 
-Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css}}`.
 
 **If you want table-based authentication then you need to create three more templates.**
 
