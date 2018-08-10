@@ -143,7 +143,6 @@ If you want roles and users other than what's in the auth_default_users project 
 INSERT INTO user_role (id, description, role_name)
 VALUES (4, 'Manager', 'ROLE_MANAGER');
 
-```
 -- Add a user
 INSERT INTO user (account_expiration_date, account_expired, account_locked,
 				  consecutive_login_failures, credentials_expiration_date,
