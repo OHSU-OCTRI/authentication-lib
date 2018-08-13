@@ -168,7 +168,7 @@ VALUES
 
 ### Web Application Authentication and UI
 
-Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures.
+Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures. You may also override the default public routes.
 
 The following methods are provided by the [`BaseSecurityConfiguration`](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
 
@@ -176,6 +176,7 @@ The following methods are provided by the [`BaseSecurityConfiguration`](src/main
 * `loginFailureRedirectUrl()` - Where to redirect after failed login. By default `/login?error`
 * `logoutUrl()` - The request mapping for logout. By default `/logout`.
 * `logoutSuccessUrl()` - Where to redirect after successful logout. By default `/login`.
+* `customPublicRoutes()` - Include additional public routes. The default set may be found in the string array: `BaseSecurityConfiguration.DEFAULT_PUBLIC_ROUTES`
 
 For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create `login.html` in the `src/main/resources/templates` directory.
 
@@ -261,3 +262,7 @@ Create `mustache-templates/user/password/change.mustache` and in the body includ
 Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/forgot}}`.
 
 Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/reset}}`.
+
+## CSRF
+
+All forms must include a CSRF token. Inside each form include the following fragment: `{{>authlib_fragments/forms/csrf_input}}`

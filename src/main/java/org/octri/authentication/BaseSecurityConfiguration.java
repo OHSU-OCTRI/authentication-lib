@@ -71,6 +71,9 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${ldap.context-source.organization:#{null}}")
 	protected String ldapOrganization;
 
+	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] { "/", "/index.html", "/login/**", "/login*",
+			"/login*/**", "/assets/**", "/user/password/**", "/css/*", "/webjars/**", "/js/*", "/error" };
+
 	@Autowired
 	protected AuthenticationUserDetailsService userDetailsService;
 
@@ -204,5 +207,14 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	protected String loginFailureRedirectUrl() {
 		return "/login?error";
+	}
+
+	/**
+	 * Override this method to add public routes to the default set of public routes: {@link #DEFAULT_PUBLIC_ROUTES}
+	 * 
+	 * @return
+	 */
+	protected String[] customPublicRoutes() {
+		return new String[] {};
 	}
 }
