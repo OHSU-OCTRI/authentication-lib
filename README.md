@@ -53,6 +53,14 @@ ldap.context-source.organization=
 
 If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
 
+### JavaScript
+
+`default.js` needs access to the application context path. To provide the application context add the following meta tag to your pages. The trailing slash is required.
+
+```
+<meta name="ctx" content="{{req.contextPath}}/" />
+```
+
 ### Email Configuration
 
 Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
@@ -143,7 +151,6 @@ If you want roles and users other than what's in the auth_default_users project 
 INSERT INTO user_role (id, description, role_name)
 VALUES (4, 'Manager', 'ROLE_MANAGER');
 
-```
 -- Add a user
 INSERT INTO user (account_expiration_date, account_expired, account_locked,
 				  consecutive_login_failures, credentials_expiration_date,
@@ -161,7 +168,7 @@ VALUES
 
 ### Web Application Authentication and UI
 
-Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures.
+Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures. You may also override the default public routes.
 
 The following methods are provided by the [`BaseSecurityConfiguration`](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
 
@@ -169,6 +176,7 @@ The following methods are provided by the [`BaseSecurityConfiguration`](src/main
 * `loginFailureRedirectUrl()` - Where to redirect after failed login. By default `/login?error`
 * `logoutUrl()` - The request mapping for logout. By default `/logout`.
 * `logoutSuccessUrl()` - Where to redirect after successful logout. By default `/login`.
+* `customPublicRoutes()` - Include additional public routes. The default set may be found in the string array: `BaseSecurityConfiguration.DEFAULT_PUBLIC_ROUTES`
 
 For UI, the library provides a login page and navigation bar with links to "Home", User Administration pages, and logout. Review and run the auth_example_project for this most basic setup. User Administration pages are also available as fragments so your application can provide its own navigation or layout. Your application can override any views or request mappings by adding your own versions to your project. For example, if you want your own login page, create `login.html` in the `src/main/resources/templates` directory.
 
@@ -243,9 +251,9 @@ Create `mustache-templates/error.mustache` and in the body include the following
 </div>
 ```
 
-Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/form.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/form}}`. This is the **New User** form - link to `{{contextPath}}/admin/user/form`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css}}`.
 
-Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets.mustache}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css.mustache}}`.
+Create `mustache-templates/admin/user/list.mustache` and in the body include the fragment: `{{>authlib_fragments/admin/user/list}}`. This is the **List of Users** page - link to `{{contextPath}}/admin/user/list`. You can include the required JavaScript by using the fragment `{{>authlib_fragments/assets}}`. Include the required CSS by using the fragment `{{>authlib_fragments/css}}`.
 
 **If you want table-based authentication then you need to create three more templates.**
 
@@ -254,3 +262,7 @@ Create `mustache-templates/user/password/change.mustache` and in the body includ
 Create `mustache-templates/user/password/forgot.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/forgot}}`.
 
 Create `mustache-templates/user/password/reset.mustache` and in the body include the fragment: `{{>authlib_fragments/user/password/reset}}`.
+
+## CSRF
+
+All forms must include a CSRF token. Inside each form include the following fragment: `{{>authlib_fragments/forms/csrf_input}}`

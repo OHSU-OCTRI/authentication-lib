@@ -33,7 +33,9 @@
 			<div class="form-group">
 				{{>authlib_fragments/forms/csrf_input}}
 				<button class="btn btn-primary" type="submit">Sign In</button>
+				{{#enableTableBased}}
 				<a href="{{req.contextPath}}/user/password/forgot" class="btn btn-link">Forgot password</a>
+				{{/enableTableBased}}
 			</div>
 		</form>
 	</div>

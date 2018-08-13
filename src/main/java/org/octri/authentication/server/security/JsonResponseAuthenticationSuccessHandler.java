@@ -32,8 +32,9 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 	private final ObjectMapper mapper;
 
 	@Autowired
-	public JsonResponseAuthenticationSuccessHandler(MappingJackson2HttpMessageConverter messageConverter) {
-		this.mapper = messageConverter.getObjectMapper();
+	public JsonResponseAuthenticationSuccessHandler(
+			MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
+		this.mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
 	}
 
 	@Override

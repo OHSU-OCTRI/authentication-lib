@@ -1,5 +1,8 @@
 package org.octri.authentication;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +61,7 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 				.logoutSuccessUrl(logoutSuccessUrl())
 				.and()
 				.authorizeRequests()
-				.antMatchers("/", "/index.html", "/login/**", "/login*", "/login*/**", "/assets/**",
-						"/user/password/**", "/css/*", "/webjars/**", "/js/*", "/error")
+				.antMatchers(publicRoutes())
 				.permitAll()
 				.antMatchers(HttpMethod.POST).authenticated()
 				.antMatchers(HttpMethod.PUT).authenticated()
@@ -67,6 +69,19 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 				.antMatchers(HttpMethod.DELETE).denyAll()
 				.anyRequest()
 				.authenticated();
+	}
+
+	/**
+	 * Adds custom public routes to the default set of public routes. Override
+	 * {@link BaseSecurityConfiguration#customPublicRoutes()} in your class that extends
+	 * {@link FormSecurityConfiguration} to add additional routes.
+	 * 
+	 * @return String array of public routes.
+	 */
+	private String[] publicRoutes() {
+		ArrayList<String> allPublicRoutes = new ArrayList<>(Arrays.asList(DEFAULT_PUBLIC_ROUTES));
+		allPublicRoutes.addAll(Arrays.asList(customPublicRoutes()));
+		return allPublicRoutes.toArray(new String[0]);
 	}
 
 }

@@ -2,7 +2,7 @@
  * Redirects to the value set in the hidden input field #contextPath
  */
 function cancel() {
-	location.href = $('#contextPath').val();
+	location.href = $("meta[name='ctx']").attr("content");
 }
 
 /**
