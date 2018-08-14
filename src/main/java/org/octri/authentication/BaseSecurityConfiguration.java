@@ -59,9 +59,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${octri.authentication.enable-ldap:true}")
 	protected Boolean enableLdap;
 
-	@Value("${server.servlet.context-path}")
-	protected String contextPath;
-
 	@Value("${ldap.context-source.search-base:#{null}}")
 	protected String ldapSearchBase;
 

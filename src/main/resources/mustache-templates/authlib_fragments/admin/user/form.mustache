@@ -1,4 +1,4 @@
-<div class="container-fluid user-form">
+<div class="container-fluid authlib-user-form">
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12">
 			<h3>{{pageTitle}}</h3>
@@ -32,12 +32,12 @@
 								{{#tableBasedEnabled}}
 								<div class="form-group">
 									<input type="checkbox" id="ldapUser" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
-									<span>OHSU User</span>
+									<label for="ldapUser">OHSU User</label>
 								</div>
+								{{/tableBasedEnabled}}
 								<div class="form-group">
 									<button id="ldapLookup" class="btn btn-primary">LDAP Lookup</button>
 								</div>
-								{{/tableBasedEnabled}}
 							{{/ldapEnabled}}
 						{{/newUser}}
 						

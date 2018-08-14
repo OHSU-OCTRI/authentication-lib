@@ -61,7 +61,7 @@ public class UserService {
 	@Autowired
 	private EmailConfiguration emailConfig;
 
-	@Autowired
+	@Autowired(required = false)
 	private FilterBasedLdapUserSearch ldapSearch;
 
 	@Autowired
