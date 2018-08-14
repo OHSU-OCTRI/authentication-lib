@@ -20,3 +20,8 @@ body.authlib {
 .authlib-user-list .dataTables_wrapper .dataTables_length {
 	float: right;
 }
+
+.authlib-user-form label[for="ldapUser"] {
+	margin-bottom:0;
+	font-weight:normal;
+}

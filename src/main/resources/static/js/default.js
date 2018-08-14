@@ -31,16 +31,6 @@ function debounce(func, wait, immediate) {
 }
 
 /**
- * Produces muted text div with the provided text.
- * @param text The text to display.
- * @param classNames A space separated list of CSS class names.
- * @returns HTML div with given text and classes.
- */
-function mutedDiv(text, classNames) {
-	return div(text, classNames + ' text-muted');
-}
-
-/**
  * Produces a div with the provided classes.
  * @param text The text to display.
  * @param classNames A space separated list of CSS class names.
@@ -144,7 +134,7 @@ $(function() {
 		$.post(contextPath + "admin/user/ldapLookup", obj, function(json) {
 			$('.ldap-error').remove();
 			if (json.ldapLookupError) {
-				$('#ldapLookup').before(mutedDiv(json.ldapLookupError, 'ldap-error text-danger'));
+				$('#ldapLookup').before(div(json.ldapLookupError, 'ldap-error text-danger small'));
 			} else {
 				$('#firstName').val(json.firstName);
 				$('#lastName').val(json.lastName);
