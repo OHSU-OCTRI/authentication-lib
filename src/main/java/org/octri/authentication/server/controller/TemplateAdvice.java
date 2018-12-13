@@ -1,5 +1,7 @@
 package org.octri.authentication.server.controller;
 
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.octri.authentication.server.security.SecurityHelper;
@@ -35,6 +37,7 @@ public class TemplateAdvice {
 		model.addAttribute("appName", appName);
 		model.addAttribute("appVersion", appVersion);
 		model.addAttribute("displayName", displayName);
+		model.addAttribute("currentYear", Calendar.getInstance().get(Calendar.YEAR));
 
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
