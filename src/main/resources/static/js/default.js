@@ -6,6 +6,14 @@ function cancel() {
 }
 
 /**
+ * Redirects to the user list form after canceling a user edit
+ */
+function cancelUserForm() {
+	location.href = $("meta[name='ctx']").attr("content") + "admin/user/list";
+}
+
+
+/**
  * Use debounce to wait for keyboard silence before executing a function.
  * For example:
  * 	 $('#username').on('keydown blur change', debounce(myfunction));
@@ -65,6 +73,7 @@ $(function() {
 	}
 	
 	$('.btn.cancel').on('click', cancel);
+	$('.btn.cancelUserForm').on('click', cancelUserForm);
 	
 	if (typeof $.fn.datepicker !== 'undefined') {
 		$("input[name=accountExpirationDate]").datepicker();
