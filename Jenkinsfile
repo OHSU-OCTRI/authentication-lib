@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        artifactoryMavenBuild(env.BRANCH_NAME)
+        octriArtifactoryBuild(env.BRANCH_NAME)
       }
     }
     stage('Test') {
