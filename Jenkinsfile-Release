@@ -24,13 +24,13 @@ pipeline {
       steps {
         checkoutMaster(env.GIT_URL)
         artifactoryReleasePrep(env.VERSION)
-        artifactoryMavenBuild('master')
+        octriArtifactoryBuild('master')
       }
     }
     stage('Next Version') {
       steps {
         nextDevelopmentVersion()
-        artifactoryMavenBuild('master')
+        octriArtifactoryBuild('master')
       }
     }
   }
