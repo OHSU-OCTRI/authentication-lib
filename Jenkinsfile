@@ -1,8 +1,8 @@
 pipeline {
   agent any
   options {
+    quietPeriod(120)
     buildDiscarder(logRotator(numToKeepStr: '3'))
-    disableConcurrentBuilds()
   }
   triggers {
     pollSCM('')
