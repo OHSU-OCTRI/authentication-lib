@@ -118,17 +118,19 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	/**
+	 * This bean is only created if LDAP is enabled. This prevents errors on startup 
+	 * in Spring Boot Actuator.
+	 * @return
+	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "ldap.context-source", name="url")
+	@ConditionalOnProperty(name = "octri.authentication.enable-ldap", havingValue="true")
 	public BaseLdapPathContextSource contextSource() {
-		if (enableLdap) {
-			LdapContextSource contextSource = new LdapContextSource();
-			contextSource.setUrl(ldapUrl);
-			contextSource.setUserDn(ldapUserDn);
-			contextSource.setPassword(ldapPassword);
-			return contextSource;
-		}
-		return null;
+		LdapContextSource contextSource = new LdapContextSource();
+		contextSource.setUrl(ldapUrl);
+		contextSource.setUserDn(ldapUserDn);
+		contextSource.setPassword(ldapPassword);
+		return contextSource;
 	}
 
 	@Bean
