@@ -10,6 +10,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,9 +34,11 @@ public class UserApiController {
 	@Autowired
 	private UserService userService;
 
+	@Nullable
 	@Autowired
 	private FilterBasedLdapUserSearch ldapSearch;
 
+	@Nullable
 	@Autowired
 	private String ldapOrganization;
 
