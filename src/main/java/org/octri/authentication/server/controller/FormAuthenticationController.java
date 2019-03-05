@@ -26,7 +26,7 @@ public class FormAuthenticationController {
 			@RequestParam(required = false, name = "error") String error, HttpServletRequest request) {
 		model.addAttribute("passwordChanged", Boolean.valueOf(passwordChanged));
 		model.addAttribute("passwordReset", Boolean.valueOf(passwordReset));
-		model.addAttribute("enableTableBased", tableBasedEnabled);
+		model.addAttribute("tableBasedEnabled", tableBasedEnabled);
 		model.addAttribute("error", error);
 		return "login";
 	}
