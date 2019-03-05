@@ -166,6 +166,8 @@ VALUES
 	(@user_id, 4);
 ```
 
+If adding a table-based user, you can add an empty or bogus password through SQL and then use the forgot password functionality to get a legitimate hashed password.
+
 ### Web Application Authentication and UI
 
 Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures. You may also override the default public routes.
