@@ -12,7 +12,6 @@ import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoi
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,6 +67,15 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${ldap.context-source.organization:#{null}}")
 	protected String ldapOrganization;
 
+	@Value("${ldap.context-source.user-dn:#{null}}")
+	protected String ldapUserDn;
+
+	@Value("${ldap.context-source.password:#{null}}")
+	protected String ldapPassword;
+
+	@Value("${ldap.context-source.url:#{null}}")
+	protected String ldapUrl;
+
 	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] { "/", "/index.html", "/login/**", "/login*",
 			"/login*/**", "/assets/**", "/user/password/**", "/css/*", "/webjars/**", "/js/*", "/error" };
 
@@ -110,10 +118,15 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "ldap.context-source")
 	public BaseLdapPathContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-		return contextSource;
+		if (enableLdap) {
+			LdapContextSource contextSource = new LdapContextSource();
+			contextSource.setUrl(ldapUrl);
+			contextSource.setUserDn(ldapUserDn);
+			contextSource.setPassword(ldapPassword);
+			return contextSource;
+		}
+		return null;
 	}
 
 	@Bean
