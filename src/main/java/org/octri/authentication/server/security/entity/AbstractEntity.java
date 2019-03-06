@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.octri.authentication.server.view.Identified;
+
 import io.katharsis.resource.annotations.JsonApiId;
 
 /**
@@ -17,7 +19,7 @@ import io.katharsis.resource.annotations.JsonApiId;
  * @author yateam
  */
 @MappedSuperclass
-public abstract class AbstractEntity {
+public abstract class AbstractEntity implements Identified {
 
 	@Id
 	@JsonApiId
@@ -34,6 +36,7 @@ public abstract class AbstractEntity {
 		this.id = id;
 	}
 
+	@Override
 	public Long getId() {
 		return this.id;
 	}
