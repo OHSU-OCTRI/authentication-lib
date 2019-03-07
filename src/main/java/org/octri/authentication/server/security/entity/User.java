@@ -19,6 +19,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.octri.authentication.server.view.Labelled;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -29,7 +30,7 @@ import org.springframework.util.Assert;
  *
  */
 @Entity
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements Labelled {
 
 	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";
 
@@ -382,6 +383,11 @@ public class User extends AbstractEntity {
 				+ ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
 				+ accountExpirationDate + ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles="
 				+ userRoles + ", ldapUser=" + ldapUser + ", id=" + id + "]";
+	}
+
+	@Override
+	public String getLabel() {
+		return firstName + " " + lastName;
 	}
 
 }

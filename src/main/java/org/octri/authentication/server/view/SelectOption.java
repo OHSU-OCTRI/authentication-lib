@@ -2,37 +2,22 @@ package org.octri.authentication.server.view;
 
 import java.util.Collection;
 
-import org.octri.authentication.server.security.entity.AbstractEntity;
-
 /**
- * Used for UI select inputs. Wraps the choice along with its selected status.
+ * Used for UI select inputs. Wraps the choice along with its selected status. Value and label is the choice.
  * 
  * @author lawhead
  *
  * @param <T>
  */
-public class SelectOption<T extends AbstractEntity & Labelled> {
+public class SelectOption<T> {
 
-	private T choice;
-	private Long value;
-	private String label;
-	private Boolean selected;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param choice
-	 */
-	public SelectOption(T choice) {
-		super();
-		this.choice = choice;
-		this.label = choice.getLabel();
-
-		this.selected = false;
-	}
+	protected T choice;
+	protected String value;
+	protected String label;
+	protected Boolean selected;
 
 	/**
-	 * Constructor
+	 * Constructor. The label and value will be set to choice.toString().
 	 * 
 	 * @param choice
 	 *            - lookup list item
@@ -40,13 +25,12 @@ public class SelectOption<T extends AbstractEntity & Labelled> {
 	 *            - The selected item; may be null
 	 */
 	public SelectOption(T choice, T selected) {
-		super();
 		this.choice = choice;
-		this.label = choice.getLabel();
-
+		this.label = choice.toString();
+		this.value = choice.toString();
 		this.selected = choice.equals(selected);
 	}
-
+	
 	/**
 	 * Constructor used for an option in a multi-select.
 	 * 
@@ -56,10 +40,9 @@ public class SelectOption<T extends AbstractEntity & Labelled> {
 	 *            - collection of selected items
 	 */
 	public SelectOption(T choice, Collection<T> selected) {
-		super();
 		this.choice = choice;
-		this.label = choice.getLabel();
-
+		this.label = choice.toString();
+		this.value = choice.toString();
 		this.selected = selected != null && selected.contains(choice);
 	}
 
@@ -67,19 +50,11 @@ public class SelectOption<T extends AbstractEntity & Labelled> {
 		return choice;
 	}
 
-	public Long getId() {
-		return choice.getId();
-	}
-
-	public void setChoice(T choice) {
-		this.choice = choice;
-	}
-
-	public Long getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(Long value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
@@ -98,5 +73,4 @@ public class SelectOption<T extends AbstractEntity & Labelled> {
 	public void setSelected(Boolean selected) {
 		this.selected = selected;
 	}
-
 }
