@@ -14,7 +14,7 @@
 			<th>Credentials Expired</th>
 		</thead>
 		<tbody>
-			{{#allUsers}}
+			{{#users}}
 			<tr>
 				<td>
 					<a href="{{req.contextPath}}/admin/user/form?id={{id}}">
@@ -61,7 +61,7 @@
 					{{/credentialsExpired}}
 				</td>
 			</tr>
-			{{/allUsers}}
+			{{/users}}
 		</tbody>
 	</table>
 </div>
