@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -112,8 +113,19 @@ public class SecurityHelper {
 	 * @return True if the user contains the role.
 	 */
 	public boolean hasRole(Role role) {
+		return hasRoleName(role.name());
+	}
+	
+	/**
+	 * Checks if the user has the given roleName. This could be any role defined by the application, not
+	 * just the default roles set up in this library.
+	 * 
+	 * @param roleName
+	 * @return True if the user contains the roleName
+	 */
+	public boolean hasRoleName(String roleName) {
 		return authorities == null ? false
-				: authorities.stream().anyMatch(authority -> authority.getAuthority().equals(role.name()));
+				: authorities.stream().anyMatch(authority -> authority.getAuthority().equals(roleName));		
 	}
 
 	/**
@@ -124,6 +136,16 @@ public class SecurityHelper {
 	 * @return True if the user contains one of the roles.
 	 */
 	public boolean hasAnyRole(List<Role> roles) {
-		return roles.stream().anyMatch(role -> hasRole(role));
+		return hasAnyRoleName(roles.stream().map(role -> role.name()).collect(Collectors.toList()));
+	}
+	
+	/**
+	 * Checks if a user contains at least one of the role names.
+	 * 
+	 * @param roleNames
+	 * @return True if the user contains at least one of the role names.
+	 */
+	public boolean hasAnyRoleName(List<String> roleNames) {
+		return roleNames.stream().anyMatch(name -> hasRoleName(name));
 	}
 }
