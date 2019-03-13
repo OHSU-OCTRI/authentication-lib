@@ -67,6 +67,9 @@ public class UserService {
 	@Autowired
 	private Boolean tableBasedEnabled;
 
+	@Value("${app.displayName}")
+	private String displayName;
+
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
 	 *
@@ -278,25 +281,48 @@ public class UserService {
 			throw new InvalidPasswordException("This password does not meet all of the requirements");
 		}
 	}
-
+	
 	/**
-	 * Send email confirmation to user.
+	 * This is maintained for backward compatibility. 
+	 * Use {@link #sendPasswordResetTokenEmail(PasswordResetToken, HttpServletRequest, boolean, boolean)}
 	 * 
-	 * @param user
-	 * @param token
-	 * @param request
-	 * @param dryRun
-	 *            Will only print email contents to console if true
+	 * @param token the password reset token
+	 * @param request the request so the application url can be constructed
+	 * @param dryRun Will only print email contents to console if true
 	 */
+	@Deprecated
 	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
 			final boolean dryRun) {
+		sendPasswordResetTokenEmail(token, request, false, dryRun);
+	}
+	
+	/**
+	 * Send email confirmation to user. If the user is new, a welcome email is sent. Otherwise a password
+	 * reset is sent.
+	 * 
+	 * @param token the password reset token
+	 * @param request the request so the application url can be constructed
+	 * @param isNewUser whether the user is new and should receive a welcome email instead of a password reset
+	 * @param dryRun Will only print email contents to console if true
+	 */
+	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
+			final boolean isNewUser, final boolean dryRun) {
 		
 		User user = token.getUser();
-		SimpleMailMessage email = new SimpleMailMessage();
-		email.setSubject("Reset your password request");
 		final String resetPath = buildResetPasswordUrl(token.getToken(), request);
-		final String body = "Hello " + user.getFirstName() + ", to reset your password please follow this link: "
+
+		SimpleMailMessage email = new SimpleMailMessage();
+		String body;
+		if (isNewUser) {
+			email.setSubject("Welcome to " + displayName);
+			body = "Hello " + user.getFirstName() + ",\n\nAn account has been created for you with username " 
+				+ user.getUsername() + ". To set your password, please follow this link: " + resetPath;
+			
+		} else {
+			email.setSubject("Reset your password request");
+			body = "Hello " + user.getFirstName() + ",\n\nTo reset your password please follow this link: "
 				+ resetPath;
+		}
 		email.setText(body);
 		email.setTo(user.getEmail());
 		email.setFrom(emailConfig.getFrom());
@@ -404,8 +430,8 @@ public class UserService {
 
 		SimpleMailMessage email = new SimpleMailMessage();
 		email.setSubject("Your password was reset");
-		final String body = "You may now log into the application, your password has been reset. "
-				+ buildLoginUrl(request);
+		final String body = "Your password has been reset. You may now log into the application.\n\nUsername: " + passwordResetToken.getUser().getUsername() 
+				+ "\nLink: " + buildLoginUrl(request);
 		email.setText(body);
 		email.setTo(userEmail);
 		email.setFrom(emailConfig.getFrom());

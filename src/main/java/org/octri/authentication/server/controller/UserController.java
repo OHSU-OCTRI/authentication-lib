@@ -162,7 +162,7 @@ public class UserController {
 					// TODO: In the future this should be more sophisticated - probably a welcome email for the new
 					// user.
 					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
-					userService.sendPasswordResetTokenEmail(token, request, false);
+					userService.sendPasswordResetTokenEmail(token, request, true, false);
 				}
 			}
 			
