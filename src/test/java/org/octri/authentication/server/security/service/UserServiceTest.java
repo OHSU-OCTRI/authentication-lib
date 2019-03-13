@@ -202,7 +202,7 @@ public class UserServiceTest {
 
 	@Test
 	public void testSendPasswordResetTokenEmail() {
-		userService.sendPasswordResetTokenEmail(new PasswordResetToken(user), request, false);
+		userService.sendPasswordResetTokenEmail(new PasswordResetToken(user), request, false, false);
 		verify(mailSender).send(any(SimpleMailMessage.class));
 	}
 

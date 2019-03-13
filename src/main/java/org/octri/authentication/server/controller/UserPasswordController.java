@@ -129,7 +129,7 @@ public class UserPasswordController {
 		try {
 			User user = userService.findByEmail(email);
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
-			userService.sendPasswordResetTokenEmail(token, request, false);
+			userService.sendPasswordResetTokenEmail(token, request, false, false);
 			model.addAttribute("confirmation", true);
 			model.addAttribute("expire_in_minutes", PasswordResetToken.EXPIRE_IN_MINUTES);
 			return "user/password/forgot";
