@@ -1,42 +1,6 @@
+{{! This is the default template for displaying a login form. It wraps the form in a container with column classes. If you want just the form use `login_form.mustache` }}
 <div class="container-fluid">
-	 <div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
-		<h3>Please Sign In</h3>
-		<form class="form" action="{{req.contextPath}}/login" method="POST">
-			{{#error}}
-			<div class="alert alert-danger">
-				Invalid username and password.
-			</div>
-			{{/error}}
-
-			{{#passwordChanged}}
-			<div class="alert alert-success">
-				Your password was successfully changed.
-			</div>
-			{{/passwordChanged}}
-
-			{{#passwordReset}}
-			<div class="alert alert-success">
-				Your password was successfully reset.
-			</div>
-			{{/passwordReset}}
-			
-			<div class="form-group">
-				<label for="username">Username</label>
-				<input id="username" name="username" class="form-control" type="text"/>
-			</div>
-
-			<div class="form-group">
-				<label for="password">Password</label>
-				<input id="password" name="password" class="form-control" type="password" />
-			</div>
-
-			<div class="form-group">
-				{{>authlib_fragments/forms/csrf_input}}
-				<button class="btn btn-primary" type="submit">Sign In</button>
-				{{#tableBasedEnabled}}
-				<a href="{{req.contextPath}}/user/password/forgot" class="btn btn-link">Forgot password</a>
-				{{/tableBasedEnabled}}
-			</div>
-		</form>
+	<div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
+        {{>authlib_fragments/login_form}}
 	</div>
 </div>
