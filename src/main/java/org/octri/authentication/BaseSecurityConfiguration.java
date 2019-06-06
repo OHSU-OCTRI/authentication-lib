@@ -79,6 +79,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] {
 			"/",
+			"/actuator/health",
 			"/actuator/prometheus",
 			"/assets/**",
 			"/css/*",
