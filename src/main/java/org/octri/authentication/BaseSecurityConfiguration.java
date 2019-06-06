@@ -40,7 +40,7 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
  * library from extending one of {@link ApiSecurityConfiguration} or
  * {@link FormSecurityConfiguration} and applying the {@link Configuration}
  * annotation.
- * 
+ *
  * @author sams
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -77,8 +77,19 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${ldap.context-source.url:#{null}}")
 	protected String ldapUrl;
 
-	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] { "/", "/index.html", "/login/**", "/login*",
-			"/login*/**", "/assets/**", "/user/password/**", "/css/*", "/webjars/**", "/js/*", "/error" };
+	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] {
+			"/",
+			"/actuator/prometheus",
+			"/assets/**",
+			"/css/*",
+			"/error",
+			"/index.html",
+			"/js/*",
+			"/login*",
+			"/login/**",
+			"/login*/**",
+			"/user/password/**",
+			"/webjars/**" };
 
 	@Autowired
 	protected AuthenticationUserDetailsService userDetailsService;
@@ -97,7 +108,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	protected ApplicationAuthenticationFailureHandler formAuthFailureHandler;
-	
+
 	@Bean
 	public Boolean ldapEnabled() {
 		return enableLdap;
@@ -107,7 +118,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public Boolean tableBasedEnabled() {
 		return enableTableBased;
 	}
-	
+
 	@Bean
 	public String ldapOrganization() {
 		return ldapOrganization;
@@ -119,12 +130,13 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * This bean is only created if LDAP is enabled. This prevents errors on startup 
+	 * This bean is only created if LDAP is enabled. This prevents errors on startup
 	 * in Spring Boot Actuator.
+	 *
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnProperty(name = "octri.authentication.enable-ldap", havingValue="true")
+	@ConditionalOnProperty(name = "octri.authentication.enable-ldap", havingValue = "true")
 	public BaseLdapPathContextSource contextSource() {
 		LdapContextSource contextSource = new LdapContextSource();
 		contextSource.setUrl(ldapUrl);
@@ -135,7 +147,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public FilterBasedLdapUserSearch ldapSearch() {
-		return enableLdap?new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()):null;
+		return enableLdap ? new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()) : null;
 	}
 
 	@Bean
@@ -147,7 +159,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
 		return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
 	}
-	
+
 	/**
 	 * Set up authentication.
 	 *
@@ -187,7 +199,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * This method returns the redirect URL for a successful login. Override
 	 * in your application to change the location.
-	 * 
+	 *
 	 * @return A request mapping e.g. /admin/user/list
 	 */
 	protected String defaultSuccessUrl() {
@@ -196,7 +208,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	/**
 	 * This is the logout request mapping. Override in your application to change this URL.
-	 * 
+	 *
 	 * @return A request mapping /logout
 	 */
 	protected String logoutUrl() {
@@ -206,7 +218,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * This is the URL you will be redirected to after logging out successfully. Override in
 	 * your application to change this mapping.
-	 * 
+	 *
 	 * @return A request mapping directing back to /login
 	 */
 	protected String logoutSuccessUrl() {
@@ -216,7 +228,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	/**
 	 * This is the URL a user will be redirected to after a failed login attempt. Override
 	 * in your application to change the location.
-	 * 
+	 *
 	 * @return A request mapping directing back to /login with the error flag set
 	 */
 	protected String loginFailureRedirectUrl() {
@@ -225,7 +237,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	/**
 	 * Override this method to add public routes to the default set of public routes: {@link #DEFAULT_PUBLIC_ROUTES}
-	 * 
+	 *
 	 * @return
 	 */
 	protected String[] customPublicRoutes() {
