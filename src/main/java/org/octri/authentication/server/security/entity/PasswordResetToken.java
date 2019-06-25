@@ -77,7 +77,7 @@ public class PasswordResetToken {
 	}
 
 	/**
-	 * Use this constructor when you want to control the expiration date of the password reset token.
+	 * Optionally used by applications to control the expiration date of the password reset token.
 	 *
 	 * @param user
 	 * @param expireInMinutes
