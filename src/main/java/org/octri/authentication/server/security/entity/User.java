@@ -20,12 +20,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.octri.authentication.server.view.Labelled;
+import org.octri.authentication.validation.Emailable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
 /**
  * Represents data related to a user account.
- * 
+ *
  * @author yateam
  *
  */
@@ -45,7 +46,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * Required fields constructor. Defaults are set for other fields - same as
 	 * default constructor.
-	 * 
+	 *
 	 * @param username
 	 * @param firstName
 	 * @param lastName
@@ -107,13 +108,12 @@ public class User extends AbstractEntity implements Labelled {
 
 	/**
 	 * We can add additional email constraints if required.
-	 * 
+	 *
 	 * @see http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
 	 */
-	@Column(unique = true)
-	@Email(message = INVALID_EMAIL_MESSAGE, regexp = ".+@.+\\..+")
-	@NotNull(message = "Email is required")
-	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters")
+	@Email(message = INVALID_EMAIL_MESSAGE, regexp = ".+@.+\\..+", groups = Emailable.class)
+	@NotNull(message = "Email is required", groups = Emailable.class)
+	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters", groups = Emailable.class)
 	private String email;
 
 	private Integer consecutiveLoginFailures;
@@ -125,9 +125,9 @@ public class User extends AbstractEntity implements Labelled {
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
 	private Date credentialsExpirationDate;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_user_role", 
+    @JoinTable(name = "user_user_role",
                joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "user_role", referencedColumnName = "id"))
 	private List<UserRole> userRoles;
@@ -145,7 +145,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * NOTE the type has to match isEnabled which is considered a "getter" by the java bean world
 	 * In other words Springs BeanWrapper will not find this setter if the types don't match
-	 * 
+	 *
 	 * @param enabled
 	 */
 	public void setEnabled(boolean enabled) {
@@ -161,7 +161,7 @@ public class User extends AbstractEntity implements Labelled {
 
 	/**
 	 * This is only incremented by the ChimeraAuthenticationProvider on a BadCredentials exception.
-	 * 
+	 *
 	 * @return
 	 */
 	public Integer getConsecutiveLoginFailures() {
@@ -188,7 +188,7 @@ public class User extends AbstractEntity implements Labelled {
 	// Spring Security accountNonExpired
 	/**
 	 * Checks the user accountExpired boolean as well as the accountExpirationDate
-	 * 
+	 *
 	 * @return
 	 */
 	public Boolean isAccountNonExpired() {
@@ -238,7 +238,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * Method use to convert a {@link Date} into a date string of format "MM/dd/yyyy". This is used
 	 * where you need to display a date in the UI for Hibernate fields of type timestamp.
-	 * 
+	 *
 	 * @param timestamp
 	 * @return Returns a string representation of Date, or empty string if timestamp is null.
 	 */

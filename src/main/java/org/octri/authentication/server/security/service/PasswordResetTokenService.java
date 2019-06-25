@@ -4,12 +4,14 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.repository.PasswordResetTokenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -21,6 +23,9 @@ import org.springframework.util.Assert;
  */
 @Service
 public class PasswordResetTokenService {
+
+	@Autowired
+	private UserService userService;
 
 	@Resource
 	private PasswordResetTokenRepository passwordResetTokenRepository;
@@ -53,9 +58,15 @@ public class PasswordResetTokenService {
 		}
 	}
 
+	public Optional<PasswordResetToken> findLatest(Long userId) {
+		return passwordResetTokenRepository.findFirstByUserIdOrderByExpiryDateDesc(userId);
+	}
+
 	/**
 	 * Expires token by setting an expiry date in the past.
-	 * @param token The token to expire.
+	 *
+	 * @param token
+	 *            The token to expire.
 	 * @return Persisted token
 	 */
 	@Transactional
@@ -66,7 +77,7 @@ public class PasswordResetTokenService {
 
 	/**
 	 * Generates a password reset token for a user. Tokens are persisted in the database.
-	 * 
+	 *
 	 * @param email
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
 	 */
@@ -76,8 +87,19 @@ public class PasswordResetTokenService {
 	}
 
 	/**
+	 * Generates a password reset token for a user. Tokens are persisted in the database.
+	 *
+	 * @param email
+	 * @return Returns a new {@link PasswordResetToken} for the given email address.
+	 */
+	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
+		Assert.notNull(user, "User cannot be null");
+		return save(new PasswordResetToken(user, expireInMinutes));
+	}
+
+	/**
 	 * Checks to ensure a token exists and has not expired.
-	 * 
+	 *
 	 * @param token
 	 * @return true if the password reset token is valid, false otherwise.
 	 */
@@ -90,6 +112,17 @@ public class PasswordResetTokenService {
 		Date now = new Date();
 		// Valid if: Now is not after the expiration date.
 		return !now.after(existing.getExpiryDate());
+	}
+
+	/**
+	 * Find all active tokens. The transient field 'tokenUrl' is set for use in mustache templates.
+	 *
+	 * @return
+	 */
+	public List<PasswordResetToken> findAllActiveTokens() {
+		List<PasswordResetToken> tokens = passwordResetTokenRepository.findByExpiryDateGreaterThanOrderByExpiryDateDesc(new Date());
+		tokens.forEach(token -> token.setTokenUrl(userService.buildResetPasswordUrl(token.getToken())));
+		return tokens;
 	}
 
 }

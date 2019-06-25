@@ -13,6 +13,20 @@
 			<div class="text-muted">
 				<p>* denotes a required field</p>
 			</div>
+			
+			{{#passwordResetUrl}}
+			<div class="alert alert-info">
+				The following URL may be sent to the user allowing them to reset their password.
+				<br>
+				{{.}}
+			</div>
+			{{/passwordResetUrl}}
+			{{! TODO SHIFT-102 add controller logic }}
+			{{#showNewTokenButton}}
+			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/user/token?id={{#user}}{{id}}{{/user}}">
+				<button type="submit" class="btn btn-primary">Generate new password reset token</button>
+			</form>
+			{{/showNewTokenButton}}
 		</div>
 	</div>
 
@@ -67,7 +81,7 @@
 						</div>
 
 						<div class="form-group">
-							<label>Email*</label>
+							<label>Email{{#emailRequired}}*{{/emailRequired}}</label>
 							<input id="email" class="form-control" type="text" id="email" name="email" value="{{#user.email}}{{.}}{{/user.email}}" />
 						</div>
 

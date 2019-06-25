@@ -76,7 +76,9 @@ public class UserServiceTest {
 	private static final String VALID_PASSWORD = "Abcdefg.1";
 	private static final String INVALID_PASSWORD_WITH_USERNAME = "Abcdefg." + USERNAME;
 
-	private static final String APP_URL = "http://localhost:8080/app";
+	private static final String BASE_URL = "http://localhost:8080";
+	private static final String CONTEXT_PATH = "/app";
+	private static final String APP_URL = BASE_URL + CONTEXT_PATH;
 	private static final String RESET_PASSWORD_URL = APP_URL + "/user/password/reset?token=secret-token";
 	private static final String LOGIN_URL = APP_URL + "/login";
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
@@ -88,17 +90,13 @@ public class UserServiceTest {
 		user.setEmail("foo@example.com");
 		userService.setTableBasedEnabled(true);
 
-		when(request.getScheme()).thenReturn("http");
-		when(request.getServerName()).thenReturn("localhost");
-		when(request.getServerPort()).thenReturn(8080);
-		when(request.getRequestURI()).thenReturn("/app");
-		when(request.getContextPath()).thenReturn("/app");
-		when(request.getQueryString()).thenReturn("");
-		when(userService.buildAppUrl(request)).thenReturn(APP_URL);
+		userService.setBaseUrl(BASE_URL);
+		userService.setContextPath(CONTEXT_PATH);
+
 		when(emailConfig.getFrom()).thenReturn("foo@example.com");
 		// This is the trick that causes save() to return whatever is passed to it inside userService.
 		// generatePasswordResetToken() creates a PasswordResetToken and sets a UUID on the token property.
-		// generatePasswordResetToken() returns save(PasswordResetToken) which is why this techinque is used.
+		// generatePasswordResetToken() returns save(PasswordResetToken) which is why this technique is used.
 		when(userService.save(user)).thenReturn(user);
 		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 	}
@@ -216,19 +214,19 @@ public class UserServiceTest {
 
 	@Test
 	public void testBuildAppUrl() {
-		final String appUrl = userService.buildAppUrl(request);
+		final String appUrl = userService.buildAppUrl();
 		assertEquals("Builds correct app URL", APP_URL, appUrl);
 	}
 
 	@Test
 	public void testBuildResetPasswordUrl() {
-		final String resetPasswordUrl = userService.buildResetPasswordUrl("secret-token", request);
+		final String resetPasswordUrl = userService.buildResetPasswordUrl("secret-token");
 		assertEquals("Builds correct reset password URL", RESET_PASSWORD_URL, resetPasswordUrl);
 	}
 
 	@Test
 	public void testBuildLoginUrl() {
-		final String loginUrl = userService.buildLoginUrl(request);
+		final String loginUrl = userService.buildLoginUrl();
 		assertEquals("Builds correct login URL", LOGIN_URL, loginUrl);
 	}
 

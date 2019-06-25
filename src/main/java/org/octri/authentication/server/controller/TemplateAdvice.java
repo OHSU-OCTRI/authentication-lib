@@ -5,6 +5,8 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 
 import org.octri.authentication.server.security.SecurityHelper;
+import org.octri.authentication.utils.ProfileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,9 @@ public class TemplateAdvice {
 
 	private SecurityHelper securityHelper;
 
+	@Autowired
+	private ProfileUtils profileUtils;
+
 	@ModelAttribute
 	public void addDefaultAttributes(HttpServletRequest request, Model model) {
 		this.securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
@@ -42,5 +47,6 @@ public class TemplateAdvice {
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
+		model.addAttribute("emailRequired", !profileUtils.isActive(ProfileUtils.AuthProfile.noemail));
 	}
 }

@@ -155,7 +155,7 @@ $(function() {
 	
 
 	/**
-	 * Handle dislaying inline form validation errors.
+	 * Handle displaying inline form validation errors.
 	 * UserController is responsible for sending the BindingResult in the model.
 	 * The mustache template renders hidden input fields with the correct keys 
 	 * and messages which are matched with the form element IDs using this JavaScript.
