@@ -101,6 +101,20 @@ The default is to set the credentials expiration date 180 days in the future whe
 octri.authentication.credentials-expiration-period=180
 ```
 
+User email is required by default, but can be made optional by using the spring profile `noemail`. See no email mode section below for details.
+
+### No email mode
+
+For applications that don't require an email address, do the following to configure your application.
+
+Set the spring profile `noemail`. You can do this a few ways. The easiest is to define the following property in your application. This activates the profile by default. Other profiles can still be activated by setting `spring.profiles.active`.
+
+```
+spring.profiles.include=noemail
+```
+
+Lastly copy the migration [`V20190621120000__alter_user.sql`](src/main/resources/noemail/db/migration/V20190621120000__alter_user.sql) into your application's Flyway migration directory. Usually `src/main/resources/db/migration`.
+
 ### Session Timeout
 
 Session timeout is managed by the three properties shown below. See the [full list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
