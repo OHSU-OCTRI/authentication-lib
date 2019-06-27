@@ -222,13 +222,6 @@ public class UserController {
 		return "redirect:/admin/user/list";
 	}
 
-	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@PostMapping("admin/user/token")
-	public String adminUserToken(final ModelMap model) {
-		// TODO SHIFT-102 implement token refresh - button on user form should trigger a new password reset token
-		return "admin/user/form";
-	}
-
 	/**
 	 *
 	 * @return Returns a list of all {@link UserRole}.

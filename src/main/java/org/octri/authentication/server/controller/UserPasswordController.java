@@ -11,6 +11,7 @@ import org.octri.authentication.server.security.exception.InvalidLdapUserDetails
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
+import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for all the reset password functionality
- * 
+ *
  * @author yateam
  *
  */
@@ -40,6 +41,9 @@ public class UserPasswordController {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
+
+	@Autowired
+	private ProfileUtils profileUtils;
 
 	/**
 	 * Present a form for changing a password when credentials are expired.
@@ -198,4 +202,15 @@ public class UserPasswordController {
 		}
 	}
 
+	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
+	@PostMapping("admin/password/token/refresh")
+	public String passwordTokenRefresh(final ModelMap model, @RequestParam(name = "userId") Long userId,
+			RedirectAttributes redirectAttributes) {
+		if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
+			final User user = userService.find(userId);
+			Assert.notNull(user, "Could not find a user");
+			passwordResetTokenService.save(new PasswordResetToken(user, PasswordResetToken.LONG_EXPIRE_IN_MINUTES));
+		}
+		return "redirect:/admin/user/form?id=" + userId;
+	}
 }
