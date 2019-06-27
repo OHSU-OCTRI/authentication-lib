@@ -12,18 +12,20 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.validation.Emailable;
 
 /**
- * Tests {@link User} contraint validations.<br>
+ * Tests {@link User} constraint validations.<br>
  * <br>
  * Note, there isn't a "UserConstraintValidation" class - this class tests the
  * integration between {@link User} and {@link PasswordContraintValidator}.
- * 
+ *
  * @author sams
  */
 public class UserConstraintValidationTest {
@@ -88,7 +90,7 @@ public class UserConstraintValidationTest {
 	@Test
 	public void testSaveWithNulls() {
 		User user = new User();
-		messages = getMessages(user);
+		messages = getMessages(user, Emailable.class);
 		assertTrue(USERNAME_REQUIRED, messages.contains(USERNAME_REQUIRED));
 		assertTrue(EMAIL_REQUIRED, messages.contains(EMAIL_REQUIRED));
 		assertTrue(FIRSTNAME_REQUIRED, messages.contains(FIRSTNAME_REQUIRED));
@@ -114,7 +116,7 @@ public class UserConstraintValidationTest {
 	public void testForValidEmail() {
 		for (String email : VALID_EMAILS) {
 			testUser.setEmail(email);
-			assertValid(testUser);
+			assertValid(testUser, Emailable.class);
 		}
 	}
 
@@ -122,39 +124,47 @@ public class UserConstraintValidationTest {
 	public void testForInvalidEmail() {
 		for (String email : INVALID_EMAILS) {
 			testUser.setEmail(email);
-			assertInvalid(testUser, INVALID_EMAIL);
+			assertInvalid(testUser, INVALID_EMAIL, Emailable.class);
+		}
+	}
+
+	@Test
+	public void testNoEmailMode() {
+		for (String email : INVALID_EMAILS) {
+			testUser.setEmail(email);
+			assertValid(testUser, Default.class);
 		}
 	}
 
 	/**
 	 * Helper for ensuring a {@link User} passes validation. Throws an assertion error if there are validation errors.
-	 * 
+	 *
 	 * @param user
 	 */
-	public void assertValid(final User user) {
-		messages = getMessages(user);
+	public void assertValid(final User user, Class validationGroup) {
+		messages = getMessages(user, validationGroup);
 		assertTrue(messages.size() == 0);
 	}
 
 	/**
 	 * Helper for ensuring a {@link User} fails validation. Throws an assertion error if there are validation errors.
-	 * 
+	 *
 	 * @param user
 	 */
-	public void assertInvalid(final User user, final String expectedMessage) {
-		messages = getMessages(user);
+	public void assertInvalid(final User user, final String expectedMessage, Class validationGroup) {
+		messages = getMessages(user, validationGroup);
 		assertTrue(messages.size() > 0);
 		assertTrue(messages.contains(expectedMessage));
 	}
 
 	/**
 	 * Helper for retrieving {@link ContraintViolation} messages.
-	 * 
+	 *
 	 * @param user
 	 * @return List of contraint violation messages.
 	 */
-	public List<String> getMessages(User user) {
-		Set<ConstraintViolation<User>> violations = validator.validate(user);
+	public List<String> getMessages(User user, Class validationGroup) {
+		Set<ConstraintViolation<User>> violations = validator.validate(user, validationGroup);
 		return violations.stream().map(v -> v.getMessage()).collect(Collectors.toList());
 	}
 

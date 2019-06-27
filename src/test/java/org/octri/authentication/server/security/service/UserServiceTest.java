@@ -26,6 +26,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.repository.UserRepository;
+import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.mail.SimpleMailMessage;
@@ -69,6 +70,9 @@ public class UserServiceTest {
 
 	@Mock
 	private FilterBasedLdapUserSearch ldapSearch;
+
+	@Mock
+	private ProfileUtils profileUtils;
 
 	private User user;
 	private static final String USERNAME = "foo";
@@ -200,6 +204,7 @@ public class UserServiceTest {
 
 	@Test
 	public void testSendPasswordResetTokenEmail() {
+		when(profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString())).thenReturn(false);
 		userService.sendPasswordResetTokenEmail(new PasswordResetToken(user), request, false, false);
 		verify(mailSender).send(any(SimpleMailMessage.class));
 	}
