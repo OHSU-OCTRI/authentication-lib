@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import org.octri.authentication.server.controller.UserController;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 
 /**
@@ -32,7 +31,7 @@ import org.octri.authentication.server.security.password.PasswordConstraintValid
  * <li>Prevent using previous password.
  * <li>Prevent using username in the password.
  * </ul>
- * 
+ *
  * @author sams
  */
 @Documented

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
@@ -17,6 +18,7 @@ import org.octri.authentication.server.security.exception.InvalidLdapUserDetails
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
+import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
@@ -24,14 +26,13 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
  * A service wrapper for the {@link UserRepository}.
- * 
+ *
  * @author yateam
  *
  */
@@ -39,6 +40,12 @@ import org.springframework.util.Assert;
 public class UserService {
 
 	private static final Log log = LogFactory.getLog(UserService.class);
+
+	@Value("${server.servlet.context-path:/}")
+	private String contextPath;
+
+	@Value("${octri.authentication.base-url}")
+	private String baseUrl;
 
 	@Value("${octri.authentication.max-login-attempts:7}")
 	private int maxLoginAttempts;
@@ -69,6 +76,9 @@ public class UserService {
 
 	@Value("${app.displayName}")
 	private String displayName;
+
+	@Autowired
+	private ProfileUtils profileUtils;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -146,8 +156,10 @@ public class UserService {
 			}
 		}
 
+		final boolean newUser = user.getId() == null;
+
 		// Don't clobber existing passwords when editing a user.
-		if (user.getId() != null) {
+		if (!newUser) {
 			User existing = find(user.getId());
 			if (existing.getPassword() != null) {
 				user.setPassword(existing.getPassword());
@@ -218,7 +230,7 @@ public class UserService {
 	/**
 	 * Saves user with newPassword and updates {@link User#credentialsExpirationDate}, otherwise throws an
 	 * {@link InvalidPasswordException}.
-	 * 
+	 *
 	 * @param user
 	 * @param currentPassword
 	 * @param newPassword
@@ -239,7 +251,7 @@ public class UserService {
 
 	/**
 	 * Validates a password using the {@link PasswordConstraintValidator} as well as some other checks.
-	 * 
+	 *
 	 * @param user
 	 * @param currentPassword
 	 *            null or the current password. If the currentPassword is null, this indicates the user is resetting
@@ -281,52 +293,59 @@ public class UserService {
 			throw new InvalidPasswordException("This password does not meet all of the requirements");
 		}
 	}
-	
+
 	/**
-	 * This is maintained for backward compatibility. 
+	 * This is maintained for backward compatibility.
 	 * Use {@link #sendPasswordResetTokenEmail(PasswordResetToken, HttpServletRequest, boolean, boolean)}
-	 * 
-	 * @param token the password reset token
-	 * @param request the request so the application url can be constructed
-	 * @param dryRun Will only print email contents to console if true
+	 *
+	 * @param token
+	 *            the password reset token
+	 * @param request
+	 *            the request so the application url can be constructed
+	 * @param dryRun
+	 *            Will only print email contents to console if true
 	 */
 	@Deprecated
 	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
 			final boolean dryRun) {
 		sendPasswordResetTokenEmail(token, request, false, dryRun);
 	}
-	
+
 	/**
 	 * Send email confirmation to user. If the user is new, a welcome email is sent. Otherwise a password
 	 * reset is sent.
-	 * 
-	 * @param token the password reset token
-	 * @param request the request so the application url can be constructed
-	 * @param isNewUser whether the user is new and should receive a welcome email instead of a password reset
-	 * @param dryRun Will only print email contents to console if true
+	 *
+	 * @param token
+	 *            the password reset token
+	 * @param request
+	 *            the request so the application url can be constructed
+	 * @param isNewUser
+	 *            whether the user is new and should receive a welcome email instead of a password reset
+	 * @param dryRun
+	 *            Will only print email contents to console if true
 	 */
 	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
 			final boolean isNewUser, final boolean dryRun) {
-		
+
 		User user = token.getUser();
-		final String resetPath = buildResetPasswordUrl(token.getToken(), request);
+		final String resetPath = buildResetPasswordUrl(token.getToken());
 
 		SimpleMailMessage email = new SimpleMailMessage();
 		String body;
 		if (isNewUser) {
 			email.setSubject("Welcome to " + displayName);
-			body = "Hello " + user.getFirstName() + ",\n\nAn account has been created for you with username " 
-				+ user.getUsername() + ". To set your password, please follow this link: " + resetPath;
-			
+			body = "Hello " + user.getFirstName() + ",\n\nAn account has been created for you with username "
+					+ user.getUsername() + ". To set your password, please follow this link: " + resetPath;
+
 		} else {
 			email.setSubject("Reset your password request");
 			body = "Hello " + user.getFirstName() + ",\n\nTo reset your password please follow this link: "
-				+ resetPath;
+					+ resetPath;
 		}
 		email.setText(body);
 		email.setTo(user.getEmail());
 		email.setFrom(emailConfig.getFrom());
-		if (dryRun) {
+		if (emailDryRun(dryRun, user.getEmail())) {
 			log.info("DRY RUN, would have sent email to " + user.getEmail() + " from " + emailConfig.getFrom()
 					+ " about " + body);
 		} else {
@@ -337,43 +356,39 @@ public class UserService {
 
 	/**
 	 * Builds a full URL for resetting a password.
-	 * 
+	 *
 	 * @param token
 	 * @param request
 	 * @return URL for resetting password including token.
 	 */
-	protected String buildResetPasswordUrl(final String token, final HttpServletRequest request) {
-		final String appUrl = buildAppUrl(request);
-		return appUrl + "/user/password/reset?token=" + token;
+	public String buildResetPasswordUrl(final String token) {
+		return buildAppUrl() + "/user/password/reset?token=" + token;
 	}
 
 	/**
 	 * Builds a full URL for the login page.
-	 * 
+	 *
 	 * @param token
 	 * @param request
 	 * @return URL for resetting password including token.
 	 */
-	protected String buildLoginUrl(final HttpServletRequest request) {
-		final String appUrl = buildAppUrl(request);
-		return appUrl + "/login";
+	protected String buildLoginUrl() {
+		return buildAppUrl() + "/login";
 	}
 
 	/**
 	 * Builds full app URL including context path. No trailing slash.
-	 * 
+	 *
 	 * @param request
 	 * @return Full application URL with context path.
 	 */
-	protected String buildAppUrl(final HttpServletRequest request) {
-		final String fullUrl = UrlUtils.buildFullRequestUrl(request);
-		final String urlPath = UrlUtils.buildRequestUrl(request);
-		return fullUrl.substring(0, fullUrl.indexOf(urlPath));
+	protected String buildAppUrl() {
+		return (baseUrl + contextPath).replaceAll("\\/*$", "");
 	}
 
 	/**
 	 * Update a user's password per reset request.
-	 * 
+	 *
 	 * @param password
 	 * @param token
 	 * @param sendEmail
@@ -401,7 +416,7 @@ public class UserService {
 
 	/**
 	 * Sets credentials expired to false and sets a new credentials expiration date in the future.
-	 * 
+	 *
 	 * @param user
 	 */
 	private void resetCredentialsExpired(User user) {
@@ -412,7 +427,7 @@ public class UserService {
 
 	/**
 	 * Send email confirmation to user.
-	 * 
+	 *
 	 * @param user
 	 * @param request
 	 * @param dryRun
@@ -430,13 +445,14 @@ public class UserService {
 
 		SimpleMailMessage email = new SimpleMailMessage();
 		email.setSubject("Your password was reset");
-		final String body = "Your password has been reset. You may now log into the application.\n\nUsername: " + passwordResetToken.getUser().getUsername() 
-				+ "\nLink: " + buildLoginUrl(request);
+		final String body = "Your password has been reset. You may now log into the application.\n\nUsername: "
+				+ passwordResetToken.getUser().getUsername()
+				+ "\nLink: " + buildLoginUrl();
 		email.setText(body);
 		email.setTo(userEmail);
 		email.setFrom(emailConfig.getFrom());
 
-		if (dryRun) {
+		if (emailDryRun(dryRun, userEmail)) {
 			log.info("DRY RUN, would have sent email to " + userEmail + " from " + emailConfig.getFrom()
 					+ " about "
 					+ body);
@@ -446,8 +462,20 @@ public class UserService {
 		}
 	}
 
+	private boolean emailDryRun(final boolean dryRun, final String toEmail) {
+		return dryRun || StringUtils.isBlank(toEmail) || profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString());
+	}
+
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
 		this.tableBasedEnabled = tableBasedEnabled;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
 }

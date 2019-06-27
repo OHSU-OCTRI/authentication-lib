@@ -1,10 +1,16 @@
 package org.octri.authentication.server.controller;
 
+import static org.octri.authentication.server.security.entity.PasswordResetToken.LONG_EXPIRE_IN_MINUTES;
+
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +24,9 @@ import org.octri.authentication.server.security.service.PasswordResetTokenServic
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.view.OptionList;
+import org.octri.authentication.utils.ProfileUtils;
+import org.octri.authentication.utils.ValidationUtils;
+import org.octri.authentication.validation.Emailable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,6 +65,15 @@ public class UserController {
 
 	@Autowired
 	private Boolean tableBasedEnabled;
+
+	@Autowired
+	private Validator validator;
+
+	@Autowired
+	private ProfileUtils profileUtils;
+
+	@Autowired
+	private ValidationUtils<User> validationUtils;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -102,6 +120,17 @@ public class UserController {
 				model.addAttribute("pageTitle", "Edit User");
 				model.addAttribute("newUser", false);
 				model.addAttribute("formView", true);
+
+				if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
+					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
+					if (latestToken.isPresent()
+							&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
+						final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
+						model.addAttribute("passwordResetUrl", url);
+					} else {
+						model.addAttribute("showNewTokenButton", true);
+					}
+				}
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);
 				model.addAttribute("status", 403);
@@ -129,7 +158,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/form")
-	public String userForm(@Valid @ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+	public String userForm(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
 			HttpServletRequest request) {
 		Assert.notNull(user, "User must not be null");
 
@@ -146,9 +175,13 @@ public class UserController {
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		model.addAttribute("formView", true);
 
-		if (bindingResult.hasErrors()) {
+		Set<ConstraintViolation<User>> validationResult = profileUtils.isActive(ProfileUtils.AuthProfile.noemail)
+				? validator.validate(user, Default.class)
+				: validator.validate(user, Emailable.class);
+
+		if (validationResult.size() > 0) {
 			model.addAttribute("error", true);
-			model.addAttribute("errors", bindingResult.getAllErrors());
+			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
 			return "admin/user/form";
 		}
 
@@ -159,13 +192,16 @@ public class UserController {
 				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
 				if (!ldapUser) {
-					// TODO: In the future this should be more sophisticated - probably a welcome email for the new
-					// user.
-					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
-					userService.sendPasswordResetTokenEmail(token, request, true, false);
+					if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
+						passwordResetTokenService.save(new PasswordResetToken(savedUser, LONG_EXPIRE_IN_MINUTES));
+					} else {
+						PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
+						userService.sendPasswordResetTokenEmail(token, request, true, false);
+					}
+
 				}
 			}
-			
+
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not add new user", ex);
 			model.addAttribute("error", true);
