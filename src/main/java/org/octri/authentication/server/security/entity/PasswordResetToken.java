@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 public class PasswordResetToken {
 
 	/**
-	 * Used directly in ThymeLeaf templates
+	 * This property is used to create a {@link PasswordResetToken}. It is also presented in templates.
 	 */
 	public static final Integer EXPIRE_IN_MINUTES = 30;
 
