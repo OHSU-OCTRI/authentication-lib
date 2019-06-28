@@ -18,7 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * opposed to a client using the {@link ApiSecurityConfiguration}. OptOut uses
  * the form security configuration whereas an Ember application may use the api
  * security configuration.
- * 
+ *
  * @author sams
  */
 @Order(10)
@@ -75,10 +75,10 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 	 * Adds custom public routes to the default set of public routes. Override
 	 * {@link BaseSecurityConfiguration#customPublicRoutes()} in your class that extends
 	 * {@link FormSecurityConfiguration} to add additional routes.
-	 * 
+	 *
 	 * @return String array of public routes.
 	 */
-	private String[] publicRoutes() {
+	protected String[] publicRoutes() {
 		ArrayList<String> allPublicRoutes = new ArrayList<>(Arrays.asList(DEFAULT_PUBLIC_ROUTES));
 		allPublicRoutes.addAll(Arrays.asList(customPublicRoutes()));
 		return allPublicRoutes.toArray(new String[0]);
