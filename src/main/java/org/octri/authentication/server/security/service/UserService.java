@@ -243,8 +243,7 @@ public class UserService {
 		validatePassword(user, currentPassword, newPassword, confirmPassword);
 
 		user.setPassword(passwordEncoder.encode(newPassword));
-
-		resetCredentialsExpired(user);
+		resetCredentialMetadata(user);
 
 		return this.save(user);
 	}
@@ -407,7 +406,7 @@ public class UserService {
 		validatePassword(user, null, newPassword, confirmPassword);
 		user.setPassword(passwordEncoder.encode(newPassword));
 
-		resetCredentialsExpired(user);
+		resetCredentialMetadata(user);
 
 		User saved = this.save(user);
 		passwordResetTokenService.expireToken(existingToken);
@@ -415,14 +414,15 @@ public class UserService {
 	}
 
 	/**
-	 * Sets credentials expired to false and sets a new credentials expiration date in the future.
+	 * Resets credential expiration and consecutive login failures.
 	 *
 	 * @param user
 	 */
-	private void resetCredentialsExpired(User user) {
+	private void resetCredentialMetadata(User user) {
 		user.setCredentialsExpired(false);
 		Instant now = Instant.now();
 		user.setCredentialsExpirationDate(Date.from(now.plus(credentialsExpirationPeriod, ChronoUnit.DAYS)));
+		user.setConsecutiveLoginFailures(0);
 	}
 
 	/**

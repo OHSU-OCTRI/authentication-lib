@@ -1,13 +1,12 @@
 package org.octri.authentication.server.security.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -114,6 +113,20 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void testPasswordChangeResetsCredentialMetadata()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
+		user.setCredentialsExpired(true);
+		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+		user.setConsecutiveLoginFailures(7);
+
+		Date now = Date.from(Instant.now());
+		User saved = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD, VALID_PASSWORD);
+		assertFalse("Credentials expired flag should be false", saved.getCredentialsExpired());
+		assertTrue("New expiration date is in the future", saved.getCredentialsExpirationDate().after(now));
+		assertTrue("Consecutive login failures should be 0", saved.getConsecutiveLoginFailures() == 0);
+	}
+
+	@Test
 	public void testNewAndConfirmPasswordsMustMatchOnChange()
 			throws InvalidPasswordException, InvalidLdapUserDetailsException {
 		expectedException.expect(InvalidPasswordException.class);
@@ -162,6 +175,23 @@ public class UserServiceTest {
 				passwordEncoder.matches(password, saved.getPassword()));
 		assertTrue("Returned user should have encoded password",
 				passwordEncoder.matches(password, saved.getPassword()));
+	}
+
+	@Test
+	public void testPasswordResetResetsCredentialMetadata()
+			throws InvalidPasswordException, InvalidLdapUserDetailsException {
+		user.setCredentialsExpired(true);
+		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+		user.setConsecutiveLoginFailures(7);
+
+		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
+
+		Date now = Date.from(Instant.now());
+		User saved = userService.resetPassword(VALID_PASSWORD, VALID_PASSWORD, passwordResetToken.getToken());
+		assertFalse("Credentials expired flag should be false", saved.getCredentialsExpired());
+		assertTrue("New expiration date is in the future", saved.getCredentialsExpirationDate().after(now));
+		assertTrue("Consecutive login failures should be 0", saved.getConsecutiveLoginFailures() == 0);
 	}
 
 	@Test
