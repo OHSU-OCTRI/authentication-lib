@@ -34,6 +34,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Scope("session")
 public class UserPasswordController {
 
+	private static final String DEFAULT_ERROR_MESSAGE = "An error occurred. If this continues please contact your administrator.";
+
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
 	@Autowired
@@ -52,8 +54,10 @@ public class UserPasswordController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/change")
-	public String changePassword() {
-		return "user/password/change";
+	public String changePassword(ModelMap model) {
+		model.addAttribute("formTitle", "Change Password");
+		model.addAttribute("formRoute", "/user/password/change");
+		return "user/password/form";
 	}
 
 	/**
@@ -85,23 +89,25 @@ public class UserPasswordController {
 		final User user = userService.findByUsername(username);
 		Assert.notNull(user, "Could not find an existing user");
 
+		model.addAttribute("formTitle", "Change Password");
+		model.addAttribute("formRoute", "/user/password/change");
+
 		try {
 			userService.changePassword(user, currentPassword, newPassword, confirmPassword);
 			redirectAttributes.addFlashAttribute("passwordChanged", true);
 			model.clear();
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
-			log.error(username + " submitted an invalid password", ex);
-			model.addAttribute("error", true);
-			return "user/password/change";
+			model.addAttribute("errorMessage", "The password does not meet all of the requirements.");
+			return "user/password/form";
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not change password", ex);
-			model.addAttribute("error", true);
-			return "user/password/change";
+			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
-			model.addAttribute("error", true);
-			return "user/password/change";
+			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			return "user/password/form";
 		}
 	}
 
@@ -159,10 +165,12 @@ public class UserPasswordController {
 		// Check to see if there is a valid token.
 		// A record should exist in the database and be not expired.
 		if (!passwordResetTokenService.isValidPasswordResetToken(token)) {
-			model.addAttribute("invalidToken", true);
+			model.addAttribute("errorMessage", "Could not validate password token. If this continues to happen please contact your administrator for assistance.");
 		}
+		model.addAttribute("formTitle", "Reset Password");
+		model.addAttribute("formRoute", "/user/password/reset");
 		model.addAttribute("token", token);
-		return "user/password/reset";
+		return "user/password/form";
 	}
 
 	/**
@@ -185,6 +193,8 @@ public class UserPasswordController {
 	public String resetPassword(@ModelAttribute("newPassword") String newPassword,
 			@ModelAttribute("confirmPassword") String confirmPassword, @ModelAttribute("token") String token,
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		model.addAttribute("formTitle", "Reset Password");
+		model.addAttribute("formRoute", "/user/password/reset");
 		try {
 			userService.resetPassword(newPassword, confirmPassword, token);
 			userService.sendPasswordResetEmailConfirmation(token, request, false);
@@ -193,12 +203,12 @@ public class UserPasswordController {
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error("Validation error while saving password", ex);
-			model.addAttribute("invalidPassword", true);
-			return "user/password/reset";
+			model.addAttribute("errorMessage", "Your new password does not meet all of the requirements.");
+			return "user/password/form";
 		} catch (Exception ex) {
 			log.error("Unexpected error while saving password", ex);
-			model.addAttribute("error", true);
-			return "user/password/reset";
+			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			return "user/password/form";
 		}
 	}
 
