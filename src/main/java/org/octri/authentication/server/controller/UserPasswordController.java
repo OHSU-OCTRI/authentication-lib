@@ -34,7 +34,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Scope("session")
 public class UserPasswordController {
 
-	private static final String DEFAULT_ERROR_MESSAGE = "An error occurred. If this continues please contact your administrator.";
+	/**
+	 * Static class for holding message constants.
+	 */
+	private static class Messages {
+		private static final String TITLE_CHANGE_PASSWORD = "Change Password";
+
+		private static final String TITLE_RESET_PASSWORD = "Reset Password";
+
+		private static final String INVALID_PASSWORD_RESET_TOKEN = "Could not validate password token. If this continues to happen please contact your administrator for assistance.";
+
+		private static final String PASSWORD_INVALID = "The password does not meet all of the requirements.";
+
+		private static final String COULD_NOT_FIND_AN_EXISTING_USER = "Could not find an existing user.";
+
+		private static final String COULD_NOT_FIND_USERNAME_IN_SESSION = "Could not find username in session.";
+
+		private static final String DEFAULT_ERROR_MESSAGE = "An error occurred. If this continues please contact your administrator.";
+
+		private Messages() {
+		}
+	}
 
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
@@ -55,7 +75,7 @@ public class UserPasswordController {
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/change")
 	public String changePassword(ModelMap model) {
-		model.addAttribute("formTitle", "Change Password");
+		model.addAttribute("formTitle", Messages.TITLE_CHANGE_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/change");
 		return "user/password/form";
 	}
@@ -84,12 +104,12 @@ public class UserPasswordController {
 			@ModelAttribute("confirmPassword") String confirmPassword, RedirectAttributes redirectAttributes,
 			HttpServletRequest request, ModelMap model) {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
-		Assert.notNull(username, "Could not find username in session");
+		Assert.notNull(username, Messages.COULD_NOT_FIND_USERNAME_IN_SESSION);
 
 		final User user = userService.findByUsername(username);
-		Assert.notNull(user, "Could not find an existing user");
+		Assert.notNull(user, Messages.COULD_NOT_FIND_AN_EXISTING_USER);
 
-		model.addAttribute("formTitle", "Change Password");
+		model.addAttribute("formTitle", Messages.TITLE_CHANGE_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/change");
 
 		try {
@@ -98,15 +118,15 @@ public class UserPasswordController {
 			model.clear();
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
-			model.addAttribute("errorMessage", "The password does not meet all of the requirements.");
+			model.addAttribute("errorMessage", Messages.PASSWORD_INVALID);
 			return "user/password/form";
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not change password", ex);
-			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
-			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		}
 	}
@@ -165,9 +185,9 @@ public class UserPasswordController {
 		// Check to see if there is a valid token.
 		// A record should exist in the database and be not expired.
 		if (!passwordResetTokenService.isValidPasswordResetToken(token)) {
-			model.addAttribute("errorMessage", "Could not validate password token. If this continues to happen please contact your administrator for assistance.");
+			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET_TOKEN);
 		}
-		model.addAttribute("formTitle", "Reset Password");
+		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
 		model.addAttribute("token", token);
 		return "user/password/form";
@@ -193,7 +213,7 @@ public class UserPasswordController {
 	public String resetPassword(@ModelAttribute("newPassword") String newPassword,
 			@ModelAttribute("confirmPassword") String confirmPassword, @ModelAttribute("token") String token,
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-		model.addAttribute("formTitle", "Reset Password");
+		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
 		try {
 			userService.resetPassword(newPassword, confirmPassword, token);
@@ -203,11 +223,11 @@ public class UserPasswordController {
 			return "redirect:/login";
 		} catch (InvalidPasswordException ex) {
 			log.error("Validation error while saving password", ex);
-			model.addAttribute("errorMessage", "Your new password does not meet all of the requirements.");
+			model.addAttribute("errorMessage", Messages.PASSWORD_INVALID);
 			return "user/password/form";
 		} catch (Exception ex) {
 			log.error("Unexpected error while saving password", ex);
-			model.addAttribute("errorMessage", DEFAULT_ERROR_MESSAGE);
+			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		}
 	}
