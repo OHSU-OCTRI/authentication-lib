@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Change Password</title>
+		<title>{{displayName}} - {{formTitle}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta name="ctx" content="{{req.contextPath}}/"/>
 		{{>authlib_fragments/css}}
 	</head>
 	<body class="authlib">
 		{{>authlib_fragments/navbar}}
-		{{>authlib_fragments/user/password/change}}
-		{{>authlib_fragments/assets}}
+		<main class="container mt-4">
+			{{>authlib_fragments/user/password/form}}
+			{{>authlib_fragments/assets}}
+		</main>
 		<script type="text/javascript">
 				$(function() {
-					$('#currentPassword').focus();
+					$('#password-form')
+							.find('input[type=text],input[type=password]')
+							.filter(':visible:first')
+							.focus();
 				});
 		</script>
 	</body>
