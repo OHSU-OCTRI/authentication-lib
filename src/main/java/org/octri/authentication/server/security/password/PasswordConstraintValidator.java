@@ -1,13 +1,13 @@
 package org.octri.authentication.server.security.password;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.octri.authentication.server.security.annotation.ValidPassword;
 import org.passay.CharacterCharacteristicsRule;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -20,23 +20,25 @@ import org.springframework.stereotype.Component;
 
 /**
  * A password constraint validator. Validates passwords against OHSU standards.
- * 
+ *
  * @see https://ozone.ohsu.edu/cc/sec/isp/00004.pdf
  * @see http://www.passay.org/reference/
  * @see http://www.baeldung.com/registration-password-strength-and-rules
  * @author sams
  */
 @Component
-public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
+public class PasswordConstraintValidator {
 
 	private static final Log log = LogFactory.getLog(PasswordConstraintValidator.class);
 
-	@Override
-	public void initialize(ValidPassword arg0) {
-	}
-
-	@Override
-	public boolean isValid(String password, ConstraintValidatorContext context) {
+	/**
+	 * Get a list of validation error messages, or an empty list if the password passes validation.
+	 *
+	 * @param password
+	 * @param context
+	 * @return
+	 */
+	public List<String> validate(String password, ConstraintValidatorContext context) {
 		// Require at least one capital letter
 		CharacterRule capitalLetter = new CharacterRule(EnglishCharacterData.UpperCase, 1);
 
@@ -58,17 +60,17 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 						new CharacterRule(EnglishCharacterData.Digit, 1),
 						capsOrSpecial));
 
-
 		// Validate password
+		// Note: INSUFFICIENT_CHARACTERISTICS is returned when either INSUFFICIENT_UPPERCASE or INSUFFICIENT_SPECIAL is
+		// thrown. These two constraints are handled by {@link CharacterCharacteristicsRule}. Filter them out so we
+		// don't duplicate messages in the UI.
 		RuleResult result = validator.validate(new PasswordData(password));
-		for (RuleResultDetail detail : result.getDetails()) {
-			log.warn("Password failed validation for reason: " + detail.getErrorCode());
-		}
-		if (result.isValid()) {
-			return true;
-		}
+		List<String> reasons = result.getDetails().stream().map(RuleResultDetail::getErrorCode)
+				.filter(key -> !Reason.ReasonKey.INSUFFICIENT_SPECIAL.toString().equals(key)
+						&& !Reason.ReasonKey.INSUFFICIENT_UPPERCASE.toString().equals(key))
+				.map(key -> Reason.message(key)).collect(Collectors.toList());
 
-		return false;
+		return reasons;
 	}
 
 }

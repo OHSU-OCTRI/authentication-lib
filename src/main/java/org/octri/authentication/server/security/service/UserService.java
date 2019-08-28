@@ -2,6 +2,7 @@ package org.octri.authentication.server.security.service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
@@ -16,6 +18,7 @@ import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
+import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.octri.authentication.utils.ProfileUtils;
@@ -238,14 +241,18 @@ public class UserService {
 	 * @return Updated user
 	 * @throws InvalidPasswordException
 	 */
-	public User changePassword(final User user, final String currentPassword, final String newPassword,
-			final String confirmPassword) throws InvalidPasswordException, InvalidLdapUserDetailsException {
-		validatePassword(user, currentPassword, newPassword, confirmPassword);
+	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword, final String newPassword,
+			final String confirmPassword) throws InvalidLdapUserDetailsException {
+		List<String> reasons = validatePassword(user, currentPassword, newPassword, confirmPassword);
+		if (!reasons.isEmpty()) {
+			return ImmutablePair.of(user, reasons);
+		}
 
 		user.setPassword(passwordEncoder.encode(newPassword));
 		resetCredentialMetadata(user);
+		User saved = this.save(user);
 
-		return this.save(user);
+		return ImmutablePair.of(saved, new ArrayList<String>());
 	}
 
 	/**
@@ -259,38 +266,39 @@ public class UserService {
 	 *            The new pasword.
 	 * @param confirmPassword
 	 *            Confirm the new password.
-	 * @throws InvalidPasswordException
+	 * @return List of error messages, or an empty list if the password passes validation.
 	 */
-	private void validatePassword(final User user, final String currentPassword, final String newPassword,
-			final String confirmPassword) throws InvalidPasswordException {
+	public List<String> validatePassword(final User user, final String currentPassword, final String newPassword, final String confirmPassword) {
+		List<String> reasons = new ArrayList<>();
+
 		// Current password must match existing password in the database if set.
 		if (currentPassword != null && !passwordEncoder.matches(currentPassword, user.getPassword())) {
-			throw new InvalidPasswordException("Current password doesn't match existing password");
+			reasons.add(Messages.CURRENT_PASSWORD_INCORRECT);
 		}
 
 		// New password must equal password confirmation
 		if (!newPassword.equals(confirmPassword)) {
-			throw new InvalidPasswordException("New and confirm new password values do not match");
+			reasons.add(Messages.NEW_AND_CONFIRM_PASSWORDS_MISMATCH);
 		}
 
 		// Rule: Prevents a password from containing username.
 		// TODO: Look into validating with http://www.passay.org/javadocs/org/passay/UsernameRule.html
 		if (newPassword.contains(user.getUsername())) {
-			throw new InvalidPasswordException("Password must not include username");
+			reasons.add(Messages.PASSWORDS_MUST_NOT_INCLUDE_USERNAME);
 		}
 
 		// Rule: Prevents using a previous password.
 		// TODO: Look into validating with http://www.passay.org/javadocs/org/passay/DigestHistoryRule.html
 		if (passwordEncoder.matches(newPassword, user.getPassword())) {
-			throw new InvalidPasswordException("Must not use current password");
+			reasons.add(Messages.MUST_NOT_USE_CURRENT_PASSWORD);
 		}
 
 		// Manually validate the password instead of using the @ValidPassword annotation.
 		// This will allow us to set a null password in order to distinguish LDAP users.
 		PasswordConstraintValidator validator = new PasswordConstraintValidator();
-		if (!validator.isValid(newPassword, null)) {
-			throw new InvalidPasswordException("This password does not meet all of the requirements");
-		}
+		reasons.addAll(validator.validate(newPassword, null));
+
+		return reasons;
 	}
 
 	/**
@@ -391,26 +399,31 @@ public class UserService {
 	 * @param password
 	 * @param token
 	 * @param sendEmail
-	 * @return User with updated password.
 	 * @throws InvalidPasswordException
 	 * @throws InvalidLdapUserDetailsException
+	 * @return ImmutablePair with the first entry the saved User and the second a list of validation error messages.
 	 */
-	public User resetPassword(final String newPassword, final String confirmPassword, final String token)
-			throws InvalidPasswordException, InvalidLdapUserDetailsException {
+	public ImmutablePair<User, List<String>> resetPassword(final String newPassword, final String confirmPassword, final String token) throws InvalidLdapUserDetailsException {
 		Assert.notNull(newPassword, "Password is required");
 		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");
 		PasswordResetToken existingToken = passwordResetTokenService.findByToken(token);
 		Assert.notNull(existingToken, "Could not find existing token");
 		User user = existingToken.getUser();
-		validatePassword(user, null, newPassword, confirmPassword);
+
+		List<String> reasons = validatePassword(user, null, newPassword, confirmPassword);
+		if (!reasons.isEmpty()) {
+			return ImmutablePair.of(user, reasons);
+		}
+
 		user.setPassword(passwordEncoder.encode(newPassword));
 
 		resetCredentialMetadata(user);
 
 		User saved = this.save(user);
 		passwordResetTokenService.expireToken(existingToken);
-		return saved;
+
+		return ImmutablePair.of(saved, new ArrayList<String>());
 	}
 
 	/**

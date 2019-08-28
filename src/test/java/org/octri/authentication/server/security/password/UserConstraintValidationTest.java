@@ -101,14 +101,14 @@ public class UserConstraintValidationTest {
 	@Test
 	public void testForValidPasswords() {
 		for (String password : VALID_PASSWORDS) {
-			assertTrue(password + " should be valid", passwordConstraintValidator.isValid(password, null));
+			assertTrue(password + " should be valid", passwordConstraintValidator.validate(password, null).isEmpty());
 		}
 	}
 
 	@Test
 	public void testForInvalidPasswords() {
 		for (String password : INVALID_PASSWORDS) {
-			assertFalse(password + " should not be valid", passwordConstraintValidator.isValid(password, null));
+			assertFalse(password + " should not be valid", passwordConstraintValidator.validate(password, null).isEmpty());
 		}
 	}
 
