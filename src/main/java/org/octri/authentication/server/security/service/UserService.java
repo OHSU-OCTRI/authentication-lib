@@ -245,7 +245,7 @@ public class UserService {
 			final String confirmPassword) throws InvalidLdapUserDetailsException {
 		List<String> reasons = validatePassword(user, currentPassword, newPassword, confirmPassword);
 		if (!reasons.isEmpty()) {
-			return ImmutablePair.of(null, reasons);
+			return ImmutablePair.of(user, reasons);
 		}
 
 		user.setPassword(passwordEncoder.encode(newPassword));
@@ -413,7 +413,7 @@ public class UserService {
 
 		List<String> reasons = validatePassword(user, null, newPassword, confirmPassword);
 		if (!reasons.isEmpty()) {
-			return ImmutablePair.of(null, reasons);
+			return ImmutablePair.of(user, reasons);
 		}
 
 		user.setPassword(passwordEncoder.encode(newPassword));
