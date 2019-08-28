@@ -1,14 +1,17 @@
 package org.octri.authentication.server.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
-import org.octri.authentication.server.security.exception.InvalidPasswordException;
+import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.utils.ProfileUtils;
@@ -33,28 +36,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @Scope("session")
 public class UserPasswordController {
-
-	/**
-	 * Static class for holding message constants.
-	 */
-	private static class Messages {
-		private static final String TITLE_CHANGE_PASSWORD = "Change Password";
-
-		private static final String TITLE_RESET_PASSWORD = "Reset Password";
-
-		private static final String INVALID_PASSWORD_RESET_TOKEN = "Could not validate password token. If this continues to happen please contact your administrator for assistance.";
-
-		private static final String PASSWORD_INVALID = "The password does not meet all of the requirements.";
-
-		private static final String COULD_NOT_FIND_AN_EXISTING_USER = "Could not find an existing user.";
-
-		private static final String COULD_NOT_FIND_USERNAME_IN_SESSION = "Could not find username in session.";
-
-		private static final String DEFAULT_ERROR_MESSAGE = "An error occurred. If this continues please contact your administrator.";
-
-		private Messages() {
-		}
-	}
 
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
@@ -96,6 +77,7 @@ public class UserPasswordController {
 	 * @param model
 	 *            Object holding view data
 	 * @return Redirects to /login
+	 * @throws InvalidLdapUserDetailsException
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/change")
@@ -113,15 +95,19 @@ public class UserPasswordController {
 		model.addAttribute("formRoute", "/user/password/change");
 
 		try {
-			userService.changePassword(user, currentPassword, newPassword, confirmPassword);
-			redirectAttributes.addFlashAttribute("passwordChanged", true);
-			model.clear();
-			return "redirect:/login";
-		} catch (InvalidPasswordException ex) {
-			model.addAttribute("errorMessage", Messages.PASSWORD_INVALID);
-			return "user/password/form";
+			ImmutablePair<User, List<String>> result = userService.changePassword(user, currentPassword, newPassword, confirmPassword);
+
+			if (result.right.isEmpty()) {
+				redirectAttributes.addFlashAttribute("passwordChanged", true);
+				model.clear();
+				return "redirect:/login";
+			} else {
+				model.addAttribute("errorMessages", result.right);
+				model.addAttribute("passwordValidationError", true);
+				return "user/password/form";
+			}
 		} catch (InvalidLdapUserDetailsException ex) {
-			log.error("Could not change password", ex);
+			log.error("Unexpected LDAP exception while saving " + username, ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		} catch (RuntimeException ex) {
@@ -216,16 +202,25 @@ public class UserPasswordController {
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
 		try {
-			userService.resetPassword(newPassword, confirmPassword, token);
-			userService.sendPasswordResetEmailConfirmation(token, request, false);
-			redirectAttributes.addFlashAttribute("passwordReset", true);
-			model.clear();
-			return "redirect:/login";
-		} catch (InvalidPasswordException ex) {
-			log.error("Validation error while saving password", ex);
-			model.addAttribute("errorMessage", Messages.PASSWORD_INVALID);
+			ImmutablePair<User, List<String>> result = userService.resetPassword(newPassword, confirmPassword, token);
+
+			if (result.right.isEmpty()) {
+				userService.sendPasswordResetEmailConfirmation(token, request, false);
+				redirectAttributes.addFlashAttribute("passwordReset", true);
+				model.clear();
+				return "redirect:/login";
+			} else {
+				model.addAttribute("errorMessages", result.right);
+				model.addAttribute("passwordValidationError", true);
+				return "user/password/form";
+			}
+		} catch (InvalidLdapUserDetailsException ex) {
+			PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
+			final String username = passwordResetToken != null ? passwordResetToken.getUser().getUsername() : null;
+			log.error("Unexpected LDAP exception while saving " + username, ex);
+			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
-		} catch (Exception ex) {
+		} catch (RuntimeException ex) {
 			log.error("Unexpected error while saving password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
