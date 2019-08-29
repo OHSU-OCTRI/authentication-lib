@@ -103,6 +103,7 @@ public class UserPasswordController {
 				return "redirect:/login";
 			} else {
 				model.addAttribute("errorMessages", result.right);
+				model.addAttribute("currentPasswordIncorrect", result.right.contains(Messages.CURRENT_PASSWORD_INCORRECT));
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}

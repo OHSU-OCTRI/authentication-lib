@@ -13,7 +13,7 @@
 				{{^token}}
 				<div class="form-group">
 					<label for="currentPassword">Current Password</label>
-					<input id="currentPassword" name="currentPassword" class="form-control" type="password" autofocus="true" required>
+					<input id="currentPassword" name="currentPassword" class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}" type="password" autofocus="true" required>
 				</div>
 				{{/token}}
 

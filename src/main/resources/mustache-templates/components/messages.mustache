@@ -1,5 +1,5 @@
 {{#errorMessage}}
-<div class='alert alert-danger alert-dismissible fade show mt-2 mb-2 pb-0' role='alert'>
+<div class='alert alert-danger alert-dismissible fade show mt-2 mb-2' role='alert'>
 	{{.}}
  	<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
 		<span aria-hidden='true'>&times;</span>
@@ -9,8 +9,8 @@
 
 {{#errorMessages}}
 {{#-first}}
-<div class='alert alert-danger alert-dismissible fade show mt-2 mb-2 pb-0' role='alert'>
-	<ul class="pl-0 ml-2">
+<div class='alert alert-danger alert-dismissible fade show mt-2 mb-2' role='alert'>
+	<ul class="pl-0 mb-0 ml-2">
 {{/-first}}
 {{/errorMessages}}
 	{{#errorMessages}}
@@ -27,7 +27,7 @@
 {{/errorMessages}}
 
 {{#successMessage}}
-<div class='alert alert-success alert-dismissible fade show mt-2 mb-2 pb-0' role='alert'>
+<div class='alert alert-success alert-dismissible fade show mt-2 mb-2' role='alert'>
 	{{.}}
   	<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
 		<span aria-hidden='true'>&times;</span>
@@ -36,7 +36,7 @@
 {{/successMessage}}
 
 {{#infoMessage}}
-<div class='alert alert-primary alert-dismissible fade show mt-2 mb-2 pb-0' role='alert'>
+<div class='alert alert-primary alert-dismissible fade show mt-2 mb-2' role='alert'>
 	{{.}}
   	<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
    		<span aria-hidden='true'>&times;</span>
@@ -45,7 +45,7 @@
 {{/infoMessage}}
 
 {{#warningMessage}}
-<div class='alert alert-warning alert-dismissible fade show mt-2 mb-2 pb-0' role='alert'>
+<div class='alert alert-warning alert-dismissible fade show mt-2 mb-2' role='alert'>
 	{{.}}
 	<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
 		<span aria-hidden='true'>&times;</span>
