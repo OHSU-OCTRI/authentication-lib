@@ -1,7 +1,6 @@
 package org.octri.authentication.server.security.password;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -161,7 +160,7 @@ public class UserConstraintValidationTest {
 	 * Helper for retrieving {@link ContraintViolation} messages.
 	 *
 	 * @param user
-	 * @return List of contraint violation messages.
+	 * @return List of constraint violation messages.
 	 */
 	public List<String> getMessages(User user, Class validationGroup) {
 		Set<ConstraintViolation<User>> violations = validator.validate(user, validationGroup);

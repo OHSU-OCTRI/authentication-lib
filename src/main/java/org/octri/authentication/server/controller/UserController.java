@@ -1,6 +1,6 @@
 package org.octri.authentication.server.controller;
 
-import static org.octri.authentication.server.security.entity.PasswordResetToken.LONG_EXPIRE_IN_MINUTES;
+import static org.octri.authentication.server.security.entity.PasswordResetToken.*;
 
 import java.util.Date;
 import java.util.List;
@@ -130,6 +130,7 @@ public class UserController {
 					} else {
 						model.addAttribute("showNewTokenButton", true);
 					}
+					model.addAttribute("allowPasswordGeneration", true);
 				}
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);

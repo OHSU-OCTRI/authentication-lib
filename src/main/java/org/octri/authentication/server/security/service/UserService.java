@@ -256,6 +256,16 @@ public class UserService {
 	}
 
 	/**
+	 * Set the password for the given user to an encoded value.
+	 * 
+	 * @param user
+	 * @param newPassword
+	 */
+	public void setEncodedPassword(User user, String newPassword) {
+		user.setPassword(passwordEncoder.encode(newPassword));
+	}
+
+	/**
 	 * Validates a password using the {@link PasswordConstraintValidator} as well as some other checks.
 	 *
 	 * @param user
