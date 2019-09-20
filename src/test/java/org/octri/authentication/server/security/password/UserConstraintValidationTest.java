@@ -157,7 +157,7 @@ public class UserConstraintValidationTest {
 	}
 
 	/**
-	 * Helper for retrieving {@link ContraintViolation} messages.
+	 * Helper for retrieving {@link ConstraintViolation} messages.
 	 *
 	 * @param user
 	 * @return List of constraint violation messages.
