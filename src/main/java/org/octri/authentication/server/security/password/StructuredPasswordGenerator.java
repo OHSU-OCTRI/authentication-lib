@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.passay.EnglishCharacterData;
 import org.springframework.util.Assert;
 
 /**
@@ -28,6 +27,8 @@ public class StructuredPasswordGenerator {
 	// Default password format is valid for OHSU, except for the dictionary-word criteria, which is not enforced.
 	private List<Component> format = Arrays.asList(Component.CAPITAL_WORD, Component.MY_SYMBOL, Component.DIGIT,
 			Component.DIGIT, Component.DIGIT, Component.MY_SYMBOL, Component.WORD);
+
+	private String specialChars = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 	/**
 	 * Construct a new Generator using the provided dictionary.
@@ -86,7 +87,7 @@ public class StructuredPasswordGenerator {
 	 * @return a random special character
 	 */
 	private Character randomSymbol() {
-		String syms = EnglishCharacterData.Special.getCharacters();
+		String syms = specialChars;
 		int index = ThreadLocalRandom.current().nextInt(0, syms.length());
 		return syms.charAt(index);
 	}
@@ -148,6 +149,14 @@ public class StructuredPasswordGenerator {
 
 	public void setFormat(List<Component> format) {
 		this.format = format;
+	}
+
+	public String getSpecialChars() {
+		return specialChars;
+	}
+
+	public void setSpecialChars(String specialChars) {
+		this.specialChars = specialChars;
 	}
 
 }

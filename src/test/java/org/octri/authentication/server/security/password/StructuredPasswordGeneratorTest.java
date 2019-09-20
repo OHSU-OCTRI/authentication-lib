@@ -21,7 +21,7 @@ public class StructuredPasswordGeneratorTest {
 
 	RandomDictionary dict = new RandomDictionary(words);
 	StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
-	
+
 	PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 
 	@Test
@@ -61,5 +61,41 @@ public class StructuredPasswordGeneratorTest {
 		password = generator
 				.generate(Arrays.asList(Component.WORD, Component.CAPITAL_WORD, Component.CAPITAL_WORD));
 		assertEquals(password.length(), 9);
+	}
+
+	@Test
+	public void testSpecialChars() {
+		List<Component> format = Arrays.asList(Component.WORD, Component.DIGIT);
+		generator.setMinWordLength(6);
+		generator.setMaxWordLength(6);
+
+		String password = generator.generate(format);
+
+		assertTrue(password.length() == 7);
+
+		assertFalse(intersects(password, generator.getSpecialChars()));
+
+		format = Arrays.asList(Component.WORD, Component.SPECIAL, Component.DIGIT);
+		password = generator.generate(format);
+		assertTrue(password.length() == 8);
+		assertTrue(intersects(password, generator.getSpecialChars()));
+	}
+
+	/**
+	 * 
+	 * @param string1
+	 * @param string2
+	 * @return true if the two strings have any characters in common.
+	 */
+	private Boolean intersects(String string1, String string2) {
+
+		for (int i = 0; i < string1.length(); i++) {
+			for (int j = 0; j < string2.length(); j++) {
+				if (string1.charAt(i) == string2.charAt(j)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
