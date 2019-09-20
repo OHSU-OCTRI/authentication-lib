@@ -19,6 +19,8 @@ import org.springframework.util.Assert;
 public class RandomDictionary {
 
 	private Map<Integer, List<String>> wordsBySize;
+	// Attempts to find a word by a random size in the given range.
+	private Integer maxAttempts = 10;
 
 	/**
 	 * Create a new dictionary from the given wordlist.
@@ -26,6 +28,8 @@ public class RandomDictionary {
 	 * @param wordList
 	 */
 	public RandomDictionary(List<String> wordList) {
+		Assert.notNull(wordList, "Wordlist must not be null");
+		Assert.isTrue(!wordList.isEmpty(), "Word list must contain words");
 		this.initialize(wordList);
 	}
 
@@ -37,12 +41,23 @@ public class RandomDictionary {
 	 * @return
 	 */
 	public String getRandom(int minSize, int maxSize) {
-		int wordSize = ThreadLocalRandom.current().nextInt(minSize, maxSize + 1);
 
-		List<String> words = wordsBySize.get(wordSize);
-		// TODO: may not be any words of a given size
-		int randIndex = ThreadLocalRandom.current().nextInt(0, words.size());
-		return words.get(randIndex);
+		// Try a given number of times to find a word using a random size in the provided range.
+		int wordSize = ThreadLocalRandom.current().nextInt(minSize, maxSize + 1);
+		int attempt = 0;
+		while (!wordsBySize.containsKey(wordSize) && attempt < maxAttempts) {
+			attempt += 1;
+			wordSize = ThreadLocalRandom.current().nextInt(minSize, maxSize + 1);
+		}
+
+		if (wordsBySize.containsKey(wordSize)) {
+			List<String> words = wordsBySize.get(wordSize);
+			int randIndex = ThreadLocalRandom.current().nextInt(0, words.size());
+			return words.get(randIndex);
+		} else {
+			throw new RuntimeException("Words were not found in the given range (" + minSize + " to " + maxSize
+					+ "). Please adjust the configured range or add a new dictionary");
+		}
 	}
 
 	/**
@@ -82,5 +97,13 @@ public class RandomDictionary {
 			List<String> words = wordsBySize.get(word.length());
 			words.add(word);
 		}
+	}
+
+	public Integer getMaxAttempts() {
+		return maxAttempts;
+	}
+
+	public void setMaxAttempts(Integer attempts) {
+		this.maxAttempts = attempts;
 	}
 }

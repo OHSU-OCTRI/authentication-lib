@@ -248,18 +248,18 @@ public class UserPasswordController {
 	@PostMapping("admin/password/generate")
 	public String generatePassword(final ModelMap model, @RequestParam(name = "userId") Long userId,
 			RedirectAttributes redirectAttributes) throws InvalidLdapUserDetailsException {
-		if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-			final User user = userService.find(userId);
-			Assert.notNull(user, "Could not find a user");
 
-			String newPassword = generator.generatePassword(); // Get this from the password generator
+		final User user = userService.find(userId);
+		Assert.notNull(user, "Could not find a user");
 
-			userService.setEncodedPassword(user, newPassword);
-			user.setCredentialsExpired(true);
-			userService.save(user);
+		String newPassword = generator.generatePassword();
 
-			redirectAttributes.addFlashAttribute("generatedPassword", newPassword);
-		}
+		userService.setEncodedPassword(user, newPassword);
+		user.setCredentialsExpired(true);
+		userService.save(user);
+
+		redirectAttributes.addFlashAttribute("generatedPassword", newPassword);
+
 		return "redirect:/admin/user/form?id=" + userId;
 	}
 }
