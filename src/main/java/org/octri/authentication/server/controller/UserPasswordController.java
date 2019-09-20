@@ -12,6 +12,7 @@ import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.password.Messages;
+import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.utils.ProfileUtils;
@@ -47,6 +48,9 @@ public class UserPasswordController {
 
 	@Autowired
 	private ProfileUtils profileUtils;
+
+	@Autowired
+	private PasswordGeneratorService generator;
 
 	/**
 	 * Present a form for changing a password when credentials are expired.
@@ -237,6 +241,25 @@ public class UserPasswordController {
 			Assert.notNull(user, "Could not find a user");
 			passwordResetTokenService.save(new PasswordResetToken(user, PasswordResetToken.LONG_EXPIRE_IN_MINUTES));
 		}
+		return "redirect:/admin/user/form?id=" + userId;
+	}
+
+	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
+	@PostMapping("admin/password/generate")
+	public String generatePassword(final ModelMap model, @RequestParam(name = "userId") Long userId,
+			RedirectAttributes redirectAttributes) throws InvalidLdapUserDetailsException {
+
+		final User user = userService.find(userId);
+		Assert.notNull(user, "Could not find a user");
+
+		String newPassword = generator.generatePassword();
+
+		userService.setEncodedPassword(user, newPassword);
+		user.setCredentialsExpired(true);
+		userService.save(user);
+
+		redirectAttributes.addFlashAttribute("generatedPassword", newPassword);
+
 		return "redirect:/admin/user/form?id=" + userId;
 	}
 }

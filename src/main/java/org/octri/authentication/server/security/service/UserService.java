@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -252,7 +253,23 @@ public class UserService {
 		resetCredentialMetadata(user);
 		User saved = this.save(user);
 
+		// If a user has successfully changed their password reset tokens are no longer needed.
+		Optional<PasswordResetToken> existingToken = passwordResetTokenService.findLatest(user.getId());
+		if (existingToken.isPresent()) {
+			passwordResetTokenService.expireToken(existingToken.get());
+		}
+
 		return ImmutablePair.of(saved, new ArrayList<String>());
+	}
+
+	/**
+	 * Set the password for the given user to an encoded value.
+	 * 
+	 * @param user
+	 * @param newPassword
+	 */
+	public void setEncodedPassword(User user, String newPassword) {
+		user.setPassword(passwordEncoder.encode(newPassword));
 	}
 
 	/**

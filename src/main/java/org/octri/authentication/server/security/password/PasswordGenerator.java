@@ -4,7 +4,7 @@ import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 
 /**
- * Class for generatoring passwords meeting OHSU standards.
+ * Class for generating passwords meeting OHSU standards.
  * 
  * @author sams
  */

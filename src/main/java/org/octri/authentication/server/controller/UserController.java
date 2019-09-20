@@ -1,6 +1,6 @@
 package org.octri.authentication.server.controller;
 
-import static org.octri.authentication.server.security.entity.PasswordResetToken.LONG_EXPIRE_IN_MINUTES;
+import static org.octri.authentication.server.security.entity.PasswordResetToken.*;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +20,7 @@ import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
+import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
@@ -74,6 +75,9 @@ public class UserController {
 
 	@Autowired
 	private ValidationUtils<User> validationUtils;
+
+	@Autowired
+	private PasswordGenConfig passwordGeneration;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -130,6 +134,9 @@ public class UserController {
 					} else {
 						model.addAttribute("showNewTokenButton", true);
 					}
+				}
+				if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
+					model.addAttribute("allowPasswordGeneration", true);
 				}
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);

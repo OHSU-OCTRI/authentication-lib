@@ -24,9 +24,27 @@
 			{{#showNewTokenButton}}
 			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/token/refresh?userId={{#user}}{{id}}{{/user}}">
 				{{>authlib_fragments/forms/csrf_input}}
-				<button type="submit" class="btn btn-primary">Generate new password reset token</button>
+				<button type="submit" class="btn btn-primary">Generate password reset token</button>
+				<p class='small text-secondary mt-2'>Navigating to the generated url allows a user to set their login credentials.</p>
 			</form>
 			{{/showNewTokenButton}}
+			
+			
+			{{#allowPasswordGeneration}}
+			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/generate?userId={{#user}}{{id}}{{/user}}">
+				{{>authlib_fragments/forms/csrf_input}}
+				<button type="submit" class="btn btn-primary">Generate temporary password</button>
+				<p class='small text-secondary mt-2'>Expire the user's existing credentials and set the password to a new generated value. Users will be prompted for a password change on login.</p>
+			</form>
+			{{#generatedPassword}}
+			<div class="alert alert-info">
+				User temporary password set to:
+				<br>
+				{{.}}
+			</div>
+			{{/generatedPassword}}
+			{{/allowPasswordGeneration}}
+			
 		</div>
 	</div>
 
