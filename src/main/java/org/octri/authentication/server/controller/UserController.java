@@ -135,7 +135,7 @@ public class UserController {
 						model.addAttribute("showNewTokenButton", true);
 					}
 				}
-				if (passwordGeneration.getEnabled()) {
+				if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
 					model.addAttribute("allowPasswordGeneration", true);
 				}
 			} else {
