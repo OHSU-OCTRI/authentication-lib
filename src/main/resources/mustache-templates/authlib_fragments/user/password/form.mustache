@@ -7,7 +7,7 @@
 			{{>authlib_fragments/user/password/password_info}}
 
 			{{>components/messages}}
-			<form id="password-form" class="form mt-3" name='changePasswordAttributes' role="form" autocomplete="off" action="{{req.contextPath}}{{formRoute}}" method="POST">
+			<form id="password-form" class="form mt-3" role="form" autocomplete="off" action="{{req.contextPath}}{{formRoute}}" method="POST">
 				{{! The presence of a token indicates a password reset - a change otherwise.
 					i.e. The user doesn't know their current password. }}
 				{{^token}}
