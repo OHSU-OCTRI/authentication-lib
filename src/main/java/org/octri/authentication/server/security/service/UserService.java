@@ -520,8 +520,7 @@ public class UserService {
 	}
 
 	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
-			String token,
-			Map<String, String[]> parameterMap) throws InvalidLdapUserDetailsException {
+			String token, Map<String, String[]> parameterMap) throws InvalidLdapUserDetailsException {
 		return this.resetPassword(newPassword, confirmPassword, token);
 	}
 
