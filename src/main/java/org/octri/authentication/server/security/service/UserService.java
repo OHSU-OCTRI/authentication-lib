@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Resource;
@@ -242,7 +243,8 @@ public class UserService {
 	 * @return Updated user
 	 * @throws InvalidPasswordException
 	 */
-	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword, final String newPassword,
+	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword,
+			final String newPassword,
 			final String confirmPassword) throws InvalidLdapUserDetailsException {
 		List<String> reasons = validatePassword(user, currentPassword, newPassword, confirmPassword);
 		if (!reasons.isEmpty()) {
@@ -285,7 +287,8 @@ public class UserService {
 	 *            Confirm the new password.
 	 * @return List of error messages, or an empty list if the password passes validation.
 	 */
-	public List<String> validatePassword(final User user, final String currentPassword, final String newPassword, final String confirmPassword) {
+	public List<String> validatePassword(final User user, final String currentPassword, final String newPassword,
+			final String confirmPassword) {
 		List<String> reasons = new ArrayList<>();
 
 		// Current password must match existing password in the database if set.
@@ -420,7 +423,8 @@ public class UserService {
 	 * @throws InvalidLdapUserDetailsException
 	 * @return ImmutablePair with the first entry the saved User and the second a list of validation error messages.
 	 */
-	public ImmutablePair<User, List<String>> resetPassword(final String newPassword, final String confirmPassword, final String token) throws InvalidLdapUserDetailsException {
+	public ImmutablePair<User, List<String>> resetPassword(final String newPassword,
+			final String confirmPassword, final String token) throws InvalidLdapUserDetailsException {
 		Assert.notNull(newPassword, "Password is required");
 		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");
@@ -493,7 +497,8 @@ public class UserService {
 	}
 
 	private boolean emailDryRun(final boolean dryRun, final String toEmail) {
-		return dryRun || StringUtils.isBlank(toEmail) || profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString());
+		return dryRun || StringUtils.isBlank(toEmail)
+				|| profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString());
 	}
 
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
@@ -506,6 +511,17 @@ public class UserService {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public ImmutablePair<User, List<String>> changePassword(User user, String currentPassword, String newPassword,
+			String confirmPassword, Map<String, String[]> map)
+			throws InvalidLdapUserDetailsException {
+		return this.changePassword(user, currentPassword, newPassword, confirmPassword);
+	}
+
+	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
+			String token, Map<String, String[]> parameterMap) throws InvalidLdapUserDetailsException {
+		return this.resetPassword(newPassword, confirmPassword, token);
 	}
 
 }

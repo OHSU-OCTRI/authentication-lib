@@ -59,9 +59,17 @@ public class UserPasswordController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/change")
-	public String changePassword(ModelMap model) {
+	public String changePassword(ModelMap model, HttpServletRequest request) {
 		model.addAttribute("formTitle", Messages.TITLE_CHANGE_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/change");
+
+		final String username = (String) request.getSession().getAttribute("lastUsername");
+		Assert.notNull(username, Messages.COULD_NOT_FIND_USERNAME_IN_SESSION);
+
+		final User user = userService.findByUsername(username);
+		Assert.notNull(user, Messages.COULD_NOT_FIND_AN_EXISTING_USER);
+		model.addAttribute("user", user);
+
 		return "user/password/form";
 	}
 
@@ -95,11 +103,13 @@ public class UserPasswordController {
 		final User user = userService.findByUsername(username);
 		Assert.notNull(user, Messages.COULD_NOT_FIND_AN_EXISTING_USER);
 
+		model.addAttribute("user", user);
 		model.addAttribute("formTitle", Messages.TITLE_CHANGE_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/change");
 
 		try {
-			ImmutablePair<User, List<String>> result = userService.changePassword(user, currentPassword, newPassword, confirmPassword);
+			ImmutablePair<User, List<String>> result = userService.changePassword(user, currentPassword, newPassword,
+					confirmPassword, request.getParameterMap());
 
 			if (result.right.isEmpty()) {
 				redirectAttributes.addFlashAttribute("passwordChanged", true);
@@ -107,7 +117,8 @@ public class UserPasswordController {
 				return "redirect:/login";
 			} else {
 				model.addAttribute("errorMessages", result.right);
-				model.addAttribute("currentPasswordIncorrect", result.right.contains(Messages.CURRENT_PASSWORD_INCORRECT));
+				model.addAttribute("currentPasswordIncorrect",
+						result.right.contains(Messages.CURRENT_PASSWORD_INCORRECT));
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}
@@ -177,9 +188,12 @@ public class UserPasswordController {
 		// A record should exist in the database and be not expired.
 		if (!passwordResetTokenService.isValidPasswordResetToken(token)) {
 			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET_TOKEN);
+		} else {
+			model.addAttribute("user", this.getTokenUser(token));
 		}
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
+
 		model.addAttribute("token", token);
 		return "user/password/form";
 	}
@@ -204,10 +218,16 @@ public class UserPasswordController {
 	public String resetPassword(@ModelAttribute("newPassword") String newPassword,
 			@ModelAttribute("confirmPassword") String confirmPassword, @ModelAttribute("token") String token,
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+
+		User user = this.getTokenUser(token);
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
+		model.addAttribute("user", user);
+
 		try {
-			ImmutablePair<User, List<String>> result = userService.resetPassword(newPassword, confirmPassword, token);
+			ImmutablePair<User, List<String>> result = userService.resetPassword(user, newPassword, confirmPassword,
+					token,
+					request.getParameterMap());
 
 			if (result.right.isEmpty()) {
 				userService.sendPasswordResetEmailConfirmation(token, request, false);
@@ -215,6 +235,7 @@ public class UserPasswordController {
 				model.clear();
 				return "redirect:/login";
 			} else {
+				log.info("Error saving; redirectoring to form");
 				model.addAttribute("errorMessages", result.right);
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
@@ -230,6 +251,20 @@ public class UserPasswordController {
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		}
+	}
+
+	/**
+	 * Given a token, find the associated user if one exists.
+	 * 
+	 * @param token
+	 * @return
+	 */
+	private User getTokenUser(String token) {
+		PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
+		if (passwordResetToken != null) {
+			return passwordResetToken.getUser();
+		}
+		return null;
 	}
 
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)

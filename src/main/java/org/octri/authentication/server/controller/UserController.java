@@ -29,6 +29,7 @@ import org.octri.authentication.utils.ProfileUtils;
 import org.octri.authentication.utils.ValidationUtils;
 import org.octri.authentication.validation.Emailable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +38,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -259,6 +262,16 @@ public class UserController {
 	@ModelAttribute("tableBasedEnabled")
 	public Boolean getTableBasedEnabled() {
 		return tableBasedEnabled;
+	}
+
+	/**
+	 * Ensure that empty strings are saved as NULL values.
+	 * 
+	 * @param binder
+	 */
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 	}
 
 }
