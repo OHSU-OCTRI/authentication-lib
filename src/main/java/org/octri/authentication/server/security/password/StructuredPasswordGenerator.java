@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security.password;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,7 +16,34 @@ import org.springframework.util.Assert;
 public class StructuredPasswordGenerator {
 
 	public enum Component {
-		CAPITAL_WORD, WORD, DIGIT, SPECIAL, MY_SYMBOL
+		CAPITAL_WORD('C'), WORD('W'), DIGIT('D'), SPECIAL('S'), MY_SYMBOL('M');
+
+		private Character code;
+
+		// Constructor
+		Component(Character code) {
+			this.code = code;
+		}
+
+		public Character getCode() {
+			return code;
+		}
+
+		/**
+		 * Find Component by its format code.
+		 * 
+		 * @param code
+		 * @return
+		 */
+		public static Component fromCode(Character code) {
+
+			for (Component component : Component.values()) {
+				if (component.getCode().equals(code)) {
+					return component;
+				}
+			}
+			return null;
+		}
 	}
 
 	private Integer minWordLength = 4;
@@ -149,6 +177,24 @@ public class StructuredPasswordGenerator {
 
 	public void setFormat(List<Component> format) {
 		this.format = format;
+	}
+
+	/**
+	 * Set the format from an encoded string; see the Component enumeration for valid codes.
+	 * 
+	 * @param encodedFormat
+	 */
+	public void setFormat(String encodedFormat) {
+		List<Component> components = new ArrayList<>();
+		for (int i = 0; i < encodedFormat.length(); i++) {
+			Character code = encodedFormat.charAt(i);
+			Component c = Component.fromCode(code);
+			if (c == null) {
+				throw new RuntimeException("Invalid password format character: " + code);
+			}
+			components.add(c);
+		}
+		this.setFormat(components);
 	}
 
 	public String getSpecialChars() {

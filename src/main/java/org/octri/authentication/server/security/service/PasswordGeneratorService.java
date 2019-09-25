@@ -45,6 +45,9 @@ public class PasswordGeneratorService {
 			this.generator.setMinWordLength(config.getMinWordLength());
 			this.generator.setMaxWordLength(config.getMaxWordLength());
 			this.generator.setSymbol(config.getSeparator());
+			if (config.getFormat() != null) {
+				this.generator.setFormat(config.getFormat());
+			}
 		}
 	}
 

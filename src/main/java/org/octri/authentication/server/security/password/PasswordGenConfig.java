@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@ConfigurationProperties(prefix = "octri.authenthication.password-gen")
+@ConfigurationProperties(prefix = "octri.authentication.password-gen")
 public class PasswordGenConfig {
 
 	private Boolean enabled = false;
@@ -25,6 +25,8 @@ public class PasswordGenConfig {
 	private Integer minWordLength = 4;
 	private Integer maxWordLength = 8;
 	private String separator = "-";
+	// Encoded String; see {@link StructuredPasswordGenerator#setFormat}
+	private String format;
 
 	public Boolean getEnabled() {
 		return enabled;
@@ -64,6 +66,14 @@ public class PasswordGenConfig {
 
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 }
