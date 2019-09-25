@@ -81,6 +81,29 @@ public class StructuredPasswordGeneratorTest {
 		assertTrue(intersects(password, generator.getSpecialChars()));
 	}
 
+	@Test
+	public void testEncodedFormat() {
+		String encodedFormat = "CMDMW";
+		generator.setFormat(encodedFormat);
+
+		List<Component> expectedFormat = Arrays.asList(Component.CAPITAL_WORD, Component.MY_SYMBOL, Component.DIGIT,
+				Component.MY_SYMBOL, Component.WORD);
+		List<Component> format = generator.getFormat();
+
+		for (int i = 0; i < format.size(); i++) {
+			assertEquals(expectedFormat.get(i), format.get(i));
+		}
+
+		generator.setMinWordLength(4);
+		generator.setMaxWordLength(4);
+
+		String password = generator.generate();
+		assertTrue(password.startsWith("Four"));
+		assertTrue(password.endsWith("four"));
+		assertEquals(new Integer(password.indexOf("-")), new Integer(4));
+		assertEquals(password.length(), 11);
+	}
+
 	/**
 	 * 
 	 * @param string1
