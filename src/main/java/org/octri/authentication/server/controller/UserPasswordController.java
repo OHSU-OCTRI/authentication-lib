@@ -285,11 +285,9 @@ public class UserPasswordController {
 	@PostMapping("admin/password/token/refresh")
 	public String passwordTokenRefresh(final ModelMap model, @RequestParam(name = "userId") Long userId,
 			RedirectAttributes redirectAttributes) {
-		if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-			final User user = userService.find(userId);
-			Assert.notNull(user, "Could not find a user");
-			passwordResetTokenService.save(new PasswordResetToken(user, PasswordResetToken.LONG_EXPIRE_IN_MINUTES));
-		}
+		final User user = userService.find(userId);
+		Assert.notNull(user, "Could not find a user");
+		passwordResetTokenService.save(new PasswordResetToken(user, PasswordResetToken.LONG_EXPIRE_IN_MINUTES));
 		return "redirect:/admin/user/form?id=" + userId;
 	}
 

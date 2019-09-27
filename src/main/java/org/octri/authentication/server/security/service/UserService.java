@@ -497,8 +497,7 @@ public class UserService {
 	}
 
 	private boolean emailDryRun(final boolean dryRun, final String toEmail) {
-		return dryRun || StringUtils.isBlank(toEmail)
-				|| profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString());
+		return dryRun || StringUtils.isBlank(toEmail);
 	}
 
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
