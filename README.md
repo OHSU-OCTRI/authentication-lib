@@ -105,7 +105,7 @@ User email is required by default, but can be made optional by using the spring 
 
 ### No email mode
 
-For applications that don't require an email address, do the following to configure your application.
+For applications that don't require an email address on user creation, do the following to configure your application.
 
 Set the spring profile `noemail`. You can do this a few ways. The easiest is to define the following property in your application. This activates the profile by default. Other profiles can still be activated by setting `spring.profiles.active`.
 

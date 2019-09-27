@@ -1,6 +1,6 @@
 package org.octri.authentication.server.controller;
 
-import static org.octri.authentication.server.security.entity.PasswordResetToken.*;
+import static org.octri.authentication.server.security.entity.PasswordResetToken.LONG_EXPIRE_IN_MINUTES;
 
 import java.util.Date;
 import java.util.List;
@@ -128,15 +128,13 @@ public class UserController {
 				model.addAttribute("newUser", false);
 				model.addAttribute("formView", true);
 
-				if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
-					if (latestToken.isPresent()
-							&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
-						final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
-						model.addAttribute("passwordResetUrl", url);
-					} else {
-						model.addAttribute("showNewTokenButton", true);
-					}
+				Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
+				if (latestToken.isPresent()
+						&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
+					final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
+					model.addAttribute("passwordResetUrl", url);
+				} else {
+					model.addAttribute("showNewTokenButton", true);
 				}
 				if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
 					model.addAttribute("allowPasswordGeneration", true);
@@ -266,7 +264,7 @@ public class UserController {
 
 	/**
 	 * Ensure that empty strings are saved as NULL values.
-	 * 
+	 *
 	 * @param binder
 	 */
 	@InitBinder
