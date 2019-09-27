@@ -243,7 +243,6 @@ public class UserServiceTest {
 
 	@Test
 	public void testSendPasswordResetTokenEmail() {
-		when(profileUtils.isActive(ProfileUtils.AuthProfile.noemail.toString())).thenReturn(false);
 		userService.sendPasswordResetTokenEmail(new PasswordResetToken(user), request, false, false);
 		verify(mailSender).send(any(SimpleMailMessage.class));
 	}
