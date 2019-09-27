@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @Scope("session")
 public class UserPasswordController {
+
+	public static final String EMAIL_SENT_CONFIRMATION_MESSAGE = "An email was sent to your address containing instructions to change your password. This request will expire in "
+			+ PasswordResetToken.EXPIRE_IN_MINUTES + " minutes. If you do not receive an email within "
+			+ PasswordResetToken.EXPIRE_IN_MINUTES
+			+ " minutes please try again or contact your system administrator.";
+
+	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. Please try again or contact your system administrator if this persists.";
+
+	public static final String LDAP_USER_WARNING_MESSAGE = "The account you entered cannot have the password reset. If you feel this is in error, please contact your system administrator.";
 
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
@@ -157,18 +167,22 @@ public class UserPasswordController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/forgot")
-	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request) {
+	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request,
+			RedirectAttributes redirectAttributes) {
 		try {
 			User user = userService.findByEmail(email);
+			if (user != null && StringUtils.isBlank(user.getPassword())) {
+				redirectAttributes.addFlashAttribute("errorMessage", LDAP_USER_WARNING_MESSAGE);
+				return "redirect:/user/password/forgot";
+			}
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 			userService.sendPasswordResetTokenEmail(token, request, false, false);
-			model.addAttribute("confirmation", true);
-			model.addAttribute("expire_in_minutes", PasswordResetToken.EXPIRE_IN_MINUTES);
-			return "user/password/forgot";
+			redirectAttributes.addFlashAttribute("successMessage", EMAIL_SENT_CONFIRMATION_MESSAGE);
+			return "redirect:/user/password/forgot";
 		} catch (Exception ex) {
 			log.error("Error while processing password reset request for email address " + email, ex);
-			model.addAttribute("error", true);
-			return "user/password/forgot";
+			redirectAttributes.addFlashAttribute("errorMessage", GENERIC_ERROR_MESSAGE);
+			return "redirect:/user/password/forgot";
 		}
 	}
 
@@ -255,7 +269,7 @@ public class UserPasswordController {
 
 	/**
 	 * Given a token, find the associated user if one exists.
-	 * 
+	 *
 	 * @param token
 	 * @return
 	 */

@@ -2,22 +2,8 @@
 	 <div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
 		<h3>Initiate a Password Reset</h3>
 		<form class="form" action="{{req.contextPath}}/user/password/forgot" method="POST">
-			{{#confirmation}}
-			<div class="alert alert-success">
-				An email was sent to your address containing instructions to 
-				change your password. This request will expire in {{expire_in_minutes}} minutes.
-				If you do not receive an email within {{expire_in_minutes}} minutes please try 
-				again or contact your system administrator.
-			</div>
-			{{/confirmation}}
+			{{>components/messages}}
 
-			{{#error}}
-			<div class="alert alert-danger">
-				There was an unexpected error processing your request. Please try again or contact your system administrator if this persists.
-			</div>
-			{{/error}}
-
-			{{^confirmation}}
 			<div class="form-group">
 				<label for="email">Enter an email address</label>
 				<input id="email" name="email" class="form-control" type="email" autofocus="true" />
@@ -27,7 +13,6 @@
 				{{>authlib_fragments/forms/csrf_input}}
 				<button class="btn btn-primary" type="submit">Submit</button>
 			</div>
-			{{/confirmation}}
 		</form>
 	</div>
 </div>
