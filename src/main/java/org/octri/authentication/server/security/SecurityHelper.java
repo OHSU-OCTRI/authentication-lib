@@ -6,10 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.octri.authentication.server.security.entity.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.util.Assert;
 
 /**
  * A class for querying Spring Security Authentication. This was added after porting the ThymeLeaf templates to
@@ -69,7 +72,7 @@ public class SecurityHelper {
 	/**
 	 * Checks if the currently authenticated user is allowed to edit a specific user. Currently a user must have the
 	 * ADMIN or SUPER role, and must not be editing themself.
-	 * 
+	 *
 	 * @param testUserId
 	 *            The id of the user being edited.
 	 * @return True if the currently authenticated user can edit a user.
@@ -89,7 +92,7 @@ public class SecurityHelper {
 
 	/**
 	 * Get the current {@link AuthenticationUserDetails}.
-	 * 
+	 *
 	 * @return
 	 */
 	public AuthenticationUserDetails authenticationUserDetails() {
@@ -115,17 +118,17 @@ public class SecurityHelper {
 	public boolean hasRole(Role role) {
 		return hasRoleName(role.name());
 	}
-	
+
 	/**
 	 * Checks if the user has the given roleName. This could be any role defined by the application, not
 	 * just the default roles set up in this library.
-	 * 
+	 *
 	 * @param roleName
 	 * @return True if the user contains the roleName
 	 */
 	public boolean hasRoleName(String roleName) {
 		return authorities == null ? false
-				: authorities.stream().anyMatch(authority -> authority.getAuthority().equals(roleName));		
+				: authorities.stream().anyMatch(authority -> authority.getAuthority().equals(roleName));
 	}
 
 	/**
@@ -138,14 +141,24 @@ public class SecurityHelper {
 	public boolean hasAnyRole(List<Role> roles) {
 		return hasAnyRoleName(roles.stream().map(role -> role.name()).collect(Collectors.toList()));
 	}
-	
+
 	/**
 	 * Checks if a user contains at least one of the role names.
-	 * 
+	 *
 	 * @param roleNames
 	 * @return True if the user contains at least one of the role names.
 	 */
 	public boolean hasAnyRoleName(List<String> roleNames) {
 		return roleNames.stream().anyMatch(name -> hasRoleName(name));
+	}
+
+	/**
+	 * Determines if the user is an LDAP user.
+	 *
+	 * @return true if the user is an LDAP user.
+	 */
+	public Boolean isLdapUser(User user) {
+		Assert.notNull(user, "User cannot be null");
+		return StringUtils.isBlank(user.getPassword());
 	}
 }
