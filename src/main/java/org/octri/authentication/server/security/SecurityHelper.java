@@ -153,13 +153,25 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Determines if the user has a password set. This method is generally used to determine if the user is an LDAP
-	 * user. Note, on user creation the password field is NULL for every user.
+	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If it is
+	 * ohsu.edu then the user is an LDAP user.
+	 *
+	 * TODO: Consider adding a persisted flag on the `user` record. AUTHLIB-73
 	 *
 	 * @return true if the user is an LDAP user.
 	 */
-	public Boolean hasPassword(User user) {
+	public Boolean isLdapUser(User user) {
 		Assert.notNull(user, "User cannot be null");
-		return !StringUtils.isBlank(user.getPassword());
+		if (StringUtils.isBlank(user.getEmail())) {
+			return false;
+		}
+
+		final String[] emailParts = user.getEmail().split("@");
+		if (emailParts.length < 2) {
+			return false;
+		}
+
+		final String domain = emailParts[1].trim();
+		return domain.equalsIgnoreCase("ohsu.edu");
 	}
 }
