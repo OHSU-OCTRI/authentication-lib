@@ -173,7 +173,7 @@ public class UserPasswordController {
 		try {
 			SecurityHelper sh = new SecurityHelper(SecurityContextHolder.getContext());
 			final User user = userService.findByEmail(email);
-			if (user != null && sh.isLdapUser(user)) {
+			if (user != null && !sh.hasPassword(user)) {
 				redirectAttributes.addFlashAttribute("errorMessage", LDAP_USER_WARNING_MESSAGE);
 				return "redirect:/user/password/forgot";
 			}

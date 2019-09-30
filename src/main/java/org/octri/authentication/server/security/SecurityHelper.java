@@ -153,12 +153,13 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Determines if the user is an LDAP user.
+	 * Determines if the user has a password set. This method is generally used to determine if the user is an LDAP
+	 * user. Note, on user creation the password field is NULL for every user.
 	 *
 	 * @return true if the user is an LDAP user.
 	 */
-	public Boolean isLdapUser(User user) {
+	public Boolean hasPassword(User user) {
 		Assert.notNull(user, "User cannot be null");
-		return StringUtils.isBlank(user.getPassword());
+		return !StringUtils.isBlank(user.getPassword());
 	}
 }
