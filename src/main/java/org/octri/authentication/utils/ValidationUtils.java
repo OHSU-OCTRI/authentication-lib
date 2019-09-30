@@ -23,6 +23,9 @@ import org.springframework.validation.FieldError;
 @Component
 public class ValidationUtils<T> {
 
+	// See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation
+	public static final String VALID_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+
 	/**
 	 * Get list of {@link FieldError} used in mustache templates.
 	 *

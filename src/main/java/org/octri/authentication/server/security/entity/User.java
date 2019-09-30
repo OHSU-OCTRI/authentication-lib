@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.entity;
 
+import static org.octri.authentication.utils.ValidationUtils.VALID_EMAIL_REGEX;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -34,9 +36,6 @@ import org.springframework.util.Assert;
 public class User extends AbstractEntity implements Labelled {
 
 	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";
-
-	// See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation
-	public static final String VALID_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
 	// TODO: This could be configurable.
 	public static final Integer EXPIRE_CREDENTIALS_IN_DAYS = 180;
