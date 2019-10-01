@@ -266,7 +266,7 @@ public class UserService {
 
 	/**
 	 * Set the password for the given user to an encoded value.
-	 * 
+	 *
 	 * @param user
 	 * @param newPassword
 	 */
@@ -521,6 +521,25 @@ public class UserService {
 	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
 			String token, Map<String, String[]> parameterMap) throws InvalidLdapUserDetailsException {
 		return this.resetPassword(newPassword, confirmPassword, token);
+	}
+
+	/**
+	 * Send a notification to the original/current email address letting the user know their email address has been
+	 * changed.
+	 *
+	 * @param user
+	 * @param currentEmail
+	 */
+	public void sendNotificationEmail(final User user, final String currentEmail) {
+		SimpleMailMessage email = new SimpleMailMessage();
+		email.setSubject("Your SHIFT Onboard email was changed");
+		final String body = "Hello " + user.getFirstName()
+				+ ",\n\nWe are writing to let you know that your email address was changed on the SHIFT Onboard site. If this was you, no action is needed.\n\nIf this was not you please contact your system administrator.";
+		email.setText(body);
+		email.setTo(currentEmail);
+		email.setFrom(emailConfig.getFrom());
+		mailSender.send(email);
+		log.info("Email changed for user id " + user.getId() + ". Email confirmation sent.");
 	}
 
 }
