@@ -1,6 +1,7 @@
 package org.octri.authentication.server.security.password;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +68,7 @@ public class UserConstraintValidationTest {
 			"foo",
 			"example.com",
 			"foo.example.com",
-			"joe@example");
+			"joe@");
 
 	@BeforeClass
 	public static void setUp() {
