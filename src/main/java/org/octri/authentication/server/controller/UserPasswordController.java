@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
+import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
@@ -20,6 +20,7 @@ import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -170,8 +171,9 @@ public class UserPasswordController {
 	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request,
 			RedirectAttributes redirectAttributes) {
 		try {
-			User user = userService.findByEmail(email);
-			if (user != null && StringUtils.isBlank(user.getPassword())) {
+			SecurityHelper sh = new SecurityHelper(SecurityContextHolder.getContext());
+			final User user = userService.findByEmail(email);
+			if (user != null && sh.isLdapUser(user)) {
 				redirectAttributes.addFlashAttribute("errorMessage", LDAP_USER_WARNING_MESSAGE);
 				return "redirect:/user/password/forgot";
 			}

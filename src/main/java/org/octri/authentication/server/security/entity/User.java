@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.entity;
 
+import static org.octri.authentication.utils.ValidationUtils.VALID_EMAIL_REGEX;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -111,7 +113,7 @@ public class User extends AbstractEntity implements Labelled {
 	 *
 	 * @see http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
 	 */
-	@Email(message = INVALID_EMAIL_MESSAGE, regexp = ".+@.+\\..+", groups = Emailable.class)
+	@Email(message = INVALID_EMAIL_MESSAGE, regexp = VALID_EMAIL_REGEX, groups = Emailable.class)
 	@NotNull(message = "Email is required", groups = Emailable.class)
 	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters", groups = Emailable.class)
 	private String email;
