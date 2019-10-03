@@ -367,7 +367,7 @@ public class UserService {
 		} else {
 			email.setSubject("Reset your password request");
 			body = "Hello " + user.getFirstName() + ",\n\nTo reset your password please follow this link: "
-					+ resetPath;
+					+ resetPath + "\n\nIf you did not initiate this request, please contact your system administrator.";
 		}
 		email.setText(body);
 		email.setTo(user.getEmail());
