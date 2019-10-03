@@ -12,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
@@ -186,8 +187,9 @@ public class UserController {
 		model.addAttribute("formView", true);
 
 		Set<ConstraintViolation<User>> validationResult = profileUtils.isActive(ProfileUtils.AuthProfile.noemail)
-				? validator.validate(user, Default.class)
-				: validator.validate(user, Emailable.class);
+				&& StringUtils.isBlank(user.getEmail())
+						? validator.validate(user, Default.class)
+						: validator.validate(user, Emailable.class);
 
 		if (validationResult.size() > 0) {
 			model.addAttribute("error", true);
