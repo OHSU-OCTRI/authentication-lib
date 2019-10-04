@@ -8,13 +8,11 @@ import javax.persistence.MappedSuperclass;
 
 import org.octri.authentication.server.view.Identified;
 
-import io.katharsis.resource.annotations.JsonApiId;
-
 /**
  * An abstract entity for all other entities to extend. It includes the base {@link #id} field which is
  * auto-incrementing.
  * 
- * TODO: Add back in Katharsis and auditing?
+ * TODO: Add back in auditing?
  * 
  * @author yateam
  */
@@ -22,7 +20,6 @@ import io.katharsis.resource.annotations.JsonApiId;
 public abstract class AbstractEntity implements Identified {
 
 	@Id
-	@JsonApiId
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	protected Long id;

@@ -14,7 +14,17 @@ The repo 'auth_example_project' in this project shows a minimal web application 
 	</dependency>
 ```
 
-The library will transitively bring in several Spring Boot jars along with MySQL, Flyway, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up. You will also likely need to include your project's package in these annotations.
+### Flyway Migrations
+
+To create the database tables used by the library, copy the SQL migrations from `setup/migrations/` into your project's Flyway migration directory (`src/main/resources/db/migration/`). If you used the OCTRI Spring Boot archetype to generate your application and enabled the library, this has already been done for you. If adding the library to an existing application, you will need to rename the migrations so that they are applied after existing migrations.
+
+> Note: Prior to version 0.5.0, migrations were automatically applied by Flyway. This could cause issues with migration ordering and complicated adding the library to existing applications, so the migrations must now be manually included in projects.
+
+Additional migrations are provided to enable specific workflows. See the [setup README](setup/README.md) and files in `setup/optional_migrations` for details.
+
+### Package Scanning
+
+The library will transitively bring in several Spring Boot jars along with MySQL, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up. You will also likely need to include your project's package in these annotations.
 
 ```
 @SpringBootApplication
@@ -113,7 +123,7 @@ Set the spring profile `noemail`. You can do this a few ways. The easiest is to 
 spring.profiles.include=noemail
 ```
 
-Lastly copy the migration [`V20190621120000__alter_user.sql`](src/main/resources/noemail/db/migration/V20190621120000__alter_user.sql) into your application's Flyway migration directory. Usually `src/main/resources/db/migration`.
+Lastly copy the migration [`V20190621120000__alter_user.sql`](setup/optional_migrations/noemail/V20190621120000__alter_user.sql) into your application's Flyway migration directory. Usually `src/main/resources/db/migration`.
 
 ### Session Timeout
 
