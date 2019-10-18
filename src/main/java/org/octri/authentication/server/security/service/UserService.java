@@ -23,7 +23,6 @@ import org.octri.authentication.server.security.exception.InvalidPasswordExcepti
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
-import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
@@ -81,9 +80,6 @@ public class UserService {
 
 	@Value("${app.displayName}")
 	private String displayName;
-
-	@Autowired
-	private ProfileUtils profileUtils;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -365,7 +361,7 @@ public class UserService {
 					+ user.getUsername() + ". To set your password, please follow this link: " + resetPath;
 
 		} else {
-			email.setSubject("Reset your password request");
+			email.setSubject("Password reset request for " + displayName);
 			body = "Hello " + user.getFirstName() + ",\n\nTo reset your password please follow this link: "
 					+ resetPath + "\n\nIf you did not initiate this request, please contact your system administrator.";
 		}
@@ -373,8 +369,7 @@ public class UserService {
 		email.setTo(user.getEmail());
 		email.setFrom(emailConfig.getFrom());
 		if (emailDryRun(dryRun, user.getEmail())) {
-			log.info("DRY RUN, would have sent email to " + user.getEmail() + " from " + emailConfig.getFrom()
-					+ " about " + body);
+			logDryRunEmail(email);
 		} else {
 			mailSender.send(email);
 			log.info("Password reset confirmation email sent to " + user.getEmail());
@@ -478,7 +473,7 @@ public class UserService {
 		final String userEmail = passwordResetToken.getUser().getEmail();
 
 		SimpleMailMessage email = new SimpleMailMessage();
-		email.setSubject("Your password was reset");
+		email.setSubject("Your " + displayName + " password was reset");
 		final String body = "Your password has been reset. You may now log into the application.\n\nUsername: "
 				+ passwordResetToken.getUser().getUsername()
 				+ "\nLink: " + buildLoginUrl();
@@ -487,9 +482,7 @@ public class UserService {
 		email.setFrom(emailConfig.getFrom());
 
 		if (emailDryRun(dryRun, userEmail)) {
-			log.info("DRY RUN, would have sent email to " + userEmail + " from " + emailConfig.getFrom()
-					+ " about "
-					+ body);
+			logDryRunEmail(email);
 		} else {
 			mailSender.send(email);
 			log.info("Password reset confirmation email sent to " + userEmail);
@@ -498,6 +491,12 @@ public class UserService {
 
 	private boolean emailDryRun(final boolean dryRun, final String toEmail) {
 		return dryRun || StringUtils.isBlank(toEmail);
+	}
+
+	private void logDryRunEmail(SimpleMailMessage message) {
+		final String format = "DRY RUN, would have sent email to %s from %s with subject \"%s\" and contents \"%s\"";
+		log.info(String.format(format, String.join(", ", message.getTo()), message.getFrom(), message.getSubject(),
+			message.getText()));
 	}
 
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
@@ -532,9 +531,10 @@ public class UserService {
 	 */
 	public void sendNotificationEmail(final User user, final String currentEmail) {
 		SimpleMailMessage email = new SimpleMailMessage();
-		email.setSubject("Your SHIFT Onboard email was changed");
+		email.setSubject("Your " + displayName + " email was changed");
 		final String body = "Hello " + user.getFirstName()
-				+ ",\n\nWe are writing to let you know that your email address was changed on the SHIFT Onboard site. If this was you, no action is needed.\n\nIf this was not you please contact your system administrator.";
+				+ ",\n\nWe are writing to let you know that your email address was changed on the " + displayName
+				+ " site. If this was you, no action is needed.\n\nIf this was not you please contact your system administrator.";
 		email.setText(body);
 		email.setTo(currentEmail);
 		email.setFrom(emailConfig.getFrom());
