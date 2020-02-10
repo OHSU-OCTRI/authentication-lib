@@ -16,7 +16,6 @@ import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
-import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,9 +55,6 @@ public class UserPasswordController {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
-
-	@Autowired
-	private ProfileUtils profileUtils;
 
 	@Autowired
 	private PasswordGeneratorService generator;
