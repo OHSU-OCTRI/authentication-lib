@@ -11,6 +11,7 @@ import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
@@ -133,11 +134,14 @@ public class UserPasswordController {
 			log.error("Unexpected LDAP exception while saving " + username, ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
+		} catch (DuplicateEmailException ex) {
+			model.addAttribute("errorMessage", ex.getMessage());
+			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
-		}
+		} 
 	}
 
 	/**
@@ -258,11 +262,14 @@ public class UserPasswordController {
 			log.error("Unexpected LDAP exception while saving " + username, ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
+		} catch (DuplicateEmailException ex) {
+			model.addAttribute("errorMessage", ex.getMessage());
+			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected error while saving password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
-		}
+		} 
 	}
 
 	/**
@@ -292,7 +299,7 @@ public class UserPasswordController {
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/password/generate")
 	public String generatePassword(final ModelMap model, @RequestParam(name = "userId") Long userId,
-			RedirectAttributes redirectAttributes) throws InvalidLdapUserDetailsException {
+			RedirectAttributes redirectAttributes) throws InvalidLdapUserDetailsException, DuplicateEmailException {
 
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");

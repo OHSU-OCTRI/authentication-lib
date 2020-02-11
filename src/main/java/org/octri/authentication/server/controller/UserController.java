@@ -20,6 +20,7 @@ import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
+import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
@@ -217,12 +218,17 @@ public class UserController {
 		} catch (InvalidLdapUserDetailsException ex) {
 			log.error("Could not add new user", ex);
 			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
+			model.addAttribute("errorMessage", ex.getMessage());
 			return "admin/user/form";
 		} catch (UsernameNotFoundException ex) {
 			log.error("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
+			return "admin/user/form";
+		} catch (DuplicateEmailException ex) {
+			log.error("Email already exists", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", ex.getMessage());
 			return "admin/user/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
@@ -230,7 +236,6 @@ public class UserController {
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
 			return "admin/user/form";
 		}
-
 		return "redirect:/admin/user/list";
 	}
 
