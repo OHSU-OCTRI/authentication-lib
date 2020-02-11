@@ -130,11 +130,8 @@ public class UserPasswordController {
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}
-		} catch (InvalidLdapUserDetailsException ex) {
-			log.error("Unexpected LDAP exception while saving " + username, ex);
-			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
-			return "user/password/form";
-		} catch (DuplicateEmailException ex) {
+		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+			log.error("Unexpected exception while changing password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
 		} catch (RuntimeException ex) {
@@ -256,17 +253,12 @@ public class UserPasswordController {
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}
-		} catch (InvalidLdapUserDetailsException ex) {
-			PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
-			final String username = passwordResetToken != null ? passwordResetToken.getUser().getUsername() : null;
-			log.error("Unexpected LDAP exception while saving " + username, ex);
-			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
-			return "user/password/form";
-		} catch (DuplicateEmailException ex) {
+		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+			log.error("Unexpected exception while resetting password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
 		} catch (RuntimeException ex) {
-			log.error("Unexpected error while saving password", ex);
+			log.error("Unexpected error while resetting password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
 		} 

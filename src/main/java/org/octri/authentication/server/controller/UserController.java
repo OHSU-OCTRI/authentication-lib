@@ -215,8 +215,8 @@ public class UserController {
 				}
 			}
 
-		} catch (InvalidLdapUserDetailsException ex) {
-			log.error("Could not add new user", ex);
+		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+			log.error("Checked exception thrown", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "admin/user/form";
@@ -224,11 +224,6 @@ public class UserController {
 			log.error("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/form";
-		} catch (DuplicateEmailException ex) {
-			log.error("Email already exists", ex);
-			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", ex.getMessage());
 			return "admin/user/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
