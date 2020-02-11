@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class ApplicationAuthenticationSuccessHandler extends AuditLoginAuthentic
 		recordLoginSuccess(auth, request);
 		try {
 			resetUserFailedAttempts(auth);
-		} catch (InvalidLdapUserDetailsException ex) {
+		} catch (Exception ex) {
 			throw new ServletException(ex);
 		}
 

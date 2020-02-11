@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.Authentication;
@@ -43,7 +42,7 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 		recordLoginSuccess(auth, request);
 		try {
 			resetUserFailedAttempts(auth);
-		} catch (InvalidLdapUserDetailsException ex) {
+		} catch (Exception ex) {
 			throw new ServletException(ex);
 		}
 

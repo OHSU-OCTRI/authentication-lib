@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.octri.authentication.EmailConfiguration;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.Messages;
@@ -97,7 +98,7 @@ public class UserServiceTest {
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@Before
-	public void beforeEach() throws InvalidLdapUserDetailsException {
+	public void beforeEach() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
@@ -115,7 +116,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSuccessfulPasswordChange() throws InvalidLdapUserDetailsException {
+	public void testSuccessfulPasswordChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD, VALID_PASSWORD);
 		final User saved = result.left;
 		assertNotNull("User must not be null", saved);
@@ -123,7 +124,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testPasswordChangeResetsCredentialMetadata() throws InvalidLdapUserDetailsException {
+	public void testPasswordChangeResetsCredentialMetadata() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
@@ -137,7 +138,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewAndConfirmPasswordsMustMatchOnChange() throws InvalidLdapUserDetailsException {
+	public void testNewAndConfirmPasswordsMustMatchOnChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD, "invalid_confirm_password");
 		assertFalse("Should return errors", result.right.isEmpty());
 		assertEquals("Should return 1 error", 1, result.right.size());
@@ -145,7 +146,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testCurrentPasswordMustMatchExistingOnChange() throws InvalidLdapUserDetailsException {
+	public void testCurrentPasswordMustMatchExistingOnChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, "not_current_password", VALID_PASSWORD, VALID_PASSWORD);
 		assertFalse("Should return errors", result.right.isEmpty());
 		assertEquals("Should return 1 error", 1, result.right.size());
@@ -153,7 +154,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewPasswordMustNotContainUsernameOnChange() throws InvalidLdapUserDetailsException {
+	public void testNewPasswordMustNotContainUsernameOnChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, INVALID_PASSWORD_WITH_USERNAME, INVALID_PASSWORD_WITH_USERNAME);
 		assertFalse("Should return errors", result.right.isEmpty());
 		assertEquals("Should return 1 error", 1, result.right.size());
@@ -161,7 +162,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewPasswordMustNotBeCurrentPasswordOnChange() throws InvalidLdapUserDetailsException {
+	public void testNewPasswordMustNotBeCurrentPasswordOnChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, CURRENT_PASSWORD, CURRENT_PASSWORD);
 		assertFalse("Should return errors", result.right.isEmpty());
 		assertEquals("Should return 1 error", 1, result.right.size());
@@ -169,7 +170,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPassword() throws InvalidLdapUserDetailsException {
+	public void testResetPassword() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -187,7 +188,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testPasswordResetResetsCredentialMetadata() throws InvalidLdapUserDetailsException {
+	public void testPasswordResetResetsCredentialMetadata() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
@@ -204,7 +205,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidConfirmPassword() throws InvalidLdapUserDetailsException {
+	public void testResetPasswordWithInvalidConfirmPassword() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		final String password = "Abcdefg.1";
 		final String confirmPassword = "Abcdefg.2";
 		UserService spyUserService = spy(userService);
@@ -218,7 +219,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException, InvalidLdapUserDetailsException {
+	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException, InvalidLdapUserDetailsException, DuplicateEmailException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -231,7 +232,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException, InvalidLdapUserDetailsException {
+	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException, InvalidLdapUserDetailsException, DuplicateEmailException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -274,7 +275,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSuccessfulSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException {
+	public void testSuccessfulSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		userService.setTableBasedEnabled(false);
 		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
 		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
@@ -286,7 +287,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testExceptionOnSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException {
+	public void testExceptionOnSaveWithLdapOnlyEnabled() throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		userService.setTableBasedEnabled(false);
 		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
 		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
