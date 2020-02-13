@@ -25,20 +25,27 @@ public class Reason {
 	 * @return The message as a String.
 	 */
 	public static String message(final String key) {
-		switch (ReasonKey.valueOf(key)) {
-			case TOO_SHORT:
-				return Messages.PASSWORD_TOO_SHORT;
-			case INSUFFICIENT_DIGIT:
-				return Messages.PASSWORD_INSUFFICIENT_DIGIT;
-			case INSUFFICIENT_UPPERCASE:
-				return Messages.PASSWORD_INSUFFICIENT_UPPERCASE;
-			case INSUFFICIENT_SPECIAL:
-				return Messages.PASSWORD_INSUFFICIENT_SPECIAL;
-			case INSUFFICIENT_CHARACTERISTICS:
-				return Messages.PASSWORD_INSUFFICIENT_CHARACTERISTICS;
-			default:
-				return Messages.DEFAULT_ERROR_MESSAGE;
+		
+		try {
+			switch (ReasonKey.valueOf(key)) {
+				case TOO_SHORT:
+					return Messages.PASSWORD_TOO_SHORT;
+				case INSUFFICIENT_DIGIT:
+					return Messages.PASSWORD_INSUFFICIENT_DIGIT;
+				case INSUFFICIENT_UPPERCASE:
+					return Messages.PASSWORD_INSUFFICIENT_UPPERCASE;
+				case INSUFFICIENT_SPECIAL:
+					return Messages.PASSWORD_INSUFFICIENT_SPECIAL;
+				case INSUFFICIENT_CHARACTERISTICS:
+					return Messages.PASSWORD_INSUFFICIENT_CHARACTERISTICS;
+				default:
+					return Messages.PASSWORD_INVALID;
+			}
+		} catch (IllegalArgumentException ex) {
+			// On occasion we'll encounter reasons we haven't handled in the enum. Return a generic message instead of throwing an exception.
+			return Messages.PASSWORD_INVALID;
 		}
+		
 	}
 
 	private Reason() {
