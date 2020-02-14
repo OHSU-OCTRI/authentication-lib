@@ -241,15 +241,15 @@ public class UserService {
 	}
 
 	/**
-	 * Saves user with newPassword and updates {@link User#credentialsExpirationDate}, otherwise throws an
-	 * {@link InvalidPasswordException}.
+	 * Saves user with newPassword and updates {@link User#credentialsExpirationDate}. If validation fails,
+	 * the User is returned paired with a list of errors.
 	 *
 	 * @param user
 	 * @param currentPassword
 	 * @param newPassword
 	 * @param confirmPassword
 	 * @return Updated user
-	 * @throws InvalidPasswordException
+	 * @throws InvalidLdapUserDetailsException
 	 * @throws DuplicateEmailException 
 	 */
 	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword,
