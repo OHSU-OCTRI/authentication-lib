@@ -130,16 +130,16 @@ public class UserController {
 				model.addAttribute("newUser", false);
 				model.addAttribute("formView", true);
 
-				if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
-					if (latestToken.isPresent()
-							&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
-						final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
-						model.addAttribute("passwordResetUrl", url);
-					} else {
-						model.addAttribute("showNewTokenButton", true);
-					}
+				// Show either a valid reset URL or allow the admin to generate one
+				Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
+				if (latestToken.isPresent()
+						&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
+					final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
+					model.addAttribute("passwordResetUrl", url);
+				} else {
+					model.addAttribute("showNewTokenButton", true);
 				}
+				
 				if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
 					model.addAttribute("allowPasswordGeneration", true);
 				}
