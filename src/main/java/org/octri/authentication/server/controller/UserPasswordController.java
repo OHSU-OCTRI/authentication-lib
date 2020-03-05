@@ -197,12 +197,16 @@ public class UserPasswordController {
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/reset")
 	public String resetPassword(@RequestParam("token") String token, ModelMap model) {
-		// Check to see if there is a valid token.
+		
 		// A record should exist in the database and be not expired.
-		if (!passwordResetTokenService.isValidPasswordResetToken(token)) {
+		User user = this.getTokenUser(token);
+		
+		if (user == null) {
 			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET_TOKEN);
+		} else if (!user.canResetPassword()) {
+			model.addAttribute("errorMessage", Messages.INVALID_USER);
 		} else {
-			model.addAttribute("user", this.getTokenUser(token));
+			model.addAttribute("user", user);
 		}
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
@@ -233,6 +237,15 @@ public class UserPasswordController {
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 
 		User user = this.getTokenUser(token);
+		
+		// The user cannot change their password if they don't have a valid token or are locked/disabled in some way.
+		// They will have already received a message about this on the reset password page, but if they continue to
+		// try they will be redirected to login.
+		if (user == null || !user.canResetPassword()) {
+			model.clear();
+			return "redirect:/login?error=true";			
+		}
+
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
 		model.addAttribute("formRoute", "/user/password/reset");
 		model.addAttribute("user", user);
@@ -265,14 +278,14 @@ public class UserPasswordController {
 	}
 
 	/**
-	 * Given a token, find the associated user if one exists.
+	 * Given a token, find the associated user and check expiration.
 	 *
 	 * @param token
-	 * @return
+	 * @return the user if the token exists and is active, null otherwise
 	 */
 	private User getTokenUser(String token) {
 		PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
-		if (passwordResetToken != null) {
+		if (passwordResetToken != null && !passwordResetToken.isExpired()) {
 			return passwordResetToken.getUser();
 		}
 		return null;

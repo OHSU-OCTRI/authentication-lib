@@ -99,6 +99,7 @@ public class PasswordResetTokenService {
 
 	/**
 	 * Checks to ensure a token exists and has not expired.
+	 * @deprecated Use other service methods to get the token; then use {@link PasswordResetToken#isExpired()}
 	 *
 	 * @param token
 	 * @return true if the password reset token is valid, false otherwise.
@@ -106,12 +107,7 @@ public class PasswordResetTokenService {
 	public boolean isValidPasswordResetToken(final String token) {
 		Assert.notNull(token, "Must provide a token");
 		PasswordResetToken existing = findByToken(token);
-		if (existing == null) {
-			return false;
-		}
-		Date now = new Date();
-		// Valid if: Now is not after the expiration date.
-		return !now.after(existing.getExpiryDate());
+		return existing != null && !existing.isExpired();
 	}
 
 	/**

@@ -11,6 +11,8 @@ public class Messages {
 
 	public static final String INVALID_PASSWORD_RESET_TOKEN = "Could not validate password token. If this continues to happen please contact your administrator for assistance.";
 
+	public static final String INVALID_USER = "Could not validate user. Please contact your administrator for assistance.";
+	
 	public static final String PASSWORD_INVALID = "The password does not meet all of the requirements.";
 
 	public static final String PASSWORD_TOO_SHORT = "Password too short.";
