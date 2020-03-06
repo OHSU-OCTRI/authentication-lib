@@ -306,6 +306,7 @@ public class UserPasswordController {
 
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");
+		Assert.isTrue(generator.isEnabled(), "Cannot generate temporary passwords"); 
 
 		String newPassword = generator.generatePassword();
 

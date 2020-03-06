@@ -22,7 +22,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
-import org.octri.authentication.server.security.password.PasswordGenConfig;
+import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
@@ -82,7 +82,7 @@ public class UserController {
 	private ValidationUtils<User> validationUtils;
 
 	@Autowired
-	private PasswordGenConfig passwordGeneration;
+	private PasswordGeneratorService passwordGeneratorService;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -142,7 +142,7 @@ public class UserController {
 						model.addAttribute("showNewTokenButton", true);
 					}
 					
-					if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
+					if (passwordGeneratorService.isEnabled() && !user.getLdapUser()) {
 						model.addAttribute("allowPasswordGeneration", true);
 					}
 				}

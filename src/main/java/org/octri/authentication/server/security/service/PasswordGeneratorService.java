@@ -21,9 +21,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PasswordGeneratorService {
+	
+	@Autowired
+	private Boolean tableBasedEnabled;
 
 	private ResourceLoader resourceLoader;
 	private StructuredPasswordGenerator generator;
+	private Boolean enabled;
 
 	/**
 	 * Construct the service using the configured dictionary.
@@ -34,6 +38,8 @@ public class PasswordGeneratorService {
 	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig config)
 			throws IOException {
 		this.resourceLoader = loader;
+		// This service can only be enabled if configured and table-based users are allowed
+		this.enabled = config.getEnabled() && tableBasedEnabled;
 
 		Resource resource = resourceLoader.getResource(
 				"classpath:dictionaries/" + config.getDictionaryFile());
@@ -50,11 +56,22 @@ public class PasswordGeneratorService {
 			}
 		}
 	}
+	
+	/**
+	 * Whether this service is enabled allowing generation of temporary passwords
+	 * @return
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
 
 	/**
 	 * @return a password generated with the provided Generator.
 	 */
 	public String generatePassword() {
+		if (!enabled) {
+			throw new UnsupportedOperationException();
+		}
 		return this.generator.generate();
 	}
 
