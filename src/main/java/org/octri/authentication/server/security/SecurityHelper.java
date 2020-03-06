@@ -151,7 +151,7 @@ public class SecurityHelper {
 	public boolean hasAnyRoleName(List<String> roleNames) {
 		return roleNames.stream().anyMatch(name -> hasRoleName(name));
 	}
-	
+
 	/**
 	 * Whether the given user has an ohsu email account
 	 * @param user
@@ -170,7 +170,7 @@ public class SecurityHelper {
 		}
 
 		final String domain = emailParts[1].trim();
-		return domain.equalsIgnoreCase("ohsu.edu");	
+		return domain.equalsIgnoreCase("ohsu.edu");
 	}
 
 }
