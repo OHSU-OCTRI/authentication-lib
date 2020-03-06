@@ -151,17 +151,15 @@ public class SecurityHelper {
 	public boolean hasAnyRoleName(List<String> roleNames) {
 		return roleNames.stream().anyMatch(name -> hasRoleName(name));
 	}
-
+	
 	/**
-	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If it is
-	 * ohsu.edu then the user is an LDAP user.
-	 *
-	 * TODO: Consider adding a persisted flag on the `user` record. AUTHLIB-73
-	 *
-	 * @return true if the user is an LDAP user.
+	 * Whether the given user has an ohsu email account
+	 * @param user
+	 * @return
 	 */
-	public Boolean isLdapUser(User user) {
+	public static boolean hasOHSUEmail(User user) {
 		Assert.notNull(user, "User cannot be null");
+
 		if (StringUtils.isBlank(user.getEmail())) {
 			return false;
 		}
@@ -172,6 +170,7 @@ public class SecurityHelper {
 		}
 
 		final String domain = emailParts[1].trim();
-		return domain.equalsIgnoreCase("ohsu.edu");
+		return domain.equalsIgnoreCase("ohsu.edu");	
 	}
+
 }

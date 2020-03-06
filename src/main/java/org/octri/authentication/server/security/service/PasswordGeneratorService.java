@@ -38,7 +38,7 @@ public class PasswordGeneratorService {
 	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig config)
 			throws IOException {
 		this.resourceLoader = loader;
-		// This service can only be enabled if configured and table-based users are allowed
+		// Check that both password generation and table based users are configured
 		this.enabled = config.getEnabled() && tableBasedEnabled;
 
 		Resource resource = resourceLoader.getResource(

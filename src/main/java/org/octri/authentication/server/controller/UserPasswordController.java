@@ -8,7 +8,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
-import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
@@ -20,7 +19,6 @@ import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -168,9 +166,8 @@ public class UserPasswordController {
 	public String forgotPassword(@ModelAttribute("email") String email, ModelMap model, HttpServletRequest request,
 			RedirectAttributes redirectAttributes) {
 		try {
-			SecurityHelper sh = new SecurityHelper(SecurityContextHolder.getContext());
 			final User user = userService.findByEmail(email);
-			if (user != null && sh.isLdapUser(user)) {
+			if (!userService.canResetPassword(user)) {
 				redirectAttributes.addFlashAttribute("errorMessage", LDAP_USER_WARNING_MESSAGE);
 				return "redirect:/user/password/forgot";
 			}
@@ -201,7 +198,7 @@ public class UserPasswordController {
 		// A record should exist in the database and be not expired.
 		User user = this.getTokenUser(token);
 		
-		if (user == null || !user.canResetPassword()) {
+		if (user == null || !userService.canResetPassword(user)) {
 			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET);
 		} else {
 			model.addAttribute("user", user);
@@ -239,7 +236,7 @@ public class UserPasswordController {
 		// The user cannot change their password if they don't have a valid token or are locked/disabled in some way.
 		// They will have already received a message about this on the reset password page, but if they continue to
 		// try they will be redirected to login.
-		if (user == null || !user.canResetPassword()) {
+		if (user == null || !userService.canResetPassword(user)) {
 			model.clear();
 			return "redirect:/login?error=true";			
 		}

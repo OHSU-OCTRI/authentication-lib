@@ -131,7 +131,7 @@ public class UserController {
 				model.addAttribute("formView", true);
 				
 				// If the user can reset the password, show admin additional options
-				if (user.canResetPassword()) {
+				if (userService.canResetPassword(user)) {
 					// Show either a valid reset URL or allow the admin to generate one
 					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
 					if (latestToken.isPresent()
@@ -142,7 +142,7 @@ public class UserController {
 						model.addAttribute("showNewTokenButton", true);
 					}
 					
-					if (passwordGeneratorService.isEnabled() && !user.getLdapUser()) {
+					if (passwordGeneratorService.isEnabled()) {
 						model.addAttribute("allowPasswordGeneration", true);
 					}
 				}

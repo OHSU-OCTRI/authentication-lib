@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
@@ -78,6 +79,9 @@ public class UserService {
 
 	@Autowired
 	private Boolean tableBasedEnabled;
+
+	@Autowired
+	private Boolean ldapEnabled;
 
 	@Value("${app.displayName}")
 	private String displayName;
@@ -554,6 +558,27 @@ public class UserService {
 		email.setFrom(emailConfig.getFrom());
 		mailSender.send(email);
 		log.info("Email changed for user id " + user.getId() + ". Email confirmation sent.");
+	}
+	
+	/**
+	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If it is
+	 * ohsu.edu then the user is an LDAP user.
+	 *
+	 * TODO: Consider adding a persisted flag on the `user` record. AUTHLIB-73
+	 *
+	 * @return true if the user is an LDAP user.
+	 */
+	public boolean isLdapUser(User user) {
+		return ldapEnabled && SecurityHelper.hasOHSUEmail(user);
+	}
+	
+	/**
+	 * Determines whether the user can reset a password. They must be table based and not be disabled in any way.
+	 * @param user
+	 * @return
+	 */
+	public boolean canResetPassword(User user) {
+		return !isLdapUser(user) && user.getEnabled() && !user.getAccountLocked() && !user.getAccountExpired();
 	}
 
 }

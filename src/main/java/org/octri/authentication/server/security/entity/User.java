@@ -21,6 +21,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.view.Labelled;
 import org.octri.authentication.validation.Emailable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -369,6 +370,12 @@ public class User extends AbstractEntity implements Labelled {
 		this.userRoles = userRoles;
 	}
 
+	/**
+	 * This is a transient property. It is only accurate at the time the user form is submitted and should
+	 * not be used for any other logic. A better option is {@link UserService#isLdapUser(User)}.
+	 * 
+	 * @return whether the checkbox in the form indicates that the user is LDAP
+	 */
 	public boolean getLdapUser() {
 		return ldapUser;
 	}
@@ -377,14 +384,6 @@ public class User extends AbstractEntity implements Labelled {
 		this.ldapUser = ldapUser;
 	}
 	
-	/**
-	 * A user cannot reset their password if they are locked, disabled, or have an expired account
-	 * @return
-	 */
-	public boolean canResetPassword() {
-		return getEnabled() && !getAccountLocked() && !getAccountExpired();
-	}
-
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", enabled=" + enabled + ", accountLocked=" + accountLocked
