@@ -127,5 +127,15 @@ public class PasswordResetToken {
 	public void setTokenUrl(String tokenUrl) {
 		this.tokenUrl = tokenUrl;
 	}
+	
+	/**
+	 * This helper method checks whether this token has expired.
+	 * @return whether the token expiration date has passed
+	 */
+	public boolean isExpired() {
+		Date now = new Date();
+		return now.after(getExpiryDate());
+
+	}
 
 }

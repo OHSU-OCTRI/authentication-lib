@@ -129,19 +129,22 @@ public class UserController {
 				model.addAttribute("pageTitle", "Edit User");
 				model.addAttribute("newUser", false);
 				model.addAttribute("formView", true);
-
-				if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
+				
+				// If the user can reset the password, show admin additional options
+				if (user.canResetPassword()) {
+					// Show either a valid reset URL or allow the admin to generate one
 					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
 					if (latestToken.isPresent()
-							&& passwordResetTokenService.isValidPasswordResetToken(latestToken.get().getToken())) {
+							&& !latestToken.get().isExpired()) {
 						final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
 						model.addAttribute("passwordResetUrl", url);
 					} else {
 						model.addAttribute("showNewTokenButton", true);
 					}
-				}
-				if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
-					model.addAttribute("allowPasswordGeneration", true);
+					
+					if (passwordGeneration.getEnabled() && getTableBasedEnabled() && !user.getLdapUser()) {
+						model.addAttribute("allowPasswordGeneration", true);
+					}
 				}
 			} else {
 				log.error(securityHelper.username() + " does not have access to edit user " + id);

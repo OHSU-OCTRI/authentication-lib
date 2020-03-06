@@ -376,6 +376,14 @@ public class User extends AbstractEntity implements Labelled {
 	public void setLdapUser(boolean ldapUser) {
 		this.ldapUser = ldapUser;
 	}
+	
+	/**
+	 * A user cannot reset their password if they are locked, disabled, or have an expired account
+	 * @return
+	 */
+	public boolean canResetPassword() {
+		return getEnabled() && !getAccountLocked() && !getAccountExpired();
+	}
 
 	@Override
 	public String toString() {
