@@ -201,10 +201,8 @@ public class UserPasswordController {
 		// A record should exist in the database and be not expired.
 		User user = this.getTokenUser(token);
 		
-		if (user == null) {
-			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET_TOKEN);
-		} else if (!user.canResetPassword()) {
-			model.addAttribute("errorMessage", Messages.INVALID_USER);
+		if (user == null || !user.canResetPassword()) {
+			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET);
 		} else {
 			model.addAttribute("user", user);
 		}
