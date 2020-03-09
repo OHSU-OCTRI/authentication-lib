@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import org.octri.authentication.FormSecurityConfiguration;
 import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.password.RandomDictionary;
 import org.octri.authentication.server.security.password.StructuredPasswordGenerator;
@@ -21,9 +22,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PasswordGeneratorService {
-	
-	@Autowired
-	private Boolean tableBasedEnabled;
 
 	private ResourceLoader resourceLoader;
 	private StructuredPasswordGenerator generator;
@@ -32,27 +30,30 @@ public class PasswordGeneratorService {
 	/**
 	 * Construct the service using the configured dictionary.
 	 * 
-	 * @param loader
+	 * @param loader the resource loader
+	 * @param passwordGenConfig The configuration for password generation
+	 * @param securityConfig The security configuration
 	 * @throws IOException
 	 */
-	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig config)
+	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig passwordGenConfig, 
+			@Autowired FormSecurityConfiguration securityConfig)
 			throws IOException {
 		this.resourceLoader = loader;
 		// Check that both password generation and table based users are configured
-		this.enabled = config.getEnabled() && tableBasedEnabled;
+		this.enabled = passwordGenConfig.getEnabled() && securityConfig.tableBasedEnabled();
 
 		Resource resource = resourceLoader.getResource(
-				"classpath:dictionaries/" + config.getDictionaryFile());
+				"classpath:dictionaries/" + passwordGenConfig.getDictionaryFile());
 		resource.getInputStream();
 		InputStreamReader inputReader = new InputStreamReader(resource.getInputStream());
 		try (BufferedReader reader = new BufferedReader(inputReader)) {
 			RandomDictionary dictionary = new RandomDictionary(reader.lines().collect(Collectors.toList()));
 			this.generator = new StructuredPasswordGenerator(dictionary);
-			this.generator.setMinWordLength(config.getMinWordLength());
-			this.generator.setMaxWordLength(config.getMaxWordLength());
-			this.generator.setSymbol(config.getSeparator());
-			if (config.getFormat() != null) {
-				this.generator.setFormat(config.getFormat());
+			this.generator.setMinWordLength(passwordGenConfig.getMinWordLength());
+			this.generator.setMaxWordLength(passwordGenConfig.getMaxWordLength());
+			this.generator.setSymbol(passwordGenConfig.getSeparator());
+			if (passwordGenConfig.getFormat() != null) {
+				this.generator.setFormat(passwordGenConfig.getFormat());
 			}
 		}
 	}
