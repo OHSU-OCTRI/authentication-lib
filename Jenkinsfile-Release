@@ -4,7 +4,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '3'))
   }
   environment {
-    GIT_URL = 'ssh://git@octriapp01.acc.ohsu.edu:7999/oc/authentication_lib.git'
+    GIT_URL = 'https://source.ohsu.edu/OCTRI-Apps/authentication-lib.git'
   }
   parameters {
     string(name: 'VERSION', description: 'The version of the authentication_lib to release.')
