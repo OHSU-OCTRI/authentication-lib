@@ -120,7 +120,7 @@
 
 						<div class="form-group">
 							<label for="enabled" class="form-label">Enabled*</label>
-							<select class="form-control" id="enabled" name="enabled">
+							<select class="form-control form-select" id="enabled" name="enabled">
 								<option value="true" {{#user.enabled}}selected="selected"{{/user.enabled}}>Yes</option>
 								<option value="false" {{^user.enabled}}selected="selected"{{/user.enabled}}>No</option>
 							</select>
@@ -128,7 +128,7 @@
 
 						<div class="form-group">
 							<label for="accountLocked" class="form-label">Account Locked*</label>
-							<select class="form-control" id="accountLocked" name="accountLocked">
+							<select class="form-control form-select" id="accountLocked" name="accountLocked">
 								<option value="true" {{#user.accountLocked}}selected="selected"{{/user.accountLocked}}>Yes</option>
 								<option value="false" {{^user.accountLocked}}selected="selected"{{/user.accountLocked}}>No</option>
 							</select>
@@ -136,7 +136,7 @@
 
 						<div class="form-group">
 							<label for="accountExpired" class="form-label">Account Expired*</label>
-							<select class="form-control" id="accountExpired" name="accountExpired">
+							<select class="form-control form-select" id="accountExpired" name="accountExpired">
 								<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
 								<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
 							</select>
@@ -144,7 +144,7 @@
 
 						<div class="form-group">
 							<label for="credentialsExpired" class="form-label">Credentials Expired*</label>
-							<select class="form-control" id="credentialsExpired" name="credentialsExpired">
+							<select class="form-control form-select" id="credentialsExpired" name="credentialsExpired">
 								<option value="true" {{#user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>Yes</option>
 								<option value="false" {{^user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>No</option>
 							</select>
