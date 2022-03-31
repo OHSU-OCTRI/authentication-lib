@@ -1,0 +1,73 @@
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	/* Margin bottom by footer height */
+	margin-bottom: 60px;
+}
+
+body>.container {
+	padding: 70px 15px 0;
+}
+
+.new-entity {
+	margin-bottom: 1rem;
+}
+
+.vertical-space {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.error-text {
+	color:#a94442;
+}
+
+.footer>.container {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-top: 3.5rem;
+}
+
+#appVersion {
+	margin-top: -0.5rem;
+	margin-bottom: 2rem;
+}
+
+#logos {
+	/* Adjusting the height will change the size of the logos. */
+	height: 70px;
+}
+
+.custom-select.is-valid, .form-control.is-valid, .was-validated .custom-select:valid, .was-validated .form-control:valid {
+	border-color: #ced4da; /* default grey border color */
+}
+
+label.required-field::after {
+	content: " *";
+	color: red;
+}
+
+footer img.img-fluid {
+	height: 100%;
+	margin-right: 1.2rem;
+}
+
+footer img.last-item {
+	margin-right: 0px;
+}
+
+div.parent-summary {
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;	
+}
+
+div.parent-summary strong {
+	font-size: 1.2rem;
+}
+
+.form-group {
+	margin-bottom: 1rem;
+}

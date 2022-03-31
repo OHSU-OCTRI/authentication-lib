@@ -1,0 +1,181 @@
+<div class="container-fluid authlib-user-form">
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12">
+			<h3>{{pageTitle}}</h3>
+			
+			{{! These errors are parsed by default.js }}
+			{{#errors}}
+				<input type="hidden" data-error="true" data-field="{{field}}" data-message="{{defaultMessage}}" />
+			{{/errors}}
+			
+			{{>authlib_fragments/forms/user/user_save_error}}
+
+			<div class="text-muted">
+				<p>* denotes a required field</p>
+			</div>
+			
+			{{#passwordResetUrl}}
+			<div class="alert alert-info">
+				The following URL may be sent to the user allowing them to reset their password.
+				<br>
+				{{.}}
+			</div>
+			{{/passwordResetUrl}}
+			{{#showNewTokenButton}}
+			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/token/refresh?userId={{#user}}{{id}}{{/user}}">
+				{{>authlib_fragments/forms/csrf_input}}
+				<button type="submit" class="btn btn-outline-primary">Generate password reset token</button>
+				<p class="small text-secondary mt-2">Navigating to the generated url allows a user to set their login credentials.</p>
+			</form>
+			{{/showNewTokenButton}}
+			
+			
+			{{#allowPasswordGeneration}}
+			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/generate?userId={{#user}}{{id}}{{/user}}">
+				{{>authlib_fragments/forms/csrf_input}}
+				<button type="submit" class="btn btn-outline-primary">Generate temporary password</button>
+				<p class="small text-secondary mt-2">Expire the user's existing credentials and set the password to a new generated value. Users will be prompted for a password change on login.</p>
+			</form>
+			{{#generatedPassword}}
+			<div class="alert alert-info">
+				User temporary password set to:
+				<br>
+				{{.}}
+			</div>
+			{{/generatedPassword}}
+			{{/allowPasswordGeneration}}
+			
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12">
+			<form role="form" class="form" method="post" action="{{req.contextPath}}/admin/user/form">
+				<div class="row">
+					<div class="col-lg-3 col-md-3 col-sm-12">
+						<h4>User Details</h4>
+
+						{{#newUser}}
+						<div class="form-group">
+							<label for="username" class="form-label">Username*</label>
+							<input id="username" class="form-control lookup-user" autocomplete="off" type="text" name="username" value="{{#user.username}}{{.}}{{/user.username}}" />
+						</div>
+							{{#ldapEnabled}}
+								{{#tableBasedEnabled}}
+								<div class="form-group">
+									<input type="checkbox" id="ldapUser" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
+									<label for="ldapUser" class="form-label">OHSU User</label>
+								</div>
+								{{/tableBasedEnabled}}
+								<div class="form-group">
+									<button id="ldapLookup" class="btn btn-primary">LDAP Lookup</button>
+								</div>
+							{{/ldapEnabled}}
+						{{/newUser}}
+						
+						{{^newUser}}
+						<div class="form-group">
+							<label for="username" class="form-label">Username*</label>
+							<input class="form-control" value="{{user.username}}" type="text" disabled="disabled" />
+							<input type="hidden" id="username" name="username" value="{{user.username}}" />
+							<input class="form-control" type="hidden" id="id" name="id" value="{{user.id}}" />
+						</div>
+						{{/newUser}}
+
+
+						<div class="form-group">
+							<label for="firstName" class="form-label">First Name*</label>
+							<input id="firstName" class="form-control" type="text" id="firstName" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" />
+						</div>
+
+						<div class="form-group">
+							<label for="lastName" class="form-label">Last Name*</label>
+							<input id="lastName" class="form-control" type="text" id="lastName" name="lastName" value="{{#user.lastName}}{{.}}{{/user.lastName}}" />
+						</div>
+
+						<div class="form-group">
+							<label for="institution" class="form-label">Institution*</label>
+							<input id="institution" class="form-control" type="text" id="institution" name="institution" value="{{#user.institution}}{{.}}{{/user.institution}}" />
+						</div>
+
+						<div class="form-group">
+							<label for="email" class="form-label">Email{{#emailRequired}}*{{/emailRequired}}</label>
+							<input id="email" class="form-control" type="email" id="email" name="email" value="{{#user.email}}{{.}}{{/user.email}}" />
+						</div>
+
+						<h4>User Roles</h4>
+
+						<div class="form-group">
+							{{#userRoles}}
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" id="userRoles-{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} />
+								<label for="userRoles-{{id}}" class="form-check-label">{{label}}</label>
+							</div>
+							{{/userRoles}}
+						</div>
+					</div>
+
+					<div class="col-lg-3 col-md-3 col-sm-12 col-lg-offset-1 col-md-offset-1">
+						<h4>Account Status</h4>
+
+						<div class="form-group">
+							<label for="enabled" class="form-label">Enabled*</label>
+							<select class="form-select" id="enabled" name="enabled">
+								<option value="true" {{#user.enabled}}selected="selected"{{/user.enabled}}>Yes</option>
+								<option value="false" {{^user.enabled}}selected="selected"{{/user.enabled}}>No</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="accountLocked" class="form-label">Account Locked*</label>
+							<select class="form-select" id="accountLocked" name="accountLocked">
+								<option value="true" {{#user.accountLocked}}selected="selected"{{/user.accountLocked}}>Yes</option>
+								<option value="false" {{^user.accountLocked}}selected="selected"{{/user.accountLocked}}>No</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="accountExpired" class="form-label">Account Expired*</label>
+							<select class="form-select" id="accountExpired" name="accountExpired">
+								<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
+								<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="credentialsExpired" class="form-label">Credentials Expired*</label>
+							<select class="form-select" id="credentialsExpired" name="credentialsExpired">
+								<option value="true" {{#user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>Yes</option>
+								<option value="false" {{^user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>No</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="accountExpirationDate" class="form-label">Account Expiration Date</label>
+							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="accountExpirationDate" name="accountExpirationDate" value="{{#user.accountExpirationDateView}}{{.}}{{/user.accountExpirationDateView}}" />
+						</div>
+
+						<div class="form-group">
+							<label for="credentialsExpirationDate" class="form-label">Credentials Expiration Date</label>
+							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="credentialsExpirationDate" name="credentialsExpirationDate" value="{{#user.credentialsExpirationDateView}}{{.}}{{/user.credentialsExpirationDateView}}" />
+						</div>
+
+						<div class="form-group">
+							<label for="consecutiveLoginFailures" class="form-label">Consecutive Login Failures*</label>
+							<input class="form-control" type="text" readonly="readonly" id="consecutiveLoginFailures" name="consecutiveLoginFailures" value="{{#user.consecutiveLoginFailures}}{{.}}{{/user.consecutiveLoginFailures}}" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<div class="form-controls">
+							{{>authlib_fragments/forms/csrf_input}}
+							<button name="save" type="submit" class="btn btn-primary" value="save">Save</button>
+							<a class="btn btn-link cancelUserForm">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

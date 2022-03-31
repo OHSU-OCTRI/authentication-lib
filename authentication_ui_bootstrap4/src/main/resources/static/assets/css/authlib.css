@@ -1,0 +1,27 @@
+body.authlib {
+	/* Keeps the body below the fixed navbar */
+	padding-top:4rem;
+}
+
+.authlib-user-list .center-all td,th{
+	text-align :center;
+}
+
+.authlib-user-list .dataTables_wrapper {
+	margin-top: 1.2rem;
+}
+
+/* Swap the default positioning of search filter and length input */
+.authlib-user-list .dataTables_wrapper .dataTables_filter {
+	float: left;
+	text-align: left;
+}
+
+.authlib-user-list .dataTables_wrapper .dataTables_length {
+	float: right;
+}
+
+.authlib-user-form label[for="ldapUser"] {
+	margin-bottom:0;
+	font-weight:normal;
+}

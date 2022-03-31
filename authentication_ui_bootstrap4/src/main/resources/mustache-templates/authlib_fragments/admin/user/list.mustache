@@ -1,0 +1,67 @@
+<div class="container-fluid table-responsive authlib-user-list">
+	<h3>List of Users</h3>
+	<table class="table table-striped table-bordered users-table center-all display responsive no-wrap">
+		<thead>
+			<th></th>
+			<th>Username</th>
+			<th>Roles</th>
+			<th>Email</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Account Enabled</th>
+			<th>Account Locked</th>
+			<th>Account Expired</th>
+			<th>Credentials Expired</th>
+		</thead>
+		<tbody>
+			{{#users}}
+			<tr>
+				<td>
+					<a href="{{req.contextPath}}/admin/user/form?id={{id}}">
+						<span class="fa fa-edit"></span>
+					</a>
+				</td>
+				<td>
+					{{username}}
+				</td>
+				<td>
+					<ul class="list-unstyled">
+					{{#userRoles}}
+						<li>{{description}}</li>
+					{{/userRoles}}
+					</ul>
+				</td>
+				<td>
+					{{#email}}{{.}}{{/email}}
+				</td>
+				<td>
+					{{firstName}}
+				</td>
+				<td>
+					{{lastName}}
+				</td>
+				<td>
+					{{#enabled}}
+					<span class="fa fa-check text-success"></span>
+					{{/enabled}}
+				</td>
+				<td>
+					{{#accountLocked}}
+					<span class="fa fa-check text-success"></span>
+					{{/accountLocked}}
+				</td>
+				<td>
+					{{#accountExpired}}
+					<span class="fa fa-check text-success"></span>
+					{{/accountExpired}}
+				</td>
+				<td>
+					{{#credentialsExpired}}
+					<span class="fa fa-check text-success"></span>
+					{{/credentialsExpired}}
+				</td>
+			</tr>
+			{{/users}}
+		</tbody>
+	</table>
+</div>

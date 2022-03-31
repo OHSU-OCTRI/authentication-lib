@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		{{>authlib_fragments/css}}
+	</head>
+	<body class="authlib">
+		{{>authlib_fragments/navbar}}
+		{{>authlib_fragments/login}}
+		{{>authlib_fragments/assets}}
+		<script type="text/javascript">
+				$(function() {
+					$('#username').focus();
+				});
+		</script>
+	</body>
+</html>
