@@ -10,7 +10,7 @@ pipeline {
     string(name: 'VERSION', description: 'The version of the authentication_lib to release.')
   }
   tools {
-    maven '3.5.0'
+    maven '3.8.2'
     jdk 'JDK8'
   }
   stages {
@@ -23,14 +23,14 @@ pipeline {
     stage('Release') {
       steps {
         checkoutMaster(env.GIT_URL)
-        artifactoryReleasePrep(env.VERSION)
-        octriArtifactoryBuild('master')
+        octriMavenReleasePrep(env.VERSION)
+        octriMavenBuild()
       }
     }
     stage('Next Version') {
       steps {
-        nextDevelopmentVersion()
-        octriArtifactoryBuild('master')
+        octriMavenVersionBump()
+        octriMavenBuild()
       }
     }
   }

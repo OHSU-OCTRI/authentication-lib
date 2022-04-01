@@ -8,7 +8,7 @@ pipeline {
     pollSCM('')
   }
   tools {
-    maven '3.5.0'
+    maven '3.8.2'
     jdk 'JDK8'
   }
   stages {
@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        octriArtifactoryBuild(env.BRANCH_NAME)
+        octriMavenBuild(deployArtifacts: env.BRANCH_NAME == 'master')
       }
     }
     stage('Test') {
@@ -30,7 +30,13 @@ pipeline {
     }
   }
   post {
-    changed {
+    always {
+      junit '**/surefire-reports/**/*.xml'
+    }
+    unsuccessful {
+      emailStatusChange()
+    }
+    fixed {
       emailStatusChange()
     }
   }
