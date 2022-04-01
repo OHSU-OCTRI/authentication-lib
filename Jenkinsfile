@@ -1,7 +1,7 @@
 pipeline {
   agent any
   options {
-    quietPeriod(120)
+    quietPeriod(30)
     buildDiscarder(logRotator(numToKeepStr: '3'))
   }
   triggers {
