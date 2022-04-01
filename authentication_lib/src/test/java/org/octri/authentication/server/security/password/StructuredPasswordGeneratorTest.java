@@ -18,14 +18,11 @@ import org.octri.authentication.server.security.password.StructuredPasswordGener
 public class StructuredPasswordGeneratorTest {
 
 	List<String> words = new ArrayList<String>(Arrays.asList("foo", "bar", "baz", "four", "eagle", "wizard", "bread"));
-
 	RandomDictionary dict = new RandomDictionary(words);
-	StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
-
-	PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 
 	@Test
 	public void testDefault() {
+		StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
 		generator.setMaxWordLength(6);
 		String password = generator.generate();
 
@@ -35,6 +32,7 @@ public class StructuredPasswordGeneratorTest {
 		assertTrue(generator.getDictionary() != null);
 		assertTrue(password.length() >= 14 && password.length() <= 18);
 
+		PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 		assertTrue(password + " should be valid", passwordConstraintValidator.validate(password, null).isEmpty());
 
 		// There is only 1 word with length 4.
@@ -50,6 +48,7 @@ public class StructuredPasswordGeneratorTest {
 	@Test
 	public void testCustomFormat() {
 		List<Component> format = Arrays.asList(Component.MY_SYMBOL, Component.MY_SYMBOL, Component.MY_SYMBOL);
+		StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
 		generator.setSymbol("#");
 
 		String password = generator.generate(format);
@@ -66,6 +65,7 @@ public class StructuredPasswordGeneratorTest {
 	@Test
 	public void testSpecialChars() {
 		List<Component> format = Arrays.asList(Component.WORD, Component.DIGIT);
+		StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
 		generator.setMinWordLength(6);
 		generator.setMaxWordLength(6);
 
@@ -84,6 +84,7 @@ public class StructuredPasswordGeneratorTest {
 	@Test
 	public void testEncodedFormat() {
 		String encodedFormat = "CMDMW";
+		StructuredPasswordGenerator generator = new StructuredPasswordGenerator(dict);
 		generator.setFormat(encodedFormat);
 
 		List<Component> expectedFormat = Arrays.asList(Component.CAPITAL_WORD, Component.MY_SYMBOL, Component.DIGIT,
