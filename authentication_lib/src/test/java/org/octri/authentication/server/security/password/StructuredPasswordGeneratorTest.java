@@ -30,7 +30,7 @@ public class StructuredPasswordGeneratorTest {
 		// CW = capitalized word, W = word, D = digit, Sp = special, Sym = known symbol
 		// default format is [CW, Sym, D, D, D, Sym, W]
 		assertTrue(generator.getDictionary() != null);
-		assertTrue(password.length() >= 14 && password.length() <= 18);
+		assertTrue(password.length() >= 11 && password.length() <= 17);
 
 		PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 		assertTrue(password + " should be valid", passwordConstraintValidator.validate(password, null).isEmpty());
