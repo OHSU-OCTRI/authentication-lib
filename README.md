@@ -1,15 +1,55 @@
 # OCTRI Authentication Library
 
-This library allows you to use the entities, services, and templates provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided along with Flyway migrations to initiate a MySQL database. Once configured, your application will have endpoints and UI for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes and lock an account after a configurable number of failed login attempts.
+This library allows you to use the entities, services, and templates provided to bootstrap authentication into a new Spring Boot application. Domain classes for users and roles are provided along with Flyway migrations to initialize a MySQL database. Once configured, your application will have endpoints and UI for login and user management. In addition, failure and success handlers are provided that will persist all login attempts with IP addresses for auditing purposes and lock an account after a configurable number of failed login attempts.
 
-## Getting started
+## Simple Setup
 
-The repo 'auth_example_project' in this project shows a minimal web application that uses the library. When building your own application, add this dependency to your pom:
+The simplest way of using the library is to generate your project using [OCTRI's Spring Boot archetype](https://source.ohsu.edu/OCTRI-Apps/spring-boot-archetype). Enable the library using the `useAuth` flag.
 
 ```
+mvn archetype:generate \
+	-DinteractiveMode=false \
+	-DarchetypeGroupId=org.octri \
+	-DarchetypeArtifactId=spring-boot-archetype \
+	-DarchetypeVersion=<current archetype version> \
+	-DarchetypeCatalog=local \
+	-DgroupId=org.octri \
+	-DartifactId=sample \
+	-Dversion=0.0.1-SNAPSHOT \
+	-Dpackage=org.octri.sample \
+	-DprojectName='Sample Project' \
+	-DuseAuth=true
+```
+
+This will generate a Spring Boot application with all of the dependencies, database migrations, Mustache templates, and other files needed to integrate the library.
+
+## Manual Setup
+
+The following sections describe how to manually integrate the authentication library into a Spring Boot application. The [auth-example-project repository](https://source.ohsu.edu/OCTRI-Apps/auth-example-project) contains a minimal web application that you can use as a guide.
+
+### Dependencies
+
+Add the library's packages to the depdencies in your application's `pom.xml` file. All applications should add the `authentication_lib` core package.
+
+```xml
 	<dependency>
 		<groupId>org.octri.authentication</groupId>
 		<artifactId>authentication_lib</artifactId>
+		<version>${authentication_lib.version}</version>
+	</dependency>
+```
+
+You should also add one of the UI packages (`authentication_ui_bootstrap4` or `authentication_lib_bootstrap5`).
+
+```xml
+	<dependency>
+		<groupId>org.octri.authentication</groupId>
+		<artifactId>authentication_lib</artifactId>
+		<version>${authentication_lib.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.octri.authentication</groupId>
+		<artifactId>authentication_ui_bootstrap5</artifactId>
 		<version>${authentication_lib.version}</version>
 	</dependency>
 ```
@@ -26,7 +66,7 @@ Additional migrations are provided to enable specific workflows. See the [setup 
 
 The library will transitively bring in several Spring Boot jars along with MySQL, etc. In your Application definition, the Spring Boot Runner needs to set some additional parameters to ensure that domain, repositories, and autowired components for the Authentication Library are picked up. You will also likely need to include your project's package in these annotations.
 
-```
+```java
 @SpringBootApplication
 @ComponentScan({"org.octri.test", "org.octri.authentication"})
 @EntityScan( basePackages = {"org.octri.test", "org.octri.authentication"} )
@@ -39,9 +79,9 @@ public class TestProjectApplication {
 }
 ```
 
-The authentication library provides security configuration options for a web-based application [`FormSecurityConfiguration.java`](src/main/java/org/octri/authentication/FormSecurityConfiguration.java) or a REST application [`ApiSecurityConfiguration.java`](src/main/java/org/octri/authentication/ApiSecurityConfiguration.java). Either can be enabled by simply extending the configuration you want to use and adding the `@Configuration` annotation:
+The authentication library provides security configuration options for a web-based application [`FormSecurityConfiguration.java`](./authentication_lib/src/main/java/org/octri/authentication/FormSecurityConfiguration.java) or a REST application [`ApiSecurityConfiguration.java`](./authentication_lib/src/main/java/org/octri/authentication/ApiSecurityConfiguration.java). Either can be enabled by simply extending the configuration you want to use and adding the `@Configuration` annotation:
 
-```
+```java
 @Configuration
 public class SecurityConfiguration extends FormSecurityConfiguration {
 
@@ -65,9 +105,9 @@ If using the standard Docker/MySQL setup, start the MySQL container first and cr
 
 ### JavaScript
 
-`default.js` needs access to the application context path. To provide the application context add the following meta tag to your pages. The trailing slash is required.
+`authlib.js` the application context path to generate valid URLs for links. To provide the application context add the following meta tag to your pages. The trailing slash is required.
 
-```
+```html
 <meta name="ctx" content="{{req.contextPath}}/" />
 ```
 
@@ -160,17 +200,17 @@ Users and System Administrators shall employ the following minimum password attr
 
 ### User Roles
 
-The library sets up roles USER, ADMIN, and SUPER. The [`UserController`](src/main/java/org/octri/authentication/controller/UserController.java) restricts user management to the admin and super roles, and users cannot edit themselves.
+The library sets up roles USER, ADMIN, and SUPER. The [`UserController`](./authentication_lib/src/main/java/org/octri/authentication/controller/UserController.java) restricts user management to the admin and super roles, and users cannot edit themselves.
 
 #### Add Roles and Users
 
-For default OCTRI users see the [auth_default_users](https://octriinternal.ohsu.edu/stash/projects/OC/repos/auth_default_users/browse) project. It provides scripts for creating roles and users.
+For default OCTRI users see the [auth_default_users](https://source.ohsu.edu/OCTRI-Apps/auth-default-users) project. It provides scripts for creating roles and users.
 
 The authentication_lib provides the default roles via Flyway. Those roles are: `ROLE_USER`, `ROLE_ADMIN`, and `ROLE_SUPER`.
 
 If you want roles and users other than what's in the auth_default_users project follow this process to add roles, and users with roles.
 
-```
+```sql
 -- Add a role
 INSERT INTO user_role (id, description, role_name)
 VALUES (4, 'Manager', 'ROLE_MANAGER');
@@ -196,7 +236,7 @@ If adding a table-based user, you can add an empty or bogus password through SQL
 
 Authentication flow uses fairly standard redirection and provides success and failure handlers to record login attempts and lock accounts after consecutive failures. You may also override the default public routes.
 
-The following methods are provided by the [`BaseSecurityConfiguration`](src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
+The following methods are provided by the [`BaseSecurityConfiguration`](./authentication_lib/src/main/java/org/octri/authentication/BaseSecurityConfiguration.java) and can be overridden by the application's security configuration:
 
 * `defaultSuccessUrl()` - Where to redirect after successful login. By default `/admin/user/list`.
 * `loginFailureRedirectUrl()` - Where to redirect after failed login. By default `/login?error`
@@ -208,51 +248,55 @@ For UI, the library provides a login page and navigation bar with links to "Home
 
 #### Webjars (CSS and JavaScript dependencies)
 
-The authentication library uses Bootstrap 4, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
+The authentication library uses Bootstrap, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
 
 CSS is located in the `authlib_fragments/css.mustache` template. By default it includes the following files:
 
-```
+```html
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/font-awesome/css/all.min.css" />
-<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/css/default.css" />
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/assets/css/authlib.css" />
 ```
 
 If you provide the `formView` model property it will also include:
 
-```
+```html
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.theme.min.css" />
 ```
 
 If you provide the `listView` model property it will include:
 
+```html
+<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap5.min.css" />
 ```
-<link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap4.min.css" />
-```
+
+Note that the exact CSS file used will depend on your selection of UI package (Bootstrap 4 or Bootstrap 5).
 
 Likewise, JavaScript is included in the `authlib_fragments/assets.mustache` template. By default it includes the following:
 
-```
+```html
 <script type="text/javascript" src="{{req.contextPath}}/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="{{req.contextPath}}/webjars/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="{{req.contextPath}}/js/default.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/assets/js/authlib.js"></script>
 ```
 
 Similar to `css.mustache`, if you pass the `formView` model property it will include the corresponding JavaScript:
 
-```
+```html
 <script type="text/javascript" src="{{req.contextPath}}/webjars/jquery-ui/jquery-ui.min.js"></script>
 ```
 
 And if you pass the `listView` model property it will include:
 
-```
+```html
 <script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.bootstrap5.min.js"></script>
 ```
 
-If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jquery and bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jquery-ui to show calendar popups and the User list page will need datatables. The `UserController.java` is responsible for setting the `formView` and `listView` model properties for User Management.
+Again, the exact DataTables JavaScript used will depend on your selection of UI package.
+
+If your application has its own navigation and is using the User Management fragments instead of the templates, you will need to make sure the css and js are loaded properly. You can assume that all pages will need jQuery and Bootstrap. Other dependencies may not be needed on every page, but the New and Edit User forms, for example, need jQuery UI to show calendar popups and the User list page will need DataTables. The `UserController.java` is responsible for setting the `formView` and `listView` model properties for User Management.
 
 ### API Authentication
 
@@ -268,7 +312,7 @@ Create `mustache-templates/login.mustache` and in the body include the fragment:
 
 Create `mustache-templates/error.mustache` and in the body include the following HTML. The `UserController` will populate the model properties.
 
-```
+```html
 <div class="container-fluid">
 	<div class="alert alert-danger">
 		<p>Error {{status}}: {{error}} ({{message}})</p>
