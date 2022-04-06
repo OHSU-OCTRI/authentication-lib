@@ -120,15 +120,15 @@ $(function() {
 	}, 500));
 	
 	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
-	var ldapNotChecked = $('#ldapUser').length > 0 && !$('#ldapUser').is(':checked');
-	$('#ldapLookup').prop("disabled", ldapNotChecked);
+	var ldapNotChecked = $('#ldap_user').length > 0 && !$('#ldap_user').is(':checked');
+	$('#ldap_lookup').prop("disabled", ldapNotChecked);
 	
-	$('#ldapUser').on('click', function(e) {
-		$('#ldapLookup').prop("disabled", !$(this).is(':checked'));
+	$('#ldap_user').on('click', function(e) {
+		$('#ldap_lookup').prop("disabled", !$(this).is(':checked'));
 	});
 	
 	// Look up by username in LDAP and prepopulate user fields
-	$('#ldapLookup').on('click', function(e) {
+	$('#ldap_lookup').on('click', function(e) {
 		e.preventDefault();
 		var token =  $('input[name="_csrf"]').attr('value');
 	    $.ajaxSetup({
@@ -143,10 +143,10 @@ $(function() {
 		$.post(contextPath + "admin/user/ldapLookup", obj, function(json) {
 			$('.ldap-error').remove();
 			if (json.ldapLookupError) {
-				$('#ldapLookup').before(div(json.ldapLookupError, 'ldap-error text-danger small'));
+				$('#ldap_lookup').before(div(json.ldapLookupError, 'ldap-error text-danger small'));
 			} else {
-				$('#firstName').val(json.firstName);
-				$('#lastName').val(json.lastName);
+				$('#first_name').val(json.firstName);
+				$('#last_name').val(json.lastName);
 				$('#email').val(json.email);
 				$('#institution').val(json.institution);
 			}
@@ -162,7 +162,7 @@ $(function() {
 	 */
 	$('[data-error]').each(function(i, el) {
 		var message = $(el).data('message');
-		$('#' + $(el).data('field'))
+		$('[name=' + $(el).data('field') + ']')
 			.parent('.form-group')
 			.addClass('has-error')
 			.append('<p class="error-text">' + message + '</p>');

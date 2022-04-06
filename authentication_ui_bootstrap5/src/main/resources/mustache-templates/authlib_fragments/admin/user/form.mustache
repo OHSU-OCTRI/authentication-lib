@@ -63,12 +63,12 @@
 							{{#ldapEnabled}}
 								{{#tableBasedEnabled}}
 								<div class="form-group">
-									<input type="checkbox" id="ldapUser" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
-									<label for="ldapUser" class="form-label">OHSU User</label>
+									<input type="checkbox" id="ldap_user" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
+									<label for="ldap_user" class="form-label">OHSU User</label>
 								</div>
 								{{/tableBasedEnabled}}
 								<div class="form-group">
-									<button id="ldapLookup" class="btn btn-primary">LDAP Lookup</button>
+									<button id="ldap_lookup" class="btn btn-primary">LDAP Lookup</button>
 								</div>
 							{{/ldapEnabled}}
 						{{/newUser}}
@@ -84,13 +84,13 @@
 
 
 						<div class="form-group">
-							<label for="firstName" class="form-label">First Name*</label>
-							<input id="firstName" class="form-control" type="text" id="firstName" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" />
+							<label for="first_name" class="form-label">First Name*</label>
+							<input id="first_name" class="form-control" type="text" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" />
 						</div>
 
 						<div class="form-group">
-							<label for="lastName" class="form-label">Last Name*</label>
-							<input id="lastName" class="form-control" type="text" id="lastName" name="lastName" value="{{#user.lastName}}{{.}}{{/user.lastName}}" />
+							<label for="last_name" class="form-label">Last Name*</label>
+							<input id="last_name" class="form-control" type="text"name="lastName" value="{{#user.lastName}}{{.}}{{/user.lastName}}" />
 						</div>
 
 						<div class="form-group">
@@ -108,8 +108,8 @@
 						<div class="form-group">
 							{{#userRoles}}
 							<div class="form-check">
-								<input class="form-check-input" type="checkbox" id="userRoles-{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} />
-								<label for="userRoles-{{id}}" class="form-check-label">{{label}}</label>
+								<input class="form-check-input" type="checkbox" id="user_roles_{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} />
+								<label for="user_roles_{{id}}" class="form-check-label">{{label}}</label>
 							</div>
 							{{/userRoles}}
 						</div>
@@ -127,42 +127,42 @@
 						</div>
 
 						<div class="form-group">
-							<label for="accountLocked" class="form-label">Account Locked*</label>
-							<select class="form-select" id="accountLocked" name="accountLocked">
+							<label for="account_locked" class="form-label">Account Locked*</label>
+							<select class="form-select" id="account_locked" name="accountLocked">
 								<option value="true" {{#user.accountLocked}}selected="selected"{{/user.accountLocked}}>Yes</option>
 								<option value="false" {{^user.accountLocked}}selected="selected"{{/user.accountLocked}}>No</option>
 							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="accountExpired" class="form-label">Account Expired*</label>
-							<select class="form-select" id="accountExpired" name="accountExpired">
+							<label for="account_expired" class="form-label">Account Expired*</label>
+							<select class="form-select" id="account_expired" name="accountExpired">
 								<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
 								<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
 							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="credentialsExpired" class="form-label">Credentials Expired*</label>
-							<select class="form-select" id="credentialsExpired" name="credentialsExpired">
+							<label for="credentials_expired" class="form-label">Credentials Expired*</label>
+							<select class="form-select" id="credentials_expired" name="credentialsExpired">
 								<option value="true" {{#user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>Yes</option>
 								<option value="false" {{^user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>No</option>
 							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="accountExpirationDate" class="form-label">Account Expiration Date</label>
-							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="accountExpirationDate" name="accountExpirationDate" value="{{#user.accountExpirationDateView}}{{.}}{{/user.accountExpirationDateView}}" />
+							<label for="account_expiration_date" class="form-label">Account Expiration Date</label>
+							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="account_expiration_date" name="accountExpirationDate" value="{{#user.accountExpirationDateView}}{{.}}{{/user.accountExpirationDateView}}" />
 						</div>
 
 						<div class="form-group">
-							<label for="credentialsExpirationDate" class="form-label">Credentials Expiration Date</label>
-							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="credentialsExpirationDate" name="credentialsExpirationDate" value="{{#user.credentialsExpirationDateView}}{{.}}{{/user.credentialsExpirationDateView}}" />
+							<label for="credentials_expiration_date" class="form-label">Credentials Expiration Date</label>
+							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="credentials_expiration_date" name="credentialsExpirationDate" value="{{#user.credentialsExpirationDateView}}{{.}}{{/user.credentialsExpirationDateView}}" />
 						</div>
 
 						<div class="form-group">
-							<label for="consecutiveLoginFailures" class="form-label">Consecutive Login Failures*</label>
-							<input class="form-control" type="text" readonly="readonly" id="consecutiveLoginFailures" name="consecutiveLoginFailures" value="{{#user.consecutiveLoginFailures}}{{.}}{{/user.consecutiveLoginFailures}}" />
+							<label for="consecutive_login_failures" class="form-label">Consecutive Login Failures*</label>
+							<input class="form-control" type="text" readonly="readonly" id="consecutive_login_failures" name="consecutiveLoginFailures" value="{{#user.consecutiveLoginFailures}}{{.}}{{/user.consecutiveLoginFailures}}" />
 						</div>
 					</div>
 				</div>
