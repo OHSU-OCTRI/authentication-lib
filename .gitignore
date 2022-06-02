@@ -1,5 +1,5 @@
-target/
-!.mvn/wrapper/maven-wrapper.jar
+### OSX ###
+.DS_Store
 
 ### STS ###
 .apt_generated
@@ -23,8 +23,27 @@ dist/
 nbdist/
 .nb-gradle/
 
-### OSX ###
-.DS_Store
-
 ### Vim ###
 *.swp
+
+# Visual Studio Code
+.vscode/launch.json
+
+# Node
+node_modules/
+bundle-stats.json
+
+# Jenv
+.java-version
+
+# Maven
+target/
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+.env
+docker_data/
+dev.properties
+
