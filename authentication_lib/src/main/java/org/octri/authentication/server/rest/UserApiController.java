@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * A REST controller for API requests.
- * 
+ *
  * @author sams
  */
 @RestController
@@ -44,11 +44,12 @@ public class UserApiController {
 
 	/**
 	 * Searches the database for the username to determine whether it is taken
+	 *
 	 * @param username
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(path = "admin/user/taken/{username}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(path = "admin/user/taken/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> taken(@PathVariable("username") String username, Model model) {
 		User existing = userService.findByUsername(username);
 		Map<String, Object> out = new HashMap<>();
@@ -58,7 +59,7 @@ public class UserApiController {
 
 	/**
 	 * Searches LDAP for the username and provides user information.
-	 * 
+	 *
 	 * @param username
 	 * @return
 	 */
@@ -74,19 +75,17 @@ public class UserApiController {
 				out.put("email", ldapUser.getStringAttribute("mail"));
 				out.put("institution", ldapOrganization);
 			} catch (UsernameNotFoundException e) {
-					out.put("ldapLookupError", "Could not find username in LDAP");			
-					
+				out.put("ldapLookupError", "Could not find username in LDAP");
 			} catch (Exception e) {
 				log.error(e.getMessage());
-				out.put("ldapLookupError", "Error connecting to LDAP.");			
-			} 
+				out.put("ldapLookupError", "Error connecting to LDAP.");
+			}
 		} else {
 			log.error("Error connecting to LDAP");
 			out.put("ldapLookupError", "Error connecting to LDAP.");
 		}
-		
+
 		return out;
 	}
-
 
 }

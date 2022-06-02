@@ -1,7 +1,7 @@
 package org.octri.authentication.server.security.password;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,9 +14,9 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.validation.Emailable;
 
@@ -70,13 +70,13 @@ public class UserConstraintValidationTest {
 			"foo.example.com",
 			"joe@");
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeEach() {
 		testUser = new User();
 		testUser.setUsername("foo");
@@ -91,24 +91,26 @@ public class UserConstraintValidationTest {
 	public void testSaveWithNulls() {
 		User user = new User();
 		messages = getMessages(user, Emailable.class);
-		assertTrue(USERNAME_REQUIRED, messages.contains(USERNAME_REQUIRED));
-		assertTrue(EMAIL_REQUIRED, messages.contains(EMAIL_REQUIRED));
-		assertTrue(FIRSTNAME_REQUIRED, messages.contains(FIRSTNAME_REQUIRED));
-		assertTrue(LAST_NAME_REQUIRED, messages.contains(LAST_NAME_REQUIRED));
-		assertTrue(INSTITUTION_REQUIRED, messages.contains(INSTITUTION_REQUIRED));
+		assertTrue(messages.contains(USERNAME_REQUIRED), USERNAME_REQUIRED);
+		assertTrue(messages.contains(EMAIL_REQUIRED), EMAIL_REQUIRED);
+		assertTrue(messages.contains(FIRSTNAME_REQUIRED), FIRSTNAME_REQUIRED);
+		assertTrue(messages.contains(LAST_NAME_REQUIRED), LAST_NAME_REQUIRED);
+		assertTrue(messages.contains(INSTITUTION_REQUIRED), INSTITUTION_REQUIRED);
 	}
 
 	@Test
 	public void testForValidPasswords() {
 		for (String password : VALID_PASSWORDS) {
-			assertTrue(password + " should be valid", passwordConstraintValidator.validate(password, null).isEmpty());
+			assertTrue(passwordConstraintValidator.validate(password, null).isEmpty(),
+					password + " should be valid");
 		}
 	}
 
 	@Test
 	public void testForInvalidPasswords() {
 		for (String password : INVALID_PASSWORDS) {
-			assertFalse(password + " should not be valid", passwordConstraintValidator.validate(password, null).isEmpty());
+			assertFalse(passwordConstraintValidator.validate(password, null).isEmpty(),
+					password + " should not be valid");
 		}
 	}
 
@@ -137,21 +139,23 @@ public class UserConstraintValidationTest {
 	}
 
 	/**
-	 * Helper for ensuring a {@link User} passes validation. Throws an assertion error if there are validation errors.
+	 * Helper for ensuring a {@link User} passes validation. Throws an assertion
+	 * error if there are validation errors.
 	 *
 	 * @param user
 	 */
-	public void assertValid(final User user, Class validationGroup) {
+	public void assertValid(final User user, Class<?> validationGroup) {
 		messages = getMessages(user, validationGroup);
 		assertTrue(messages.size() == 0);
 	}
 
 	/**
-	 * Helper for ensuring a {@link User} fails validation. Throws an assertion error if there are validation errors.
+	 * Helper for ensuring a {@link User} fails validation. Throws an assertion
+	 * error if there are validation errors.
 	 *
 	 * @param user
 	 */
-	public void assertInvalid(final User user, final String expectedMessage, Class validationGroup) {
+	public void assertInvalid(final User user, final String expectedMessage, Class<?> validationGroup) {
 		messages = getMessages(user, validationGroup);
 		assertTrue(messages.size() > 0);
 		assertTrue(messages.contains(expectedMessage));
@@ -163,7 +167,7 @@ public class UserConstraintValidationTest {
 	 * @param user
 	 * @return List of constraint violation messages.
 	 */
-	public List<String> getMessages(User user, Class validationGroup) {
+	public List<String> getMessages(User user, Class<?> validationGroup) {
 		Set<ConstraintViolation<User>> violations = validator.validate(user, validationGroup);
 		return violations.stream().map(v -> v.getMessage()).collect(Collectors.toList());
 	}

@@ -17,9 +17,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * "Used to suppress default (BasicErrorController) functionality: By default Spring Boot adds the error path to the
- * list of paths, ignored by Spring Security."
- * 
+ * "Used to suppress default (BasicErrorController) functionality: By default
+ * Spring Boot adds the error path to the list of paths, ignored by Spring
+ * Security."
+ *
+ * TODO: Determine whether this is still needed.
+ *
  * @see https://github.com/olle/no-auth-for-you/blob/master/spring-boot-1.5.0/src/main/java/com/studiomediatech/bugs/web/ErrorController.java
  * @see https://github.com/spring-projects/spring-boot/issues/1048
  */
@@ -27,11 +30,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ErrorController extends BasicErrorController {
 
 	/**
-	 * This Bean declaration provides the Spring Security Context to 4xx responses. This is reported as
-	 * fixed in Spring Boot 2.0.0:
-	 * 
+	 * This Bean declaration provides the Spring Security Context to 4xx responses.
+	 * This is reported as fixed in Spring Boot 2.0.0:
+	 *
 	 * https://github.com/spring-projects/spring-boot/issues/1048
-	 * 
+	 *
 	 * @param springSecurityFilterChain
 	 * @return
 	 */
@@ -53,11 +56,6 @@ public class ErrorController extends BasicErrorController {
 	@RequestMapping(value = "/error")
 	public String error(Model model) {
 		return "/error";
-	}
-
-	@Override
-	public String getErrorPath() {
-		return "/__dummyErrorPath";
 	}
 
 }

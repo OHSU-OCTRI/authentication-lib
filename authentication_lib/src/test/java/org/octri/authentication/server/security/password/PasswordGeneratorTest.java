@@ -1,6 +1,6 @@
 package org.octri.authentication.server.security.password;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Set;
@@ -11,9 +11,9 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.octri.authentication.server.security.entity.User;
 
 public class PasswordGeneratorTest {
@@ -22,13 +22,13 @@ public class PasswordGeneratorTest {
 
 	private User testUser;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeEach() {
 		testUser = new User();
 		testUser.setUsername("foo");
@@ -46,7 +46,7 @@ public class PasswordGeneratorTest {
 
 		Set<ConstraintViolation<User>> violations = validator.validate(testUser);
 		List<String> messages = violations.stream().map(v -> v.getMessage()).collect(Collectors.toList());
-		assertTrue(messages.size() == 0);
+		assertTrue(messages.size() == 0, "Generated passwords are valid");
 	}
 
 }

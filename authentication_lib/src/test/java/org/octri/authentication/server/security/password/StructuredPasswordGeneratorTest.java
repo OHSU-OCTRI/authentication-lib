@@ -1,17 +1,19 @@
 package org.octri.authentication.server.security.password;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.octri.authentication.server.security.password.StructuredPasswordGenerator.Component;
 
 /**
  * Tests for StructuredPasswordGenerator
- * 
+ *
  * @author lawhead
  *
  */
@@ -33,7 +35,7 @@ public class StructuredPasswordGeneratorTest {
 		assertTrue(password.length() >= 11 && password.length() <= 17);
 
 		PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
-		assertTrue(password + " should be valid", passwordConstraintValidator.validate(password, null).isEmpty());
+		assertTrue(passwordConstraintValidator.validate(password, null).isEmpty(), password + " should be valid");
 
 		// There is only 1 word with length 4.
 		generator.setMinWordLength(4);
@@ -106,7 +108,6 @@ public class StructuredPasswordGeneratorTest {
 	}
 
 	/**
-	 * 
 	 * @param string1
 	 * @param string2
 	 * @return true if the two strings have any characters in common.
