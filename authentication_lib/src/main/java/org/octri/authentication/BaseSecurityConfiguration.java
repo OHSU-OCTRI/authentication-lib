@@ -10,6 +10,7 @@ import org.octri.authentication.server.security.JsonResponseAuthenticationSucces
 import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
 import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
+import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,7 +25,6 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
@@ -93,6 +93,9 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			"/webjars/**" };
 
 	@Autowired
+	protected UserService userService;
+
+	@Autowired
 	protected AuthenticationUserDetailsService userDetailsService;
 
 	@Autowired
@@ -110,6 +113,12 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	protected ApplicationAuthenticationFailureHandler formAuthFailureHandler;
 
+	@Autowired(required = false)
+	protected TableBasedAuthenticationProvider tableBasedAuthenticationProvider;
+
+	@Autowired(required = false)
+	protected PasswordEncoder passwordEncoder;
+
 	@Bean
 	public Boolean ldapEnabled() {
 		return enableLdap;
@@ -123,11 +132,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Bean
 	public String ldapOrganization() {
 		return ldapOrganization;
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 	/**
@@ -156,11 +160,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new LdapUserDetailsContextMapper(userDetailsService);
 	}
 
-	@Bean
-	public TableBasedAuthenticationProvider tableBasedAuthenticationProvider() {
-		return new TableBasedAuthenticationProvider(userDetailsService, new BCryptPasswordEncoder());
-	}
-
 	/**
 	 * Set up authentication.
 	 *
@@ -177,8 +176,11 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		// Use table-based authentication by default
 		if (enableTableBased) {
+			log.info("Enabling table-based authentication.");
+			userService.setTableBasedEnabled(enableTableBased);
+			userService.setPasswordEncoder(passwordEncoder);
 			auth.userDetailsService(userDetailsService).and()
-					.authenticationProvider(tableBasedAuthenticationProvider());
+					.authenticationProvider(tableBasedAuthenticationProvider);
 		} else {
 			log.info("Not enabling table-based authentication: octri.authentication.enable-table-based was false.");
 		}
@@ -186,6 +188,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Authentication falls through to LDAP if configured
 		if (enableLdap) {
 			log.info("Enabling LDAP authentication.");
+			userService.setLdapEnabled(enableLdap);
 			auth.ldapAuthentication()
 					.contextSource(contextSource())
 					.userSearchBase(ldapSearchBase)

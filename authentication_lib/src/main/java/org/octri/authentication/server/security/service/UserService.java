@@ -59,11 +59,11 @@ public class UserService {
 	@Value("${octri.authentication.credentials-expiration-period:180}")
 	private int credentialsExpirationPeriod;
 
+	@Value("${app.displayName}")
+	private String displayName;
+
 	@Resource
 	private UserRepository userRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
@@ -77,14 +77,14 @@ public class UserService {
 	@Autowired(required = false)
 	private FilterBasedLdapUserSearch ldapSearch;
 
-	@Autowired
-	private Boolean tableBasedEnabled;
+	private Boolean tableBasedEnabled = false;
 
-	@Autowired
-	private Boolean ldapEnabled;
+	private Boolean ldapEnabled = false;
 
-	@Value("${app.displayName}")
-	private String displayName;
+	/**
+	 * May be null if table-based authentication is disabled.
+	 */
+	private PasswordEncoder passwordEncoder;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -103,6 +103,37 @@ public class UserService {
 	 */
 	public void setMaxLoginAttempts(int maxLoginAttempts) {
 		this.maxLoginAttempts = maxLoginAttempts;
+	}
+
+	public Boolean getTableBasedEnabled() {
+		return tableBasedEnabled;
+	}
+
+	public Boolean getLdapEnabled() {
+		return ldapEnabled;
+	}
+
+	public void setLdapEnabled(Boolean ldapEnabled) {
+		this.ldapEnabled = ldapEnabled;
+	}
+
+	/**
+	 * Gets the encoder used to check and save user password hashes.
+	 *
+	 * @return the current password encoder
+	 */
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+
+	/**
+	 * Sets the encoder used to check and save user password hashes.
+	 *
+	 * @param passwordEncoder
+	 *            the encoder to user
+	 */
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	/**
@@ -142,28 +173,29 @@ public class UserService {
 	}
 
 	/**
-	 * Saves the given user account to the database. Handles logic for throwing an exception if the email already exists or if the
+	 * Saves the given user account to the database. Handles logic for throwing an exception if the email already exists
+	 * or if the
 	 * LDAP user doesn't match the form input. Also handles not expiring passwords when a password changes.
-	 * 
+	 *
 	 * This method is not Transactional. The checked exceptions don't work properly within a single transaction.
 	 *
 	 * @param user
 	 *            the user model to save
 	 * @return the saved user model
 	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException 
+	 * @throws DuplicateEmailException
 	 */
 	public User save(User user) throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		Assert.notNull(user, "Must provide a user");
-		
+
 		final boolean newUser = user.getId() == null;
-		
+
 		// Some applications make email optional, but if it exists it can't match another in the database.
 		if (StringUtils.isNotBlank(user.getEmail())) {
-	 		User existing = findByEmail(user.getEmail());
-	 		if (existing != null && (newUser || !existing.getId().equals(user.getId()))) {
-	 			throw new DuplicateEmailException();
-	 		}
+			User existing = findByEmail(user.getEmail());
+			if (existing != null && (newUser || !existing.getId().equals(user.getId()))) {
+				throw new DuplicateEmailException();
+			}
 		}
 
 		if (!tableBasedEnabled) {
@@ -254,11 +286,11 @@ public class UserService {
 	 * @param confirmPassword
 	 * @return Updated user
 	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException 
+	 * @throws DuplicateEmailException
 	 */
 	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword,
-			final String newPassword,
-			final String confirmPassword) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			final String newPassword, final String confirmPassword)
+			throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		List<String> reasons = validatePassword(user, currentPassword, newPassword, confirmPassword);
 		if (!reasons.isEmpty()) {
 			return ImmutablePair.of(user, reasons);
@@ -433,11 +465,12 @@ public class UserService {
 	 * @param sendEmail
 	 * @throws InvalidPasswordException
 	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException 
+	 * @throws DuplicateEmailException
 	 * @return ImmutablePair with the first entry the saved User and the second a list of validation error messages.
 	 */
 	public ImmutablePair<User, List<String>> resetPassword(final String newPassword,
-			final String confirmPassword, final String token) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			final String confirmPassword, final String token)
+			throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		Assert.notNull(newPassword, "Password is required");
 		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");
@@ -514,7 +547,7 @@ public class UserService {
 	private void logDryRunEmail(SimpleMailMessage message) {
 		final String format = "DRY RUN, would have sent email to %s from %s with subject \"%s\" and contents \"%s\"";
 		log.info(String.format(format, String.join(", ", message.getTo()), message.getFrom(), message.getSubject(),
-			message.getText()));
+				message.getText()));
 	}
 
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
@@ -536,7 +569,8 @@ public class UserService {
 	}
 
 	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
-			String token, Map<String, String[]> parameterMap) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			String token, Map<String, String[]> parameterMap)
+			throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		return this.resetPassword(newPassword, confirmPassword, token);
 	}
 
@@ -559,7 +593,7 @@ public class UserService {
 		mailSender.send(email);
 		log.info("Email changed for user id " + user.getId() + ". Email confirmation sent.");
 	}
-	
+
 	/**
 	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If it is
 	 * ohsu.edu then the user is an LDAP user.
@@ -571,9 +605,10 @@ public class UserService {
 	public boolean isLdapUser(User user) {
 		return ldapEnabled && SecurityHelper.hasOHSUEmail(user);
 	}
-	
+
 	/**
 	 * Determines whether the user can reset a password. They must be table based and not be disabled in any way.
+	 *
 	 * @param user
 	 * @return
 	 */
