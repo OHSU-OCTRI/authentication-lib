@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-import org.octri.authentication.FormSecurityConfiguration;
+import org.octri.authentication.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.password.RandomDictionary;
 import org.octri.authentication.server.security.password.StructuredPasswordGenerator;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service for generating temporary user passwords.
- * 
+ *
  * @author lawhead
  *
  */
@@ -29,18 +29,21 @@ public class PasswordGeneratorService {
 
 	/**
 	 * Construct the service using the configured dictionary.
-	 * 
-	 * @param loader the resource loader
-	 * @param passwordGenConfig The configuration for password generation
-	 * @param securityConfig The security configuration
+	 *
+	 * @param loader
+	 *            the resource loader
+	 * @param passwordGenConfig
+	 *            The configuration for password generation
+	 * @param authProperties
+	 *            The authentication configuration
 	 * @throws IOException
 	 */
-	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig passwordGenConfig, 
-			@Autowired FormSecurityConfiguration securityConfig)
+	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig passwordGenConfig,
+			@Autowired OctriAuthenticationProperties authProperties)
 			throws IOException {
 		this.resourceLoader = loader;
 		// Check that both password generation and table based users are configured
-		this.enabled = passwordGenConfig.getEnabled() && securityConfig.tableBasedEnabled();
+		this.enabled = passwordGenConfig.getEnabled() && authProperties.getEnableTableBased();
 
 		Resource resource = resourceLoader.getResource(
 				"classpath:dictionaries/" + passwordGenConfig.getDictionaryFile());
@@ -57,9 +60,10 @@ public class PasswordGeneratorService {
 			}
 		}
 	}
-	
+
 	/**
 	 * Whether this service is enabled allowing generation of temporary passwords
+	 *
 	 * @return
 	 */
 	public boolean isEnabled() {

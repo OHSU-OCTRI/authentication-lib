@@ -53,12 +53,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
 
-	@Value("${octri.authentication.enable-table-based:true}")
-	protected Boolean enableTableBased;
-
-	@Value("${octri.authentication.enable-ldap:true}")
-	protected Boolean enableLdap;
-
 	@Value("${ldap.context-source.search-base:#{null}}")
 	protected String ldapSearchBase;
 
@@ -93,6 +87,12 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			"/webjars/**" };
 
 	@Autowired
+	protected Boolean ldapEnabled;
+
+	@Autowired
+	protected Boolean tableBasedEnabled;
+
+	@Autowired
 	protected UserService userService;
 
 	@Autowired
@@ -120,16 +120,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected PasswordEncoder passwordEncoder;
 
 	@Bean
-	public Boolean ldapEnabled() {
-		return enableLdap;
-	}
-
-	@Bean
-	public Boolean tableBasedEnabled() {
-		return enableTableBased;
-	}
-
-	@Bean
 	public String ldapOrganization() {
 		return ldapOrganization;
 	}
@@ -152,7 +142,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public FilterBasedLdapUserSearch ldapSearch() {
-		return enableLdap ? new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()) : null;
+		return ldapEnabled ? new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()) : null;
 	}
 
 	@Bean
@@ -167,7 +157,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * @throws Exception
 	 */
 	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
-		if (!enableTableBased && !enableLdap) {
+		if (!tableBasedEnabled && !ldapEnabled) {
 			throw new IllegalStateException(
 					"The authentication_lib requires either table-based or LDAP authentication to be "
 							+ "enabled. Set one of: octri.authentication.enable-table-based, "
@@ -175,10 +165,8 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		}
 
 		// Use table-based authentication by default
-		if (enableTableBased) {
+		if (tableBasedEnabled) {
 			log.info("Enabling table-based authentication.");
-			userService.setTableBasedEnabled(enableTableBased);
-			userService.setPasswordEncoder(passwordEncoder);
 			auth.userDetailsService(userDetailsService).and()
 					.authenticationProvider(tableBasedAuthenticationProvider);
 		} else {
@@ -186,9 +174,8 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		}
 
 		// Authentication falls through to LDAP if configured
-		if (enableLdap) {
+		if (ldapEnabled) {
 			log.info("Enabling LDAP authentication.");
-			userService.setLdapEnabled(enableLdap);
 			auth.ldapAuthentication()
 					.contextSource(contextSource())
 					.userSearchBase(ldapSearchBase)

@@ -65,6 +65,9 @@ public class UserService {
 	@Resource
 	private UserRepository userRepository;
 
+	@Autowired(required = false)
+	private PasswordEncoder passwordEncoder;
+
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
 
@@ -77,14 +80,11 @@ public class UserService {
 	@Autowired(required = false)
 	private FilterBasedLdapUserSearch ldapSearch;
 
-	private Boolean tableBasedEnabled = false;
+	@Autowired
+	private Boolean tableBasedEnabled;
 
-	private Boolean ldapEnabled = false;
-
-	/**
-	 * May be null if table-based authentication is disabled.
-	 */
-	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private Boolean ldapEnabled;
 
 	/**
 	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
@@ -103,37 +103,6 @@ public class UserService {
 	 */
 	public void setMaxLoginAttempts(int maxLoginAttempts) {
 		this.maxLoginAttempts = maxLoginAttempts;
-	}
-
-	public Boolean getTableBasedEnabled() {
-		return tableBasedEnabled;
-	}
-
-	public Boolean getLdapEnabled() {
-		return ldapEnabled;
-	}
-
-	public void setLdapEnabled(Boolean ldapEnabled) {
-		this.ldapEnabled = ldapEnabled;
-	}
-
-	/**
-	 * Gets the encoder used to check and save user password hashes.
-	 *
-	 * @return the current password encoder
-	 */
-	public PasswordEncoder getPasswordEncoder() {
-		return passwordEncoder;
-	}
-
-	/**
-	 * Sets the encoder used to check and save user password hashes.
-	 *
-	 * @param passwordEncoder
-	 *            the encoder to user
-	 */
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
 	}
 
 	/**
