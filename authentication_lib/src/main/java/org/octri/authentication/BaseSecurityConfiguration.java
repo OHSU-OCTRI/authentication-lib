@@ -7,27 +7,22 @@ import org.octri.authentication.server.security.ApplicationAuthenticationSuccess
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;
 import org.octri.authentication.server.security.JsonResponseAuthenticationFailureHandler;
 import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
-import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
 import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.ldap.authentication.NullLdapAuthoritiesPopulator;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
 /**
  * A base security configuration class that extends
@@ -52,24 +47,6 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
-
-	@Value("${ldap.context-source.search-base:#{null}}")
-	protected String ldapSearchBase;
-
-	@Value("${ldap.context-source.search-filter:#{null}}")
-	protected String ldapSearchFilter;
-
-	@Value("${ldap.context-source.organization:#{null}}")
-	protected String ldapOrganization;
-
-	@Value("${ldap.context-source.user-dn:#{null}}")
-	protected String ldapUserDn;
-
-	@Value("${ldap.context-source.password:#{null}}")
-	protected String ldapPassword;
-
-	@Value("${ldap.context-source.url:#{null}}")
-	protected String ldapUrl;
 
 	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] {
 			"/",
@@ -119,36 +96,17 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired(required = false)
 	protected PasswordEncoder passwordEncoder;
 
-	@Bean
-	public String ldapOrganization() {
-		return ldapOrganization;
-	}
+	@Autowired(required = false)
+	protected LdapContextProperties ldapContextProperties;
 
-	/**
-	 * This bean is only created if LDAP is enabled. This prevents errors on startup
-	 * in Spring Boot Actuator.
-	 *
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnProperty(name = "octri.authentication.enable-ldap", havingValue = "true")
-	public BaseLdapPathContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-		contextSource.setUrl(ldapUrl);
-		contextSource.setUserDn(ldapUserDn);
-		contextSource.setPassword(ldapPassword);
-		return contextSource;
-	}
+	@Autowired(required = false)
+	protected LdapContextSource ldapContextSource;
 
-	@Bean
-	public FilterBasedLdapUserSearch ldapSearch() {
-		return ldapEnabled ? new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, contextSource()) : null;
-	}
+	@Autowired(required = false)
+	protected UserDetailsContextMapper ldapUserDetailsContextMapper;
 
-	@Bean
-	public LdapUserDetailsContextMapper ldapContextMapper() {
-		return new LdapUserDetailsContextMapper(userDetailsService);
-	}
+	@Autowired(required = false)
+	protected LdapAuthoritiesPopulator ldapAuthoritiesPopulator;
 
 	/**
 	 * Set up authentication.
@@ -177,11 +135,11 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		if (ldapEnabled) {
 			log.info("Enabling LDAP authentication.");
 			auth.ldapAuthentication()
-					.contextSource(contextSource())
-					.userSearchBase(ldapSearchBase)
-					.userSearchFilter(ldapSearchFilter)
-					.ldapAuthoritiesPopulator(new NullLdapAuthoritiesPopulator())
-					.userDetailsContextMapper(ldapContextMapper());
+					.contextSource(ldapContextSource)
+					.userSearchBase(ldapContextProperties.getSearchBase())
+					.userSearchFilter(ldapContextProperties.getSearchFilter())
+					.ldapAuthoritiesPopulator(ldapAuthoritiesPopulator)
+					.userDetailsContextMapper(ldapUserDetailsContextMapper);
 		} else {
 			log.info("Not enabling LDAP authentication: octri.authentication.enable-ldap was false.");
 		}
