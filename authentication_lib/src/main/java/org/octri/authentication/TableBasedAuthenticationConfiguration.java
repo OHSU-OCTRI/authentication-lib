@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Configuration for table-based authentication.
+ */
 @Configuration
 @ConditionalOnProperty(value = "octri.authentication.enable-table-based", havingValue = "true", matchIfMissing = false)
 public class TableBasedAuthenticationConfiguration {

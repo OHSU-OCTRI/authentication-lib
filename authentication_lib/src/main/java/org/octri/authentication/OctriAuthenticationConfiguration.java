@@ -4,6 +4,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration for the authentication library.
+ */
 @Configuration
 @EnableConfigurationProperties(OctriAuthenticationProperties.class)
 public class OctriAuthenticationConfiguration {
