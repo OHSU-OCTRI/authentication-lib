@@ -9,7 +9,6 @@ import org.octri.authentication.server.security.JsonResponseAuthenticationFailur
 import org.octri.authentication.server.security.JsonResponseAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.StatusOnlyAuthenticationEntryPoint;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
-import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -68,9 +67,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	protected Boolean tableBasedEnabled;
-
-	@Autowired
-	protected UserService userService;
 
 	@Autowired
 	protected AuthenticationUserDetailsService userDetailsService;
