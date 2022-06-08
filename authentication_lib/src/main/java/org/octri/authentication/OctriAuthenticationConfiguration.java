@@ -19,14 +19,12 @@ public class OctriAuthenticationConfiguration {
 
 	@Bean
 	public Boolean ldapEnabled() {
-		Boolean ldapEnabled = authenticationProperties.getEnableLdap();
-		return ldapEnabled != null ? ldapEnabled : Boolean.FALSE;
+		return authenticationProperties.getEnableLdap();
 	}
 
 	@Bean
 	public Boolean tableBasedEnabled() {
-		Boolean tableBasedEnabled = authenticationProperties.getEnableTableBased();
-		return tableBasedEnabled != null ? tableBasedEnabled : Boolean.FALSE;
+		return authenticationProperties.getEnableTableBased();
 	}
 
 }
