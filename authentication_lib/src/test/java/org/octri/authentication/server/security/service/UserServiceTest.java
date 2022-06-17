@@ -28,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.OctriAuthenticationProperties;
+import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
@@ -47,6 +49,12 @@ public class UserServiceTest {
 
 	@InjectMocks
 	private UserService userService;
+
+	@Spy
+	private OctriAuthenticationProperties authenticationProperties = new OctriAuthenticationProperties();
+
+	@Spy
+	private AuthenticationUrlHelper urlHelper = new AuthenticationUrlHelper(BASE_URL, CONTEXT_PATH);
 
 	@Spy
 	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -86,9 +94,6 @@ public class UserServiceTest {
 
 	private static final String BASE_URL = "http://localhost:8080";
 	private static final String CONTEXT_PATH = "/app";
-	private static final String APP_URL = BASE_URL + CONTEXT_PATH;
-	private static final String RESET_PASSWORD_URL = APP_URL + "/user/password/reset?token=secret-token";
-	private static final String LOGIN_URL = APP_URL + "/login";
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@BeforeEach
@@ -97,9 +102,6 @@ public class UserServiceTest {
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
 		userService.setTableBasedEnabled(true);
-
-		userService.setBaseUrl(BASE_URL);
-		userService.setContextPath(CONTEXT_PATH);
 	}
 
 	@Test
@@ -273,24 +275,6 @@ public class UserServiceTest {
 		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 		userService.sendPasswordResetEmailConfirmation("mock token", request, false);
 		verify(mailSender).send(any(SimpleMailMessage.class));
-	}
-
-	@Test
-	public void testBuildAppUrl() {
-		final String appUrl = userService.buildAppUrl();
-		assertEquals(APP_URL, appUrl, "Builds correct app URL");
-	}
-
-	@Test
-	public void testBuildResetPasswordUrl() {
-		final String resetPasswordUrl = userService.buildResetPasswordUrl("secret-token");
-		assertEquals(RESET_PASSWORD_URL, resetPasswordUrl, "Builds correct reset password URL");
-	}
-
-	@Test
-	public void testBuildLoginUrl() {
-		final String loginUrl = userService.buildLoginUrl();
-		assertEquals(LOGIN_URL, loginUrl, "Builds correct login URL");
 	}
 
 	@Test
