@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
+import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -56,6 +57,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserController {
 
 	private static final Log log = LogFactory.getLog(UserController.class);
+
+	@Autowired
+	private AuthenticationUrlHelper urlHelper;
 
 	@Autowired
 	private UserService userService;
@@ -129,19 +133,19 @@ public class UserController {
 				model.addAttribute("pageTitle", "Edit User");
 				model.addAttribute("newUser", false);
 				model.addAttribute("formView", true);
-				
+
 				// If the user can reset the password, show admin additional options
 				if (userService.canResetPassword(user)) {
 					// Show either a valid reset URL or allow the admin to generate one
 					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
 					if (latestToken.isPresent()
 							&& !latestToken.get().isExpired()) {
-						final String url = userService.buildResetPasswordUrl(latestToken.get().getToken());
+						final String url = urlHelper.getPasswordResetUrl(latestToken.get().getToken());
 						model.addAttribute("passwordResetUrl", url);
 					} else {
 						model.addAttribute("showNewTokenButton", true);
 					}
-					
+
 					if (passwordGeneratorService.isEnabled()) {
 						model.addAttribute("allowPasswordGeneration", true);
 					}

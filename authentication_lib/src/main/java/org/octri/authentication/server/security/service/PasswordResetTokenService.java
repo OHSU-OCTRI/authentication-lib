@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.repository.PasswordResetTokenRepository;
@@ -25,7 +26,7 @@ import org.springframework.util.Assert;
 public class PasswordResetTokenService {
 
 	@Autowired
-	private UserService userService;
+	private AuthenticationUrlHelper urlHelper;
 
 	@Resource
 	private PasswordResetTokenRepository passwordResetTokenRepository;
@@ -99,6 +100,7 @@ public class PasswordResetTokenService {
 
 	/**
 	 * Checks to ensure a token exists and has not expired.
+	 *
 	 * @deprecated Use other service methods to get the token; then use {@link PasswordResetToken#isExpired()}
 	 *
 	 * @param token
@@ -116,8 +118,9 @@ public class PasswordResetTokenService {
 	 * @return
 	 */
 	public List<PasswordResetToken> findAllActiveTokens() {
-		List<PasswordResetToken> tokens = passwordResetTokenRepository.findByExpiryDateGreaterThanOrderByExpiryDateDesc(new Date());
-		tokens.forEach(token -> token.setTokenUrl(userService.buildResetPasswordUrl(token.getToken())));
+		List<PasswordResetToken> tokens = passwordResetTokenRepository
+				.findByExpiryDateGreaterThanOrderByExpiryDateDesc(new Date());
+		tokens.forEach(token -> token.setTokenUrl(urlHelper.getPasswordResetUrl(token.getToken())));
 		return tokens;
 	}
 

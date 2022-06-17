@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +15,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.OctriAuthenticationProperties;
+import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -47,22 +48,16 @@ public class UserService {
 
 	private static final Log log = LogFactory.getLog(UserService.class);
 
-	@Value("${server.servlet.context-path:/}")
-	private String contextPath;
-
-	@Value("${octri.authentication.base-url}")
-	private String baseUrl;
-
-	@Value("${octri.authentication.max-login-attempts:7}")
-	private int maxLoginAttempts;
-
-	@Value("${octri.authentication.credentials-expiration-period:180}")
-	private int credentialsExpirationPeriod;
-
 	@Value("${app.displayName}")
 	private String displayName;
 
-	@Resource
+	@Autowired
+	private OctriAuthenticationProperties authenticationProperties;
+
+	@Autowired
+	private AuthenticationUrlHelper urlHelper;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired(required = false)
@@ -85,25 +80,6 @@ public class UserService {
 
 	@Autowired
 	private Boolean ldapEnabled;
-
-	/**
-	 * Gets the maximum number of failed login attempts allowed before the user's account will be locked.
-	 *
-	 * @return the maximum number of attempts allowed
-	 */
-	public int getMaxLoginAttempts() {
-		return maxLoginAttempts;
-	}
-
-	/**
-	 * Sets the maximum number of failed login attempts allowed before the user's account will be locked.
-	 *
-	 * @param maxLoginAttempts
-	 *            the number of attempts to allow
-	 */
-	public void setMaxLoginAttempts(int maxLoginAttempts) {
-		this.maxLoginAttempts = maxLoginAttempts;
-	}
 
 	/**
 	 * Get the user account with the given ID.
@@ -238,7 +214,7 @@ public class UserService {
 	public User incrementFailedAttempts(User user) {
 		Assert.notNull(user, "User may not be null");
 		user.setConsecutiveLoginFailures(user.getConsecutiveLoginFailures() + 1);
-		if (user.getConsecutiveLoginFailures() >= this.maxLoginAttempts) {
+		if (user.getConsecutiveLoginFailures() >= authenticationProperties.getMaxLoginAttempts()) {
 			user.setAccountLocked(true);
 		}
 
@@ -369,7 +345,7 @@ public class UserService {
 			final boolean isNewUser, final boolean dryRun) {
 
 		User user = token.getUser();
-		final String resetPath = buildResetPasswordUrl(token.getToken());
+		final String resetPath = urlHelper.getPasswordResetUrl(token.getToken());
 
 		SimpleMailMessage email = new SimpleMailMessage();
 		String body;
@@ -392,38 +368,6 @@ public class UserService {
 			mailSender.send(email);
 			log.info("Password reset confirmation email sent to " + user.getEmail());
 		}
-	}
-
-	/**
-	 * Builds a full URL for resetting a password.
-	 *
-	 * @param token
-	 * @param request
-	 * @return URL for resetting password including token.
-	 */
-	public String buildResetPasswordUrl(final String token) {
-		return buildAppUrl() + "/user/password/reset?token=" + token;
-	}
-
-	/**
-	 * Builds a full URL for the login page.
-	 *
-	 * @param token
-	 * @param request
-	 * @return URL for resetting password including token.
-	 */
-	protected String buildLoginUrl() {
-		return buildAppUrl() + "/login";
-	}
-
-	/**
-	 * Builds full app URL including context path. No trailing slash.
-	 *
-	 * @param request
-	 * @return Full application URL with context path.
-	 */
-	protected String buildAppUrl() {
-		return (baseUrl + contextPath).replaceAll("\\/*$", "");
 	}
 
 	/**
@@ -468,6 +412,7 @@ public class UserService {
 	 * @param user
 	 */
 	private void resetCredentialMetadata(User user) {
+		Integer credentialsExpirationPeriod = authenticationProperties.getCredentialsExpirationPeriod();
 		user.setCredentialsExpired(false);
 		Instant now = Instant.now();
 		user.setCredentialsExpirationDate(Date.from(now.plus(credentialsExpirationPeriod, ChronoUnit.DAYS)));
@@ -496,7 +441,7 @@ public class UserService {
 		email.setSubject("Your " + displayName + " password was reset");
 		final String body = "Your password has been reset. You may now log into the application.\n\nUsername: "
 				+ passwordResetToken.getUser().getUsername()
-				+ "\nLink: " + buildLoginUrl();
+				+ "\nLink: " + urlHelper.getLoginUrl();
 		email.setText(body);
 		email.setTo(userEmail);
 		email.setFrom(emailConfig.getFrom());
@@ -521,14 +466,6 @@ public class UserService {
 
 	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
 		this.tableBasedEnabled = tableBasedEnabled;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
 	}
 
 	public ImmutablePair<User, List<String>> changePassword(User user, String currentPassword, String newPassword,

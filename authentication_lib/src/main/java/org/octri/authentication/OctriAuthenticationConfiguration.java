@@ -4,6 +4,8 @@ import static org.octri.authentication.OctriAuthenticationProperties.DEFAULT_BAS
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.server.security.AuthenticationUrlHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +21,11 @@ public class OctriAuthenticationConfiguration {
 	private static final String BASE_URL_ERROR = "Table-based authentication is enabled but octri.authentication.base-url is "
 			+ DEFAULT_BASE_URL + ". Check the application's configuration.";
 
+	private String contextPath;
 	private OctriAuthenticationProperties authenticationProperties;
 
-	public OctriAuthenticationConfiguration(OctriAuthenticationProperties authenticationProperties) {
+	public OctriAuthenticationConfiguration(OctriAuthenticationProperties authenticationProperties,
+			@Value("${server.servlet.context-path:/}") String contextPath) {
 		this.authenticationProperties = authenticationProperties;
 
 		if (DEFAULT_BASE_URL.equals(authenticationProperties.getBaseUrl())
@@ -38,6 +42,11 @@ public class OctriAuthenticationConfiguration {
 	@Bean
 	public Boolean tableBasedEnabled() {
 		return authenticationProperties.getEnableTableBased();
+	}
+
+	@Bean
+	public AuthenticationUrlHelper authenticatonUrlHelper() {
+		return new AuthenticationUrlHelper(authenticationProperties.getBaseUrl(), contextPath);
 	}
 
 }
