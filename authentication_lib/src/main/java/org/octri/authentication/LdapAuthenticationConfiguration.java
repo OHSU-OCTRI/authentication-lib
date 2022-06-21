@@ -23,12 +23,9 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 public class LdapAuthenticationConfiguration {
 
 	private LdapContextProperties ldapContextProperties;
-	private UserDetailsService userDetailsService;
 
-	public LdapAuthenticationConfiguration(LdapContextProperties ldapContextProperties,
-			UserDetailsService userDetailsService) {
+	public LdapAuthenticationConfiguration(LdapContextProperties ldapContextProperties) {
 		this.ldapContextProperties = ldapContextProperties;
-		this.userDetailsService = userDetailsService;
 	}
 
 	/**
@@ -90,7 +87,7 @@ public class LdapAuthenticationConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public UserDetailsContextMapper ldapContextMapper() {
+	public UserDetailsContextMapper ldapContextMapper(UserDetailsService userDetailsService) {
 		return new LdapUserDetailsContextMapper(userDetailsService);
 	}
 
