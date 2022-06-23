@@ -25,8 +25,9 @@ public class OctriAuthenticationConfiguration {
 	private OctriAuthenticationProperties authenticationProperties;
 
 	public OctriAuthenticationConfiguration(OctriAuthenticationProperties authenticationProperties,
-			@Value("${server.servlet.context-path:/}") String contextPath) {
+			@Value("${server.servlet.context-path:}") String contextPath) {
 		this.authenticationProperties = authenticationProperties;
+		this.contextPath = contextPath;
 
 		if (DEFAULT_BASE_URL.equals(authenticationProperties.getBaseUrl())
 				&& authenticationProperties.getEnableTableBased()) {

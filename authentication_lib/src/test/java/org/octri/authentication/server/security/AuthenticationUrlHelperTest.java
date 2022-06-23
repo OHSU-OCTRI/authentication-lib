@@ -28,6 +28,20 @@ public class AuthenticationUrlHelperTest {
 	}
 
 	@Test
+	public void testBuildAppUrlWithEmptyContextPath() {
+		urlHelper.setContextPath("");
+		final String appUrl = urlHelper.getAppUrl();
+		assertEquals(BASE_URL, appUrl, "Can handle empty context path");
+	}
+
+	@Test
+	public void testBuildAppUrlStripsTrailingSlash() {
+		urlHelper.setContextPath("/");
+		final String appUrl = urlHelper.getAppUrl();
+		assertEquals(BASE_URL, appUrl, "Trims trailing slash from the URL");
+	}
+
+	@Test
 	public void testBuildResetPasswordUrl() {
 		final String resetPasswordUrl = urlHelper.getPasswordResetUrl(TOKEN);
 		assertEquals(RESET_PASSWORD_URL, resetPasswordUrl, "Builds correct reset password URL");
