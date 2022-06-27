@@ -12,7 +12,6 @@ function cancelUserForm() {
 	location.href = $("meta[name='ctx']").attr("content") + "admin/user/list";
 }
 
-
 /**
  * Use debounce to wait for keyboard silence before executing a function.
  * For example:
@@ -69,22 +68,22 @@ $(function() {
 			order: [[ 1, "asc" ]]
 		});
 	}
-	
+
 	$('.btn.cancel').on('click', cancel);
 	$('.btn.cancelUserForm').on('click', cancelUserForm);
-	
+
 	if (typeof $.fn.datepicker !== 'undefined') {
 		$("input[name=accountExpirationDate]").datepicker();
 		$("input[name=credentialsExpirationDate]").datepicker();
 	}
-	
+
 	$('[data-action="popover"]').popover({
 		trigger: "click hover",
 		html: true
 	});
-	
+
 	var contextPath = $("meta[name='ctx']").attr("content");
-	
+
 	/**
 	 * Username type-ahead lookup
 	 * <input id="username" class="lookup-user" />
@@ -116,15 +115,15 @@ $(function() {
 			$('.username-taken').remove();
 		}
 	}, 500));
-	
+
 	// Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
 	var ldapNotChecked = $('#ldap_user').length > 0 && !$('#ldap_user').is(':checked');
 	$('#ldap_lookup').prop("disabled", ldapNotChecked);
-	
+
 	$('#ldap_user').on('click', function(e) {
 		$('#ldap_lookup').prop("disabled", !$(this).is(':checked'));
 	});
-	
+
 	// Look up by username in LDAP and prepopulate user fields
 	$('#ldap_lookup').on('click', function(e) {
 		e.preventDefault();
@@ -134,7 +133,7 @@ $(function() {
 	            xhr.setRequestHeader('X-CSRF-TOKEN', token);
 	        }
 	    });
-	    
+
 		var username = $('#username').val();
 		var obj = {username: username};
 
@@ -150,12 +149,11 @@ $(function() {
 			}
 		});
 	});
-	
 
 	/**
 	 * Handle displaying inline form validation errors.
 	 * UserController is responsible for sending the BindingResult in the model.
-	 * The mustache template renders hidden input fields with the correct keys 
+	 * The mustache template renders hidden input fields with the correct keys
 	 * and messages which are matched with the form element IDs using this JavaScript.
 	 */
 	$('[data-error]').each(function(i, el) {
@@ -165,4 +163,9 @@ $(function() {
 			.addClass('has-error')
 			.append('<p class="error-text">' + message + '</p>');
 	})
+
+	/**
+	 * Automatically focus a form element. Used by login and password reset forms.
+	 */
+	$('[data-focus]').first().focus();
 });

@@ -13,13 +13,13 @@
 				{{^token}}
 				<div class="form-group">
 					<label for="current_password" class="form-label">Current Password</label>
-					<input id="current_password" name="currentPassword" class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}" type="password" autofocus="true" required>
+					<input id="current_password" name="currentPassword" class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}" type="password" autofocus="true" data-focus required>
 				</div>
 				{{/token}}
 
 				<div class="form-group">
 					<label for="new_password" class="form-label">New Password</label>
-					<input id="new_password" name="newPassword" class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}" type="password" required>
+					<input id="new_password" name="newPassword" class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}" type="password" data-focus required>
 				</div>
 
 				<div class="form-group">
@@ -33,7 +33,7 @@
 					{{#token}}
 					<input id="token" name="token" type="hidden" value="{{token}}" />
 					{{/token}}
-					
+
 					{{>authlib_fragments/forms/csrf_input}}
 					<button class="btn btn-primary mb-0" type="submit">Submit</button>
 					<a href="{{req.contextPath}}/login" class="btn btn-link">Cancel</a>
@@ -41,5 +41,5 @@
 			</form>
 		</div>
 	</div>
-	<!-- /form card change password --> 
+	<!-- /form card change password -->
 </div>
