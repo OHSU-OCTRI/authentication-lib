@@ -17,7 +17,7 @@ public class SecurityHelperTest {
 	}
 
 	@Test
-	public void testIsLdapUser() {
+	public void testHasOHSUEmail() {
 		user.setEmail(null);
 		assertFalse(SecurityHelper.hasOHSUEmail(user), "Should be false with NULL email");
 
@@ -34,5 +34,25 @@ public class SecurityHelperTest {
 		user.setEmail("foo@ohsu.edu");
 		assertTrue(SecurityHelper.hasOHSUEmail(user),
 				"Should be true when using an email address with ohsu.edu domain");
+	}
+
+	@Test
+	public void testHasEmailDomain() {
+		user.setEmail(null);
+		assertFalse(SecurityHelper.hasEmailDomain(user, "ohsu.edu"), "Should be false with NULL email");
+
+		user.setEmail("");
+		assertFalse(SecurityHelper.hasEmailDomain(user, "ohsu.edu"), "Should be false with empty string");
+
+		user.setEmail("  \n  \t  ");
+		assertFalse(SecurityHelper.hasEmailDomain(user, "ohsu.edu"), "Should be false with only whitespace");
+
+		user.setEmail("foo@example.com");
+		assertFalse(SecurityHelper.hasEmailDomain(user, "ohsu.edu"),
+				"Should be false unless the email domain matches");
+
+		user.setEmail("foo@ohsu.edu");
+		assertTrue(SecurityHelper.hasEmailDomain(user, "ohsu.edu"),
+				"Should be true when the email domain matches");
 	}
 }

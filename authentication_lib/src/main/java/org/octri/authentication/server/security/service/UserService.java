@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.EmailConfiguration;
+import org.octri.authentication.LdapContextProperties;
 import org.octri.authentication.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
@@ -71,6 +72,9 @@ public class UserService {
 
 	@Autowired
 	private EmailConfiguration emailConfig;
+
+	@Autowired(required = false)
+	private LdapContextProperties ldapContextProperties;
 
 	@Autowired(required = false)
 	private FilterBasedLdapUserSearch ldapSearch;
@@ -501,15 +505,15 @@ public class UserService {
 	}
 
 	/**
-	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If it is
-	 * ohsu.edu then the user is an LDAP user.
+	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If the user's
+	 * email address domain matches the domain configured in the LDAP properties, then the user is an LDAP user.
 	 *
 	 * TODO: Consider adding a persisted flag on the `user` record. AUTHLIB-73
 	 *
 	 * @return true if the user is an LDAP user.
 	 */
 	public boolean isLdapUser(User user) {
-		return ldapEnabled && SecurityHelper.hasOHSUEmail(user);
+		return ldapEnabled && SecurityHelper.hasEmailDomain(user, ldapContextProperties.getEmailDomain());
 	}
 
 	/**

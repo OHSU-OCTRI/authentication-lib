@@ -153,12 +153,25 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Whether the given user has an ohsu email account
+	 * Whether the given user has an ohsu email account.
+	 *
 	 * @param user
 	 * @return
 	 */
 	public static boolean hasOHSUEmail(User user) {
+		return hasEmailDomain(user, "ohsu.edu");
+	}
+
+	/**
+	 * Whether the user's email matches the given domain.
+	 *
+	 * @param user
+	 * @param matchDomain
+	 * @return
+	 */
+	public static boolean hasEmailDomain(User user, String matchDomain) {
 		Assert.notNull(user, "User cannot be null");
+		Assert.notNull(matchDomain, "Domain name cannot be null");
 
 		if (StringUtils.isBlank(user.getEmail())) {
 			return false;
@@ -170,7 +183,7 @@ public class SecurityHelper {
 		}
 
 		final String domain = emailParts[1].trim();
-		return domain.equalsIgnoreCase("ohsu.edu");
+		return domain.equalsIgnoreCase(matchDomain);
 	}
 
 }
