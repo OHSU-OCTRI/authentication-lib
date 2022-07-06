@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
  * Dictionary used to find random words.
- * 
+ *
  * @author lawhead
  *
  */
-@Component
 public class RandomDictionary {
 
 	private Map<Integer, List<String>> wordsBySize;
@@ -24,7 +22,7 @@ public class RandomDictionary {
 
 	/**
 	 * Create a new dictionary from the given wordlist.
-	 * 
+	 *
 	 * @param wordList
 	 */
 	public RandomDictionary(List<String> wordList) {
@@ -35,7 +33,7 @@ public class RandomDictionary {
 
 	/**
 	 * Get a random word from the dictionary with a length between minSize and maxSize inclusive.
-	 * 
+	 *
 	 * @param minSize
 	 * @param maxSize
 	 * @return
@@ -61,7 +59,7 @@ public class RandomDictionary {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param size
 	 * @return number of words of a given length; useful for calculating password entropy.
 	 */
@@ -70,7 +68,7 @@ public class RandomDictionary {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param minSize
 	 * @param maxSize
 	 * @return number of words in a given length range (inclusive)
@@ -87,7 +85,7 @@ public class RandomDictionary {
 
 	/**
 	 * Given the wordlist, initialize the underlying data structure.
-	 * 
+	 *
 	 * @param wordList
 	 */
 	private void initialize(List<String> wordList) {
