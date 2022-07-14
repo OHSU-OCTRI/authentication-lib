@@ -43,9 +43,14 @@ public class UserPasswordController {
 			+ PasswordResetToken.EXPIRE_IN_MINUTES
 			+ " minutes please try again or contact your system administrator.";
 
-	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. Please try again or contact your system administrator if this persists.";
+	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. "
+			+ "Please try again or contact your system administrator if this persists.";
 
-	public static final String LDAP_USER_WARNING_MESSAGE = "The account you entered cannot have the password reset. If you feel this is in error, please contact your system administrator.";
+	public static final String LDAP_USER_WARNING_MESSAGE = "The account you entered cannot have the password reset. "
+			+ "If you feel this is in error, please contact your system administrator.";
+
+	public static final String UNKNOWN_EMAIL_MESSAGE = "The email address you entered cannot be found. "
+			+ "Please try a different address or contact your system administrator if you feel this is in error.";
 
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
@@ -167,16 +172,23 @@ public class UserPasswordController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			final User user = userService.findByEmail(email);
+
+			if (user == null) {
+				redirectAttributes.addFlashAttribute("errorMessage", UNKNOWN_EMAIL_MESSAGE);
+				return "redirect:/user/password/forgot";
+			}
+
 			if (!userService.canResetPassword(user)) {
 				redirectAttributes.addFlashAttribute("errorMessage", LDAP_USER_WARNING_MESSAGE);
 				return "redirect:/user/password/forgot";
 			}
+
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 			userService.sendPasswordResetTokenEmail(token, request, false, false);
 			redirectAttributes.addFlashAttribute("successMessage", EMAIL_SENT_CONFIRMATION_MESSAGE);
 			return "redirect:/user/password/forgot";
 		} catch (Exception ex) {
-			log.error("Error while processing password reset request for email address " + email, ex);
+			log.error("Unexpected error while processing forgotten password", ex);
 			redirectAttributes.addFlashAttribute("errorMessage", GENERIC_ERROR_MESSAGE);
 			return "redirect:/user/password/forgot";
 		}
