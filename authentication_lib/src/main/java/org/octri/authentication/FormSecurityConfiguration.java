@@ -46,7 +46,7 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 		formAuthSuccessHandler.setDefaultTargetUrl(defaultSuccessUrl());
 		formAuthFailureHandler.setDefaultFailureUrl(loginFailureRedirectUrl());
 		http.exceptionHandling()
-				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(loginUrl()))
 				.and()
 				.csrf()
 				.and()
@@ -69,6 +69,30 @@ public class FormSecurityConfiguration extends BaseSecurityConfiguration {
 				.antMatchers(HttpMethod.DELETE).denyAll()
 				.anyRequest()
 				.authenticated();
+
+		configureContentSecurityPolicy(http);
+	}
+
+	/**
+	 * Configures content security policy (CSP) header.
+	 *
+	 * @param http
+	 * @throws Exception
+	 */
+	protected void configureContentSecurityPolicy(HttpSecurity http) throws Exception {
+		if (cspProperties == null || !cspProperties.isEnabled()) {
+			log.info("Content security policy is disabled. Skipping.");
+			return;
+		}
+
+		log.info("Configuring content security policy.");
+		log.debug(cspProperties);
+		http.headers((headers) -> headers.contentSecurityPolicy(csp -> {
+			csp.policyDirectives(cspProperties.getPolicy());
+			if (!cspProperties.isEnforced()) {
+				csp.reportOnly();
+			}
+		}));
 	}
 
 	/**

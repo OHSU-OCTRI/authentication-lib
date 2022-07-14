@@ -95,6 +95,9 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected PasswordEncoder passwordEncoder;
 
 	@Autowired(required = false)
+	protected ContentSecurityPolicyProperties cspProperties;
+
+	@Autowired(required = false)
 	protected LdapContextProperties ldapContextProperties;
 
 	@Autowired(required = false)
@@ -151,6 +154,15 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	protected String defaultSuccessUrl() {
 		return "/admin/user/list";
+	}
+
+	/**
+	 * This is the login request mapping. Override in your application to change this URL.
+	 *
+	 * @return A request mapping /login
+	 */
+	protected String loginUrl() {
+		return "/login";
 	}
 
 	/**

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for the authentication library.
  */
 @Configuration
-@EnableConfigurationProperties(OctriAuthenticationProperties.class)
+@EnableConfigurationProperties({ OctriAuthenticationProperties.class, ContentSecurityPolicyProperties.class })
 public class OctriAuthenticationConfiguration {
 
 	private static final Log log = LogFactory.getLog(OctriAuthenticationConfiguration.class);
