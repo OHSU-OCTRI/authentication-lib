@@ -151,7 +151,7 @@ public class UserController {
 					}
 				}
 			} else {
-				log.error(securityHelper.username() + " does not have access to edit user " + id);
+				log.info(securityHelper.username() + " does not have access to edit user " + id);
 				model.addAttribute("status", 403);
 				model.addAttribute("error", "Access Denied");
 				model.addAttribute("message", "You may not edit yourself.");
@@ -223,12 +223,12 @@ public class UserController {
 			}
 
 		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
-			log.error("Checked exception thrown", ex);
+			log.info("Checked exception thrown", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "admin/user/form";
 		} catch (UsernameNotFoundException ex) {
-			log.error("User not found", ex);
+			log.info("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
 			return "admin/user/form";

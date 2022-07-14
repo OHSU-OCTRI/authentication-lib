@@ -134,14 +134,14 @@ public class UserPasswordController {
 				return "user/password/form";
 			}
 		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
-			log.error("Unexpected exception while changing password", ex);
+			log.info("Exception while changing password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception when " + username + " tried to change their password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
-		} 
+		}
 	}
 
 	/**
@@ -206,10 +206,10 @@ public class UserPasswordController {
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@GetMapping("user/password/reset")
 	public String resetPassword(@RequestParam("token") String token, ModelMap model) {
-		
+
 		// A record should exist in the database and be not expired.
 		User user = this.getTokenUser(token);
-		
+
 		if (user == null || !userService.canResetPassword(user)) {
 			model.addAttribute("errorMessage", Messages.INVALID_PASSWORD_RESET);
 		} else {
@@ -244,13 +244,13 @@ public class UserPasswordController {
 			RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 
 		User user = this.getTokenUser(token);
-		
+
 		// The user cannot change their password if they don't have a valid token or are locked/disabled in some way.
 		// They will have already received a message about this on the reset password page, but if they continue to
 		// try they will be redirected to login.
 		if (user == null || !userService.canResetPassword(user)) {
 			model.clear();
-			return "redirect:/login?error=true";			
+			return "redirect:/login?error=true";
 		}
 
 		model.addAttribute("formTitle", Messages.TITLE_RESET_PASSWORD);
@@ -274,14 +274,14 @@ public class UserPasswordController {
 				return "user/password/form";
 			}
 		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
-			log.error("Unexpected exception while resetting password", ex);
+			log.info("Exception while resetting password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
 		} catch (RuntimeException ex) {
 			log.error("Unexpected error while resetting password", ex);
 			model.addAttribute("errorMessage", Messages.DEFAULT_ERROR_MESSAGE);
 			return "user/password/form";
-		} 
+		}
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class UserPasswordController {
 
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");
-		Assert.isTrue(generator.isEnabled(), "Cannot generate temporary passwords"); 
+		Assert.isTrue(generator.isEnabled(), "Cannot generate temporary passwords");
 
 		String newPassword = generator.generatePassword();
 

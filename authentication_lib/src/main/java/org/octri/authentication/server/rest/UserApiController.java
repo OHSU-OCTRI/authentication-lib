@@ -77,11 +77,11 @@ public class UserApiController {
 			} catch (UsernameNotFoundException e) {
 				out.put("ldapLookupError", "Could not find username in LDAP");
 			} catch (Exception e) {
-				log.error(e.getMessage());
+				log.error("Unexpected LDAP search error", e);
 				out.put("ldapLookupError", "Error connecting to LDAP.");
 			}
 		} else {
-			log.error("Error connecting to LDAP");
+			log.error("ldapLookup called, but FilterBasedLdapUserSearch is null.");
 			out.put("ldapLookupError", "Error connecting to LDAP.");
 		}
 
