@@ -30,6 +30,9 @@ public class TemplateAdvice {
 	@Value("${app.displayName}")
 	private String displayName;
 
+	@Autowired
+	private String tableBasedEnabled;
+
 	private SecurityHelper securityHelper;
 
 	@Autowired
@@ -44,6 +47,7 @@ public class TemplateAdvice {
 		model.addAttribute("displayName", displayName);
 		model.addAttribute("currentYear", Calendar.getInstance().get(Calendar.YEAR));
 
+		model.addAttribute("tableBasedEnabled", tableBasedEnabled);
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
