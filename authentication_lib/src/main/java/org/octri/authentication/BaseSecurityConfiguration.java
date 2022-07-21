@@ -1,5 +1,7 @@
 package org.octri.authentication;
 
+import java.util.stream.Stream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.ContentSecurityPolicyProperties;
@@ -16,6 +18,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -49,6 +52,11 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
 
+	protected static final String[] AUTH_METHOD_PROPERTIES = new String[] {
+			"octri.authentication.enable-ldap",
+			"octri.authentication.enable-table-based"
+	};
+
 	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] {
 			"/",
 			"/actuator/health",
@@ -65,6 +73,9 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			"/login*/**",
 			"/user/password/**",
 			"/webjars/**" };
+
+	@Autowired
+	protected Environment env;
 
 	@Autowired
 	protected Boolean ldapEnabled;
@@ -118,12 +129,7 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * @throws Exception
 	 */
 	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
-		if (!tableBasedEnabled && !ldapEnabled) {
-			throw new IllegalStateException(
-					"The authentication_lib requires either table-based or LDAP authentication to be "
-							+ "enabled. Set one of: octri.authentication.enable-table-based, "
-							+ "octri.authentication.enable-ldap");
-		}
+		validateAuthenticationMethods();
 
 		// Use table-based authentication by default
 		if (tableBasedEnabled) {
@@ -203,5 +209,25 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	protected String[] customPublicRoutes() {
 		return new String[] {};
+	}
+
+	/**
+	 * Verifies that at least one authentication method is enabled.
+	 */
+	protected void validateAuthenticationMethods() {
+		String errorMessage = "The authentication_lib requires at least one authentication method to be enabled. "
+				+ "Set at least one of: " + String.join(", ", AUTH_METHOD_PROPERTIES);
+
+		log.info("Checking for enabled authentication methods ...");
+		boolean anyMethodEnabled = Stream.of(AUTH_METHOD_PROPERTIES)
+				.map(propName -> env.getProperty(propName))
+				.anyMatch(Boolean::parseBoolean);
+
+		if (!anyMethodEnabled) {
+			log.error(errorMessage);
+			throw new IllegalStateException(errorMessage);
+		} else {
+			log.info("At least one authentication method is enabled.");
+		}
 	}
 }
