@@ -2,6 +2,8 @@ package org.octri.authentication;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.config.ContentSecurityPolicyProperties;
+import org.octri.authentication.config.LdapContextProperties;
 import org.octri.authentication.server.security.ApplicationAuthenticationFailureHandler;
 import org.octri.authentication.server.security.ApplicationAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;

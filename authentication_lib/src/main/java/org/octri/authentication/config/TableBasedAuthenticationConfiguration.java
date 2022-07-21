@@ -1,4 +1,4 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,11 +1,11 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Email configuration properties.
- * 
+ *
  * @author sams
  */
 @Configuration

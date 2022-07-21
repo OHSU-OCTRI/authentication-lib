@@ -1,4 +1,4 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
 import java.util.ArrayList;
 import java.util.List;

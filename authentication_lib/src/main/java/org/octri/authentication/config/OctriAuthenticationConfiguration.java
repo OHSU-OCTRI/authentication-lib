@@ -1,6 +1,6 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
-import static org.octri.authentication.OctriAuthenticationProperties.DEFAULT_BASE_URL;
+import static org.octri.authentication.config.OctriAuthenticationProperties.DEFAULT_BASE_URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

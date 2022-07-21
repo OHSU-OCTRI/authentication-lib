@@ -38,9 +38,6 @@ public class User extends AbstractEntity implements Labelled {
 
 	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";
 
-	// TODO: This could be configurable.
-	public static final Integer EXPIRE_CREDENTIALS_IN_DAYS = 180;
-
 	public User() {
 		super();
 		setDefaults();
@@ -130,9 +127,7 @@ public class User extends AbstractEntity implements Labelled {
 	private Date credentialsExpirationDate;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_user_role",
-               joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "user_role", referencedColumnName = "id"))
+	@JoinTable(name = "user_user_role", joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_role", referencedColumnName = "id"))
 	private List<UserRole> userRoles;
 
 	public boolean isEnabled() {
@@ -228,7 +223,6 @@ public class User extends AbstractEntity implements Labelled {
 				|| (getCredentialsExpirationDate() != null
 						&& getCredentialsExpirationDate().compareTo(new Date()) <= 0);
 	}
-
 
 	public Boolean getCredentialsNonExpired() {
 		return !getCredentialsExpired();
@@ -373,7 +367,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * This is a transient property. It is only accurate at the time the user form is submitted and should
 	 * not be used for any other logic. A better option is {@link UserService#isLdapUser(User)}.
-	 * 
+	 *
 	 * @return whether the checkbox in the form indicates that the user is LDAP
 	 */
 	public boolean getLdapUser() {
@@ -383,7 +377,7 @@ public class User extends AbstractEntity implements Labelled {
 	public void setLdapUser(boolean ldapUser) {
 		this.ldapUser = ldapUser;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", enabled=" + enabled + ", accountLocked=" + accountLocked

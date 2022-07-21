@@ -16,9 +16,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * {@link FormSecurityConfiguration} for applications like OptOut where the
  * application is built-in. Use {@link ApiSecurityConfiguration} when a client
  * needs to authenticate with the server as in Ember apps...
- * 
- * TODO: Test this with LiverConference
- * 
+ *
  * @author sams
  */
 @Order(20)

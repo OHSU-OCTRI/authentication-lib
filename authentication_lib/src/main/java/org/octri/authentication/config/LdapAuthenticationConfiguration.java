@@ -1,4 +1,4 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
 import org.octri.authentication.server.security.LdapUserDetailsContextMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

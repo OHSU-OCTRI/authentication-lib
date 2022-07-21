@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-import org.octri.authentication.OctriAuthenticationProperties;
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.password.RandomDictionary;
 import org.octri.authentication.server.security.password.StructuredPasswordGenerator;

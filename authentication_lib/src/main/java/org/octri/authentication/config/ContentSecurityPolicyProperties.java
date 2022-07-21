@@ -1,4 +1,4 @@
-package org.octri.authentication;
+package org.octri.authentication.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

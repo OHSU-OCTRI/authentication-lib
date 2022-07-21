@@ -27,6 +27,6 @@ This package depends on `spring-boot-starter-mustache` and WebJars for Bootstrap
 
 ### Templates and Assets
 
-Mustache templates are stored in [`src/main/resources/mustache-templates`](./src/main/resources/mustache-templates/), as expected by the Mustache configuration provided by the `authentication_lib` package. All of the templates used by `authenticaton_lib` are provided; if for some reason a template is missing [`authentication_lib`'s template configuration class](../authentication_lib/src/main/java/org/octri/authentication/TemplateConfiguration.java) will log warnings at startup.
+Mustache templates are stored in [`src/main/resources/mustache-templates`](./src/main/resources/mustache-templates/), as expected by the Mustache configuration provided by the `authentication_lib` package. All of the templates used by `authenticaton_lib` are provided; if for some reason a template is missing [`authentication_lib`'s template configuration class](../authentication_lib/src/main/java/org/octri/authentication/config/TemplateConfiguration.java) will log warnings at startup.
 
 Some templates in the user management interface use custom styles and JavaScript for a richer user experience. These assets are found in [`src/main/resources/assets/static/assets`](./src/main/resources/static/assets/).
