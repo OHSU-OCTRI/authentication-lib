@@ -9,7 +9,7 @@ pipeline {
   }
   tools {
     maven '3.8.2'
-    jdk 'JDK8'
+    jdk 'JDK11'
   }
   stages {
     stage('Prepare') {
