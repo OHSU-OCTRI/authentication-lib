@@ -1,7 +1,5 @@
 package org.octri.authentication;
 
-import java.util.stream.Stream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.ContentSecurityPolicyProperties;
@@ -51,11 +49,6 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected static final Log log = LogFactory.getLog(BaseSecurityConfiguration.class);
-
-	protected static final String[] AUTH_METHOD_PROPERTIES = new String[] {
-			"octri.authentication.enable-ldap",
-			"octri.authentication.enable-table-based"
-	};
 
 	protected static final String[] DEFAULT_PUBLIC_ROUTES = new String[] {
 			"/",
@@ -129,8 +122,6 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 * @throws Exception
 	 */
 	protected void configureAuth(AuthenticationManagerBuilder auth) throws Exception {
-		validateAuthenticationMethods();
-
 		// Use table-based authentication by default
 		if (tableBasedEnabled) {
 			log.info("Enabling table-based authentication.");
@@ -211,23 +202,4 @@ public class BaseSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new String[] {};
 	}
 
-	/**
-	 * Verifies that at least one authentication method is enabled.
-	 */
-	protected void validateAuthenticationMethods() {
-		String errorMessage = "The authentication_lib requires at least one authentication method to be enabled. "
-				+ "Set at least one of: " + String.join(", ", AUTH_METHOD_PROPERTIES);
-
-		log.info("Checking for enabled authentication methods ...");
-		boolean anyMethodEnabled = Stream.of(AUTH_METHOD_PROPERTIES)
-				.map(propName -> env.getProperty(propName))
-				.anyMatch(Boolean::parseBoolean);
-
-		if (!anyMethodEnabled) {
-			log.error(errorMessage);
-			throw new IllegalStateException(errorMessage);
-		} else {
-			log.info("At least one authentication method is enabled.");
-		}
-	}
 }
