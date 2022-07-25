@@ -21,7 +21,10 @@
 			<ul class="navbar-nav">
 				{{#isLoggedIn}}
 				<li class="nav-item">
-					<a class="nav-link" href="{{req.contextPath}}/logout"><span class="fa fa-power-off"></span> Log Out ({{username}})</a>
+					<form action="{{req.contextPath}}/logout" method="POST">
+						{{>authlib_fragments/forms/csrf_input}}
+						<button class="btn btn-link nav-link" type="submit"><span class="fa fa-power-off"></span> Log Out ({{username}})</button>
+					</form>
 				</li>
 				{{/isLoggedIn}}
 				{{^isLoggedIn}}
