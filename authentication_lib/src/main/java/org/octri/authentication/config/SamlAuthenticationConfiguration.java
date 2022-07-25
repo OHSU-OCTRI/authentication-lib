@@ -8,8 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.server.security.saml.ApplicationSaml2AuthenticatedPrincipal;
 import org.octri.authentication.server.security.saml.GroupMembershipSamlResponseValidator;
-import org.octri.authentication.server.security.saml.SamlAuthenticationFailureHandler;
-import org.octri.authentication.server.security.saml.SamlAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.saml.SamlResponseUserDetailsAuthenticationConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,12 +43,6 @@ public class SamlAuthenticationConfiguration {
 
 	@Autowired
 	private SamlProperties samlProperties;
-
-	@Autowired
-	private SamlAuthenticationSuccessHandler successHandler;
-
-	@Autowired
-	private SamlAuthenticationFailureHandler failureHandler;
 
 	/**
 	 * Creates a SAML 2 authentication provider with customized assertion validation and authentication conversion.
