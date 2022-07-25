@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.octri.authentication.config.SamlProperties;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class TemplateAdvice {
 	@Autowired
 	private ProfileUtils profileUtils;
 
+	@Autowired(required = false)
+	private SamlProperties samlProperties;
+
 	@ModelAttribute
 	public void addDefaultAttributes(HttpServletRequest request, Model model) {
 		this.securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
@@ -48,6 +52,7 @@ public class TemplateAdvice {
 		model.addAttribute("currentYear", Calendar.getInstance().get(Calendar.YEAR));
 
 		model.addAttribute("tableBasedEnabled", tableBasedEnabled);
+		model.addAttribute("samlEnabled", samlProperties != null && Boolean.TRUE.equals(samlProperties.getEnabled()));
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
