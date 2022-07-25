@@ -86,7 +86,7 @@ public class DefaultSecurityConfigurer {
 	@Autowired(required = false)
 	private LdapAuthoritiesPopulator ldapAuthoritiesPopulator;
 
-	// SAML SSO beans
+	// SAML authentication beans
 
 	@Autowired(required = false)
 	private SamlProperties samlProperties;
