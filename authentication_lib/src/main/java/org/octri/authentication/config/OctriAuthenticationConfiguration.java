@@ -17,7 +17,8 @@ import org.springframework.core.env.Environment;
  * Configuration for the authentication library.
  */
 @Configuration
-@EnableConfigurationProperties({ OctriAuthenticationProperties.class, ContentSecurityPolicyProperties.class })
+@EnableConfigurationProperties({ AuthenticationRouteProperties.class, ContentSecurityPolicyProperties.class,
+		OctriAuthenticationProperties.class })
 public class OctriAuthenticationConfiguration {
 
 	private static final Log log = LogFactory.getLog(OctriAuthenticationConfiguration.class);
