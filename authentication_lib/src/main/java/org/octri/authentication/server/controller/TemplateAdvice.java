@@ -31,7 +31,7 @@ public class TemplateAdvice {
 	private String displayName;
 
 	@Autowired
-	private String tableBasedEnabled;
+	private Boolean tableBasedEnabled;
 
 	private SecurityHelper securityHelper;
 
