@@ -15,6 +15,18 @@ public class SamlProperties {
 	private Boolean enabled = false;
 
 	/**
+	 * ID of the relying party registration. Defaults to "default".
+	 * <br>
+	 * The relying party ID is included in the login and metadata URLs and cannot be changed once registered with the
+	 * IdP. Example URLs:
+	 * <br>
+	 * - Metadata: `{{contextPath}}/saml2/service-provider-metadata/{{registrationId}}`<br>
+	 * - Login initiation: `{{contextPath}}/saml2/authenticate/{{registrationId}}`<br>
+	 * - Login completion: `{{contextPath}}/login/saml2/sso/{{registrationId}}`
+	 */
+	private String registrationId = "default";
+
+	/**
 	 * Location of the private key for the X509 certificate to use to sign requests. Most likely a file URI or
 	 * classpath location. Key must be in PEM-encoded PKCS#8 format, beginning with "-----BEGIN PRIVATE KEY-----".
 	 */
@@ -82,6 +94,14 @@ public class SamlProperties {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getRegistrationId() {
+		return registrationId;
+	}
+
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
 
 	public Resource getSigningKeyLocation() {
@@ -174,12 +194,13 @@ public class SamlProperties {
 
 	@Override
 	public String toString() {
-		return "SamlProperties [enabled=" + enabled + ", signingKeyLocation=" + signingKeyLocation
-				+ ", signingCertLocation=" + signingCertLocation + ", decryptionKeyLocation=" + decryptionKeyLocation
-				+ ", decryptionCertLocation=" + decryptionCertLocation + ", idpMetadataUri=" + idpMetadataUri
-				+ ", requiredGroup=" + requiredGroup + ", useridAttribute=" + useridAttribute + ", emailAttribute="
-				+ emailAttribute + ", firstNameAttribute=" + firstNameAttribute + ", lastNameAttribute="
-				+ lastNameAttribute + ", groupAttribute=" + groupAttribute + "]";
+		return "SamlProperties [decryptionCertLocation=" + decryptionCertLocation + ", decryptionKeyLocation="
+				+ decryptionKeyLocation + ", emailAttribute=" + emailAttribute + ", enabled=" + enabled
+				+ ", firstNameAttribute=" + firstNameAttribute + ", groupAttribute=" + groupAttribute
+				+ ", idpMetadataUri=" + idpMetadataUri + ", lastNameAttribute=" + lastNameAttribute
+				+ ", registrationId=" + registrationId + ", requiredGroup=" + requiredGroup + ", signingCertLocation="
+				+ signingCertLocation + ", signingKeyLocation=" + signingKeyLocation + ", useridAttribute="
+				+ useridAttribute + "]";
 	}
 
 }

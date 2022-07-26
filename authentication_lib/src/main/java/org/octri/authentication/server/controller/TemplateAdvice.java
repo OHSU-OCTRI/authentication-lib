@@ -45,6 +45,7 @@ public class TemplateAdvice {
 	@ModelAttribute
 	public void addDefaultAttributes(HttpServletRequest request, Model model) {
 		this.securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
+		boolean samlEnabled = samlProperties != null && Boolean.TRUE.equals(samlProperties.getEnabled());
 
 		model.addAttribute("appName", appName);
 		model.addAttribute("appVersion", appVersion);
@@ -52,10 +53,12 @@ public class TemplateAdvice {
 		model.addAttribute("currentYear", Calendar.getInstance().get(Calendar.YEAR));
 
 		model.addAttribute("tableBasedEnabled", tableBasedEnabled);
-		model.addAttribute("samlEnabled", samlProperties != null && Boolean.TRUE.equals(samlProperties.getEnabled()));
+		model.addAttribute("samlEnabled", samlEnabled);
+		model.addAttribute("samlRegistrationId", samlEnabled ? samlProperties.getRegistrationId() : "");
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
 		model.addAttribute("emailRequired", !profileUtils.isActive(ProfileUtils.AuthProfile.noemail));
+
 	}
 }
