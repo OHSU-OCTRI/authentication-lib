@@ -74,7 +74,7 @@ public class SamlAuthenticationConfiguration {
 		log.debug("Creating default RelyingPartyRegistrationRepository");
 		var registration = RelyingPartyRegistrations
 				.fromMetadataLocation(samlProperties.getIdpMetadataUri())
-				.registrationId("default")
+				.registrationId(samlProperties.getRegistrationId())
 				.decryptionX509Credentials(c -> c.add(loadDecryptionCredential()))
 				.signingX509Credentials(c -> c.add(loadSigningCredential()))
 				.build();
