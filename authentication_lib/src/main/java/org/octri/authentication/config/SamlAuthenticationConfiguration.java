@@ -7,7 +7,7 @@ import java.security.interfaces.RSAPrivateKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.server.security.saml.ApplicationSaml2AuthenticatedPrincipal;
-import org.octri.authentication.server.security.saml.GroupMembershipSamlResponseValidator;
+import org.octri.authentication.server.security.saml.GroupMembershipSamlAssertionValidator;
 import org.octri.authentication.server.security.saml.SamlResponseUserDetailsAuthenticationConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,10 +56,10 @@ public class SamlAuthenticationConfiguration {
 	public OpenSaml4AuthenticationProvider defaultSamlAuthenticationProvider() {
 		log.debug("Creating default SAML authentication provider");
 		var authenticationConverter = new SamlResponseUserDetailsAuthenticationConverter(samlProperties);
-		var responseValidator = new GroupMembershipSamlResponseValidator(samlProperties);
+		var assertionValidator = new GroupMembershipSamlAssertionValidator(samlProperties);
 		var authenticationProvider = new OpenSaml4AuthenticationProvider();
 		authenticationProvider.setResponseAuthenticationConverter(authenticationConverter);
-		authenticationProvider.setAssertionValidator(responseValidator);
+		authenticationProvider.setAssertionValidator(assertionValidator);
 		return authenticationProvider;
 	}
 

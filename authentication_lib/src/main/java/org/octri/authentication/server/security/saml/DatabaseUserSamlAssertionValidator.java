@@ -18,18 +18,18 @@ import org.springframework.security.saml2.provider.service.authentication.OpenSa
 import org.springframework.util.CollectionUtils;
 
 /**
- * A custom SAML response validator that verifies that the user is present in the database. The username is
+ * A custom SAML assertion validator that verifies that the user is present in the database. The username is
  * extracted from the SAML response, and if an active user account with the given username is found in the database,
  * authentication is allowed. Otherwise authentication is denied.
  */
-public class DatabaseUserSamlResponseValidator implements Converter<AssertionToken, Saml2ResponseValidatorResult> {
+public class DatabaseUserSamlAssertionValidator implements Converter<AssertionToken, Saml2ResponseValidatorResult> {
 
-	private static final Log log = LogFactory.getLog(DatabaseUserSamlResponseValidator.class);
+	private static final Log log = LogFactory.getLog(DatabaseUserSamlAssertionValidator.class);
 
 	private UserService userService;
 	private SamlProperties samlProperties;
 
-	public DatabaseUserSamlResponseValidator(UserService userService, SamlProperties samlProperties) {
+	public DatabaseUserSamlAssertionValidator(UserService userService, SamlProperties samlProperties) {
 		this.userService = userService;
 		this.samlProperties = samlProperties;
 	}

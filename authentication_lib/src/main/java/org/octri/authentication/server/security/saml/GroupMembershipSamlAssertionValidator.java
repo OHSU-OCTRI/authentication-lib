@@ -22,13 +22,13 @@ import org.springframework.util.CollectionUtils;
  * membership information is extracted from the assertions included in the SAML response, and if the expected group is
  * found, authentication is allowed. Otherwise, authentication is denied.
  */
-public class GroupMembershipSamlResponseValidator implements Converter<AssertionToken, Saml2ResponseValidatorResult> {
+public class GroupMembershipSamlAssertionValidator implements Converter<AssertionToken, Saml2ResponseValidatorResult> {
 
-	private static final Log log = LogFactory.getLog(GroupMembershipSamlResponseValidator.class);
+	private static final Log log = LogFactory.getLog(GroupMembershipSamlAssertionValidator.class);
 
 	private SamlProperties samlProperties;
 
-	public GroupMembershipSamlResponseValidator(SamlProperties samlProperties) {
+	public GroupMembershipSamlAssertionValidator(SamlProperties samlProperties) {
 		this.samlProperties = samlProperties;
 	}
 
