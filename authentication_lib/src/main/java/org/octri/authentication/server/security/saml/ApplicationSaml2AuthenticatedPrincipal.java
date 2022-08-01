@@ -1,17 +1,21 @@
 package org.octri.authentication.server.security.saml;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.octri.authentication.server.security.AuthenticationUserDetails;
+import org.octri.authentication.server.security.entity.User;
 import org.opensaml.saml.saml2.core.NameID;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 
 /**
  * Custom implementation of {@link Saml2AuthenticatedPrincipal} with additional user details. Captures NameID values
  * needed for SAML logout and user attributes.
  */
-public class ApplicationSaml2AuthenticatedPrincipal implements Saml2AuthenticatedPrincipal, Serializable {
+public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDetails
+		implements Saml2AuthenticatedPrincipal {
 
 	private static final long serialVersionUID = -7394856325865885172L;
 
@@ -29,7 +33,9 @@ public class ApplicationSaml2AuthenticatedPrincipal implements Saml2Authenticate
 
 	private String email;
 
-	public ApplicationSaml2AuthenticatedPrincipal(NameID nameId, Map<String, List<Object>> attributes) {
+	public ApplicationSaml2AuthenticatedPrincipal(User user, Collection<? extends GrantedAuthority> authorities,
+			NameID nameId, Map<String, List<Object>> attributes) {
+		super(user, authorities);
 		this.nameId = nameId;
 		this.attributes = attributes;
 		this.relyingPartyRegistrationId = null;
