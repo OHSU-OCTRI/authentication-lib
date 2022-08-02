@@ -25,42 +25,42 @@ import org.springframework.util.CollectionUtils;
  */
 public class SamlResponseUserDetailsAuthenticationConverter implements Converter<ResponseToken, Saml2Authentication> {
 
-    private static final Log log = LogFactory.getLog(SamlResponseUserDetailsAuthenticationConverter.class);
+	private static final Log log = LogFactory.getLog(SamlResponseUserDetailsAuthenticationConverter.class);
 
-    private static final long SAML_USER_SENTINEL = -999L;
+	private static final long SAML_USER_SENTINEL = -999L;
 
-    private SamlProperties samlProperties;
+	private SamlProperties samlProperties;
 
-    public SamlResponseUserDetailsAuthenticationConverter(SamlProperties samlProperties) {
-        this.samlProperties = samlProperties;
-    }
+	public SamlResponseUserDetailsAuthenticationConverter(SamlProperties samlProperties) {
+		this.samlProperties = samlProperties;
+	}
 
-    @Override
-    public Saml2Authentication convert(ResponseToken responseToken) {
-        Response response = responseToken.getResponse();
-        Saml2AuthenticationToken token = responseToken.getToken();
-        Assertion assertion = CollectionUtils.firstElement(response.getAssertions());
-        Map<String, List<Object>> attributes = AssertionUtils.getAssertionAttributes(assertion);
+	@Override
+	public Saml2Authentication convert(ResponseToken responseToken) {
+		Response response = responseToken.getResponse();
+		Saml2AuthenticationToken token = responseToken.getToken();
+		Assertion assertion = CollectionUtils.firstElement(response.getAssertions());
+		Map<String, List<Object>> attributes = AssertionUtils.getAssertionAttributes(assertion);
 
-        NameID nameId = assertion.getSubject().getNameID();
+		NameID nameId = assertion.getSubject().getNameID();
 
-        User user = new User();
-        user.setId(SAML_USER_SENTINEL);
-        user.setUsername(AssertionUtils.getAttributeValue(attributes, samlProperties.getUseridAttribute()));
-        user.setFirstName(AssertionUtils.getAttributeValue(attributes, samlProperties.getFirstNameAttribute()));
-        user.setLastName(AssertionUtils.getAttributeValue(attributes, samlProperties.getLastNameAttribute()));
-        user.setEmail(AssertionUtils.getAttributeValue(attributes, samlProperties.getEmailAttribute()));
-        user.setInstitution(token.getRelyingPartyRegistration().getRegistrationId());
+		User user = new User();
+		user.setId(SAML_USER_SENTINEL);
+		user.setUsername(AssertionUtils.getAttributeValue(attributes, samlProperties.getUseridAttribute()));
+		user.setFirstName(AssertionUtils.getAttributeValue(attributes, samlProperties.getFirstNameAttribute()));
+		user.setLastName(AssertionUtils.getAttributeValue(attributes, samlProperties.getLastNameAttribute()));
+		user.setEmail(AssertionUtils.getAttributeValue(attributes, samlProperties.getEmailAttribute()));
+		user.setInstitution(token.getRelyingPartyRegistration().getRegistrationId());
 
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Role.ROLE_USER.name());
+		List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Role.ROLE_USER.name());
 
-        ApplicationSaml2AuthenticatedPrincipal principal = new ApplicationSaml2AuthenticatedPrincipal(user, authorities,
-                nameId, attributes);
+		ApplicationSaml2AuthenticatedPrincipal principal = new ApplicationSaml2AuthenticatedPrincipal(user, authorities,
+				nameId, attributes);
 
-        principal.setRelyingPartyRegistrationId(token.getRelyingPartyRegistration().getRegistrationId());
+		principal.setRelyingPartyRegistrationId(token.getRelyingPartyRegistration().getRegistrationId());
 
-        log.debug("Logging in SAML2 principal: " + principal);
-        return new Saml2Authentication(principal, token.getSaml2Response(), authorities);
-    }
+		log.debug("Logging in SAML2 principal: " + principal);
+		return new Saml2Authentication(principal, token.getSaml2Response(), authorities);
+	}
 
 }
