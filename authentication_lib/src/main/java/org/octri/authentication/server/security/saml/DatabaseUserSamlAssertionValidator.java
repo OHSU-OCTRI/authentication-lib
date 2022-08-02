@@ -30,6 +30,7 @@ public class DatabaseUserSamlAssertionValidator implements Converter<AssertionTo
 	private SamlProperties samlProperties;
 
 	public DatabaseUserSamlAssertionValidator(UserService userService, SamlProperties samlProperties) {
+		log.debug("Constructing with userService=" + userService + " samlProperties=" + samlProperties);
 		this.userService = userService;
 		this.samlProperties = samlProperties;
 	}
