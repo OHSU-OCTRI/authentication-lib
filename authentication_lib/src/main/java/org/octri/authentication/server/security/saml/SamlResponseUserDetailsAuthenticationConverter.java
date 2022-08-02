@@ -51,6 +51,7 @@ public class SamlResponseUserDetailsAuthenticationConverter implements Converter
 		user.setLastName(AssertionUtils.getAttributeValue(attributes, samlProperties.getLastNameAttribute()));
 		user.setEmail(AssertionUtils.getAttributeValue(attributes, samlProperties.getEmailAttribute()));
 		user.setInstitution(token.getRelyingPartyRegistration().getRegistrationId());
+		log.debug("Stub user: " + user);
 
 		List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Role.ROLE_USER.name());
 

@@ -25,8 +25,6 @@ public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDe
 
 	private String relyingPartyRegistrationId;
 
-	private String username;
-
 	private String firstName;
 
 	private String lastName;
@@ -36,6 +34,9 @@ public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDe
 	public ApplicationSaml2AuthenticatedPrincipal(User user, Collection<? extends GrantedAuthority> authorities,
 			NameID nameId, Map<String, List<Object>> attributes) {
 		super(user, authorities);
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.email = user.getEmail();
 		this.nameId = nameId;
 		this.attributes = attributes;
 		this.relyingPartyRegistrationId = null;
@@ -43,7 +44,7 @@ public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDe
 
 	@Override
 	public String getName() {
-		return this.username;
+		return this.getUsername();
 	}
 
 	@Override
@@ -62,14 +63,6 @@ public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDe
 
 	public NameID getNameId() {
 		return this.nameId;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 	public String getFirstName() {
@@ -99,7 +92,7 @@ public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDe
 	@Override
 	public String toString() {
 		return "ApplicationSaml2AuthenticatedPrincipal [nameId=" + nameId + ", attributes=" + attributes
-				+ ", relyingPartyRegistrationId=" + relyingPartyRegistrationId + ", username=" + username
+				+ ", relyingPartyRegistrationId=" + relyingPartyRegistrationId + ", username=" + getUsername()
 				+ ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + "]";
 	}
 
