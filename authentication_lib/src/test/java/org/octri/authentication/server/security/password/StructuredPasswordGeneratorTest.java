@@ -103,7 +103,7 @@ public class StructuredPasswordGeneratorTest {
 		String password = generator.generate();
 		assertTrue(password.startsWith("Four"));
 		assertTrue(password.endsWith("four"));
-		assertEquals(new Integer(password.indexOf("-")), new Integer(4));
+		assertEquals(Integer.valueOf(password.indexOf("-")), Integer.valueOf(4));
 		assertEquals(password.length(), 11);
 	}
 

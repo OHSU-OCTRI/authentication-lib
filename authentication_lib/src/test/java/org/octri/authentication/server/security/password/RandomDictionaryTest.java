@@ -47,11 +47,11 @@ public class RandomDictionaryTest {
 
 	@Test
 	public void testWordsOfLength() {
-		assertEquals(dict.wordsOfLength(3), new Integer(3));
+		assertEquals(dict.wordsOfLength(3), Integer.valueOf(3));
 
-		assertEquals(dict.wordsOfLength(12), new Integer(0));
+		assertEquals(dict.wordsOfLength(12), Integer.valueOf(0));
 
-		assertEquals(dict.wordsInRange(3, 4), new Integer(4));
-		assertEquals(dict.wordsInRange(3, 12), new Integer(words.size()));
+		assertEquals(dict.wordsInRange(3, 4), Integer.valueOf(4));
+		assertEquals(dict.wordsInRange(3, 12), Integer.valueOf(words.size()));
 	}
 }

@@ -8,7 +8,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * Used for rendering mustache templates. Helper functions for creating a list of select input options.
- * 
+ *
  * @author lawhead
  * @param <T>
  *
@@ -18,7 +18,7 @@ public class OptionList<T> {
 	/**
 	 * Given a Repository search result of lookups and the selected lookup item, provides a list of objects that can be
 	 * used directly by mustachejs for rendering.
-	 * 
+	 *
 	 * @param iter
 	 * @param selected
 	 * @return
@@ -33,7 +33,7 @@ public class OptionList<T> {
 	/**
 	 * Used for multi-selects. Given a Repository search result of lookups and a list of selected lookup, provides a
 	 * list of objects that can be used directly by mustachejs for rendering.
-	 * 
+	 *
 	 * @param iter
 	 * @param selected
 	 * @return
@@ -47,7 +47,7 @@ public class OptionList<T> {
 
 	/**
 	 * Generates a list of integers in the given range from which to choose.
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @param selected
@@ -55,8 +55,8 @@ public class OptionList<T> {
 	 */
 	public static List<SelectOption<Integer>> forRange(Integer start, Integer end, Integer selected) {
 		return IntStream.rangeClosed(start, end)
-				.mapToObj(i -> new SelectOption<Integer>(new Integer(i), selected))
+				.mapToObj(i -> new SelectOption<Integer>(Integer.valueOf(i), selected))
 				.collect(Collectors.toList());
 	}
-	
+
 }
