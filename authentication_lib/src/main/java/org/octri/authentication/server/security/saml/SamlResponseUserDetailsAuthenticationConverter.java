@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.SamlProperties;
+import org.octri.authentication.server.security.SecurityHelper.Role;
 import org.octri.authentication.server.security.entity.User;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.NameID;
@@ -51,7 +52,7 @@ public class SamlResponseUserDetailsAuthenticationConverter implements Converter
         user.setEmail(AssertionUtils.getAttributeValue(attributes, samlProperties.getEmailAttribute()));
         user.setInstitution(token.getRelyingPartyRegistration().getRegistrationId());
 
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Role.ROLE_USER.name());
 
         ApplicationSaml2AuthenticatedPrincipal principal = new ApplicationSaml2AuthenticatedPrincipal(user, authorities,
                 nameId, attributes);
@@ -59,8 +60,7 @@ public class SamlResponseUserDetailsAuthenticationConverter implements Converter
         principal.setRelyingPartyRegistrationId(token.getRelyingPartyRegistration().getRegistrationId());
 
         log.debug("Logging in SAML2 principal: " + principal);
-        return new Saml2Authentication(principal, token.getSaml2Response(),
-                AuthorityUtils.createAuthorityList("ROLE_USER"));
+        return new Saml2Authentication(principal, token.getSaml2Response(), authorities);
     }
 
 }
