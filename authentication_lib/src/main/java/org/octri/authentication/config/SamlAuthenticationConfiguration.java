@@ -75,6 +75,7 @@ public class SamlAuthenticationConfiguration {
 		var registration = RelyingPartyRegistrations
 				.fromMetadataLocation(samlProperties.getIdpMetadataUri())
 				.registrationId(samlProperties.getRegistrationId())
+				.singleLogoutServiceLocation(samlProperties.getLogoutPath())
 				.decryptionX509Credentials(c -> c.add(loadDecryptionCredential()))
 				.signingX509Credentials(c -> c.add(loadSigningCredential()))
 				.build();

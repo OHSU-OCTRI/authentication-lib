@@ -88,6 +88,11 @@ public class SamlProperties {
 	 */
 	private String groupAttribute = "role";
 
+	/**
+	 * Path of the SAML single log out (SLO) endpoint. Defaults to "{baseUrl}/logout/saml2/slo".
+	 */
+	private String logoutPath = "{baseUrl}/logout/saml2/slo";
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -192,15 +197,23 @@ public class SamlProperties {
 		this.groupAttribute = groupAttribute;
 	}
 
+	public String getLogoutPath() {
+		return logoutPath;
+	}
+
+	public void setLogoutPath(String logoutPath) {
+		this.logoutPath = logoutPath;
+	}
+
 	@Override
 	public String toString() {
 		return "SamlProperties [decryptionCertLocation=" + decryptionCertLocation + ", decryptionKeyLocation="
 				+ decryptionKeyLocation + ", emailAttribute=" + emailAttribute + ", enabled=" + enabled
 				+ ", firstNameAttribute=" + firstNameAttribute + ", groupAttribute=" + groupAttribute
-				+ ", idpMetadataUri=" + idpMetadataUri + ", lastNameAttribute=" + lastNameAttribute
-				+ ", registrationId=" + registrationId + ", requiredGroup=" + requiredGroup + ", signingCertLocation="
-				+ signingCertLocation + ", signingKeyLocation=" + signingKeyLocation + ", useridAttribute="
-				+ useridAttribute + "]";
+				+ ", idpMetadataUri=" + idpMetadataUri + ", lastNameAttribute=" + lastNameAttribute + ", logoutPath="
+				+ logoutPath + ", registrationId=" + registrationId + ", requiredGroup=" + requiredGroup
+				+ ", signingCertLocation=" + signingCertLocation + ", signingKeyLocation=" + signingKeyLocation
+				+ ", useridAttribute=" + useridAttribute + "]";
 	}
 
 }
