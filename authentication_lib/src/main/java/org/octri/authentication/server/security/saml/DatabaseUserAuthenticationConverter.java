@@ -10,6 +10,7 @@ import org.octri.authentication.config.SamlProperties;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.service.UserService;
+import org.octri.authentication.server.security.service.UserUserRoleService;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
@@ -31,10 +32,13 @@ public class DatabaseUserAuthenticationConverter implements Converter<ResponseTo
 
 	private SamlProperties samlProperties;
 	private UserService userService;
+	private UserUserRoleService userUserRoleService;
 
-	public DatabaseUserAuthenticationConverter(UserService userService, SamlProperties samlProperties) {
+	public DatabaseUserAuthenticationConverter(UserService userService, UserUserRoleService userUserRoleService,
+			SamlProperties samlProperties) {
 		this.samlProperties = samlProperties;
 		this.userService = userService;
+		this.userUserRoleService = userUserRoleService;
 	}
 
 	@Override
@@ -49,9 +53,11 @@ public class DatabaseUserAuthenticationConverter implements Converter<ResponseTo
 		log.debug("Username extracted from assertion: " + username);
 
 		User user = userService.findByUsername(username);
-		log.debug("User: " + user);
 
-		List<UserRole> userRoles = user.getUserRoles();
+		// Logging the full user object with roles causes a LazyInitializationException
+		log.debug("User " + username + " " + (user == null ? "not found" : "found with ID " + user.getId()));
+
+		List<UserRole> userRoles = userUserRoleService.findUserRolesByUser(user);
 		List<GrantedAuthority> authorities = userRoles.stream()
 				.map(role -> new SimpleGrantedAuthority(role.getRoleName()))
 				.collect(Collectors.toList());
@@ -59,8 +65,7 @@ public class DatabaseUserAuthenticationConverter implements Converter<ResponseTo
 
 		NameID nameId = assertion.getSubject().getNameID();
 		ApplicationSaml2AuthenticatedPrincipal principal = new ApplicationSaml2AuthenticatedPrincipal(user, authorities,
-				nameId,
-				attributes);
+				nameId, attributes);
 		principal.setRelyingPartyRegistrationId(token.getRelyingPartyRegistration().getRegistrationId());
 
 		log.debug("Logging in SAML2 principal: " + principal);

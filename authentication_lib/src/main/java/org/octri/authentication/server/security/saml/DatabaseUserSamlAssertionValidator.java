@@ -48,7 +48,9 @@ public class DatabaseUserSamlAssertionValidator implements Converter<AssertionTo
 		log.debug("Username extracted from assertion: " + username);
 
 		User user = userService.findByUsername(username);
-		log.debug("User: " + user);
+
+		// Logging the full user object with roles causes a LazyInitializationException
+		log.debug("User " + username + " " + (user == null ? "not found" : "found with ID " + user.getId()));
 
 		if (userMissingOrDisabled(user)) {
 			String message = username + " has not been granted access to this application.";
