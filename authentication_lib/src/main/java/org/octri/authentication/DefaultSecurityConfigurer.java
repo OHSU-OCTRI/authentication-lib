@@ -142,7 +142,7 @@ public class DefaultSecurityConfigurer {
 	}
 
 	/**
-	 * Adds providers for enabled authentication methods to the authentication manager builder.
+	 * Adds providers for all enabled authentication methods to the authentication manager builder.
 	 *
 	 * @param authBuilder
 	 * @throws Exception
@@ -152,14 +152,38 @@ public class DefaultSecurityConfigurer {
 			throws Exception {
 
 		// Use SAML if enabled. Note that this is mostly configured using HTTP security methods.
+		configureAuthenticationManagerForSaml(authBuilder);
+
+		// If enabled, prefer table-based authentication for form authentication
+		configureAuthenticationManagerForTableBased(authBuilder);
+
+		// Form authentication falls through to LDAP if configured
+		configureAuthenticationManagerForLdap(authBuilder);
+	}
+
+	/**
+	 * Adds support for SAML authentication to the authentication manager.
+	 *
+	 * @param authBuilder
+	 * @throws Exception
+	 */
+	public void configureAuthenticationManagerForSaml(AuthenticationManagerBuilder authBuilder) throws Exception {
 		if (samlEnabled()) {
 			log.info("Enabling SAML authentication.");
 			authBuilder.authenticationProvider(samlAuthenticationProvider);
 		} else {
 			log.info("Not enabling SAML authentication: octri.authentication.saml.enabled was false.");
 		}
+	}
 
-		// If enabled, prefer table-based authentication for form authentication
+	/**
+	 * Adds support for table-based authentication to the authentication manager.
+	 *
+	 * @param authBuilder
+	 * @throws Exception
+	 */
+	public void configureAuthenticationManagerForTableBased(AuthenticationManagerBuilder authBuilder)
+			throws Exception {
 		if (tableBasedEnabled) {
 			log.info("Enabling table-based authentication.");
 			authBuilder.userDetailsService(userDetailsService).and()
@@ -167,8 +191,15 @@ public class DefaultSecurityConfigurer {
 		} else {
 			log.info("Not enabling table-based authentication: octri.authentication.enable-table-based was false.");
 		}
+	}
 
-		// Form authentication falls through to LDAP if configured
+	/**
+	 * Adds support for LDAP authentication to the authentication manager.
+	 *
+	 * @param authBuilder
+	 * @throws Exception
+	 */
+	public void configureAuthenticationManagerForLdap(AuthenticationManagerBuilder authBuilder) throws Exception {
 		if (ldapEnabled) {
 			log.info("Enabling LDAP authentication.");
 			authBuilder.ldapAuthentication()
