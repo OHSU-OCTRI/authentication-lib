@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -19,18 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class TableBasedAuthenticationConfiguration {
 
 	private static final Log log = LogFactory.getLog(TableBasedAuthenticationConfiguration.class);
-
-	/**
-	 * Provides a default BCrypt password encoder for table-based accounts.
-	 *
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public PasswordEncoder defaultPasswordEncoder() {
-		log.debug("No password encoder bean found. Providing default BCrypt encoder.");
-		return new BCryptPasswordEncoder();
-	}
 
 	/**
 	 * Provides a default authentication provider for table-based accounts.

@@ -8,10 +8,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Configuration for the authentication library.
@@ -56,6 +59,18 @@ public class OctriAuthenticationConfiguration {
 	@Bean
 	public AuthenticationUrlHelper authenticatonUrlHelper() {
 		return new AuthenticationUrlHelper(authenticationProperties.getBaseUrl(), contextPath);
+	}
+
+	/**
+	 * Provides a default BCrypt password encoder unless overridden by the application.
+	 *
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public PasswordEncoder defaultPasswordEncoder() {
+		log.debug("No password encoder bean found. Providing default BCrypt encoder.");
+		return new BCryptPasswordEncoder();
 	}
 
 	/**
