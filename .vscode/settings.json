@@ -18,5 +18,6 @@
     },
     "java.saveActions.organizeImports": true,
     "java.format.settings.url": "settings/OCTRI_java_format.xml",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "disabled"
 }
