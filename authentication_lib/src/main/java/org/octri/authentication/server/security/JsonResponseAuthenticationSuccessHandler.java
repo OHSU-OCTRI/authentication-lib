@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -17,9 +16,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This success handler can be used with JSON APIs to record the login event and send a JSON response with 
+ * This success handler can be used with JSON APIs to record the login event and send a JSON response with
  * status OK instead of a redirect.
- * 
+ *
  * @author yateam
  *
  */
@@ -30,7 +29,6 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 
 	private final ObjectMapper mapper;
 
-	@Autowired
 	public JsonResponseAuthenticationSuccessHandler(
 			MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
 		this.mapper = mappingJackson2HttpMessageConverter.getObjectMapper();

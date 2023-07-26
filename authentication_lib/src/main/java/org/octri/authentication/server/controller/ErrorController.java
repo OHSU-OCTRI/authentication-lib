@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
@@ -48,7 +47,6 @@ public class ErrorController extends BasicErrorController {
 		return registration;
 	}
 
-	@Autowired
 	public ErrorController(ErrorAttributes errorAttributes) {
 		super(errorAttributes, new ErrorProperties());
 	}
