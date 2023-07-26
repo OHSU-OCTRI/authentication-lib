@@ -307,13 +307,13 @@ public class DefaultSecurityConfigurer {
 	 * @see {@link ApplicationRouteProperties}
 	 */
 	public void configureRouteSecurityWithDefaults(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers(routes.getPublicRoutesWithDefaults())
+		http.authorizeHttpRequests()
+				.requestMatchers(routes.getPublicRoutesWithDefaults())
 				.permitAll()
-				.antMatchers(HttpMethod.POST).authenticated()
-				.antMatchers(HttpMethod.PUT).authenticated()
-				.antMatchers(HttpMethod.PATCH).authenticated()
-				.antMatchers(HttpMethod.DELETE).denyAll()
+				.requestMatchers(HttpMethod.POST).authenticated()
+				.requestMatchers(HttpMethod.PUT).authenticated()
+				.requestMatchers(HttpMethod.PATCH).authenticated()
+				.requestMatchers(HttpMethod.DELETE).denyAll()
 				.anyRequest()
 				.authenticated();
 	}
