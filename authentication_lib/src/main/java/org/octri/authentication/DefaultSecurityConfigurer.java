@@ -1,5 +1,7 @@
 package org.octri.authentication;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.AuthenticationRouteProperties;
@@ -126,10 +128,9 @@ public class DefaultSecurityConfigurer {
 		AuthenticationManager authManager = authBuilder.build();
 
 		http.authenticationManager(authManager)
-				.exceptionHandling()
-				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(routes.getLoginUrl()))
-				.and()
-				.csrf();
+				.exceptionHandling(exceptionHandling -> exceptionHandling
+						.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(routes.getLoginUrl())))
+				.csrf(withDefaults());
 
 		configureContentSecurityPolicy(http);
 		configureFormLoginWithDefaults(http);
@@ -273,10 +274,10 @@ public class DefaultSecurityConfigurer {
 		formAuthSuccessHandler.setDefaultTargetUrl(routes.getDefaultLoginSuccessUrl());
 		formAuthFailureHandler.setDefaultFailureUrl(routes.getLoginFailureRedirectUrl());
 
-		http.formLogin()
+		http.formLogin(formLogin -> formLogin
 				.permitAll()
 				.successHandler(formAuthSuccessHandler)
-				.failureHandler(formAuthFailureHandler);
+				.failureHandler(formAuthFailureHandler));
 	}
 
 	/**
@@ -288,10 +289,10 @@ public class DefaultSecurityConfigurer {
 	 * @see {@link ApplicationRouteProperties}
 	 */
 	public void configureLogoutWithDefaults(HttpSecurity http) throws Exception {
-		http.logout()
+		http.logout(logout -> logout
 				.permitAll()
 				.logoutRequestMatcher(new AntPathRequestMatcher(routes.getLogoutUrl()))
-				.logoutSuccessUrl(routes.getLogoutSuccessUrl());
+				.logoutSuccessUrl(routes.getLogoutSuccessUrl()));
 	}
 
 	/**
