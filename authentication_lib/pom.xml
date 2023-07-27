@@ -17,7 +17,7 @@
 
 	<properties>
 		<opensaml.version>4.1.1</opensaml.version>
-		<spring-security.version>5.8.5</spring-security.version>
+		<java.version>17</java.version>
 	</properties>
 
 	<dependencies>
