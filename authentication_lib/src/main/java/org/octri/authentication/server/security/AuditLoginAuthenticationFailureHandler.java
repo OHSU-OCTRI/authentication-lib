@@ -2,8 +2,6 @@ package org.octri.authentication.server.security;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.service.LoginAttemptService;
@@ -14,17 +12,20 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * This abstract failure handler can be extended to provide auditing of the login and increment the failed attempts flag, 
- * locking the account if the maximum is exceeded.
- * 
- * The number of failed attempts prior to locking can be configured using the property: 
- * 	octri.authentication.max-login-attempts
- * 
- * See {@link UserService}
- * 
- * Adapted from ChimeraAuthenticationFailureHandler.
+import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * This abstract failure handler can be extended to provide auditing of the login and increment the failed attempts
+ * flag,
+ * locking the account if the maximum is exceeded.
+ *
+ * The number of failed attempts prior to locking can be configured using the property:
+ * octri.authentication.max-login-attempts
+ *
+ * See {@link UserService}
+ *
+ * Adapted from ChimeraAuthenticationFailureHandler.
+ * 
  * @author yateam
  */
 @Component
@@ -38,7 +39,7 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 
 	/**
 	 * Creates a new {@link LoginAttempt} record for an unsuccessful login
-	 * 
+	 *
 	 * @param username
 	 * @param error
 	 * @param request
@@ -55,6 +56,7 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 
 	/**
 	 * Increments the failed attempts counter
+	 * 
 	 * @param username
 	 * @param exception
 	 */

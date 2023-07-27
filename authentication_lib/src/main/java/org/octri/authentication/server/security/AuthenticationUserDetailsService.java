@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
@@ -23,10 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * Custom {@link UserDetailsService} implementation that loads user details from the database via our
  * {@link UserService} and {@link UserUserRoleService}.
- * 
+ *
  * @author harrelst
  *
  */
@@ -40,7 +40,7 @@ public class AuthenticationUserDetailsService implements UserDetailsService {
 	private UserUserRoleService userUserRoleService;
 
 	/**
-	 * 
+	 *
 	 * @return - the current user, or null if there is no current authenticated user.
 	 */
 	public AuthenticationUserDetails getCurrent() {
@@ -50,7 +50,7 @@ public class AuthenticationUserDetailsService implements UserDetailsService {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
 	 */
 	@Override
@@ -66,7 +66,7 @@ public class AuthenticationUserDetailsService implements UserDetailsService {
 
 	/**
 	 * Determines the user's security authorities. May be overridden.
-	 * 
+	 *
 	 * @param user
 	 *            the user for whom to calculate authorities
 	 * @return the list of authorities
@@ -77,14 +77,15 @@ public class AuthenticationUserDetailsService implements UserDetailsService {
 				.collect(Collectors.toList());
 		return list;
 	}
-	
+
 	/**
-	 * Accesses the HttpServletRequest and wraps the ipAddress checks to test for a proxy 
-	 * 
+	 * Accesses the HttpServletRequest and wraps the ipAddress checks to test for a proxy
+	 *
 	 * @return ipAddress
 	 */
 	public String getRemoteAddress() {
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+				.getRequest();
 
 		return RequestUtils.getClientIpAddr(request);
 	}

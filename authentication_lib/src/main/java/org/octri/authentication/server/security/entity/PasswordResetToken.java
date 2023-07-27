@@ -5,16 +5,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Holds a random token (UUID) generated at the time of the request, the {@link User} that requested the password reset,
@@ -127,9 +127,10 @@ public class PasswordResetToken {
 	public void setTokenUrl(String tokenUrl) {
 		this.tokenUrl = tokenUrl;
 	}
-	
+
 	/**
 	 * This helper method checks whether this token has expired.
+	 *
 	 * @return whether the token expiration date has passed
 	 */
 	public boolean isExpired() {

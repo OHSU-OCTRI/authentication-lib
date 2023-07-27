@@ -2,16 +2,16 @@ package org.octri.authentication.server.security.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.repository.LoginAttemptRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+
 /**
  * A service wrapper for the {@link LoginAttemptRepository}.
- * 
+ *
  * @author yateam
  *
  */

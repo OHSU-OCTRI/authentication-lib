@@ -1,19 +1,19 @@
 package org.octri.authentication.server.security.entity;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
 import org.octri.authentication.server.view.Identified;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * An abstract entity for all other entities to extend. It includes the base {@link #id} field which is
  * auto-incrementing.
- * 
+ *
  * TODO: Add back in auditing?
- * 
+ *
  * @author yateam
  */
 @MappedSuperclass

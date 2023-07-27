@@ -2,31 +2,31 @@ package org.octri.authentication.server.security.entity;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Used to record successful and failed login attempts for a given username. New records are created in the
  * {@link AuthenticationFailureHandler} and {@link AuthenticationSuccessHandler} objects.
- * 
+ *
  * Adapted from Chimera's LoginAttempt.
- * 
+ *
  * @author lawhead
  * @author harrelst
- * 
+ *
  */
 @Configurable
 @Entity
@@ -43,7 +43,7 @@ public class LoginAttempt {
 
 	@NotNull
 	private String username;
-	
+
 	@NotNull
 	private String ipAddress;
 
@@ -58,7 +58,7 @@ public class LoginAttempt {
 	@Lob
 	@Column(columnDefinition = "TEXT")
 	private String errorType;
-	
+
 	@Lob
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
@@ -88,12 +88,10 @@ public class LoginAttempt {
 		this.username = username;
 	}
 
-	
 	public String getIpAddress() {
 		return ipAddress;
 	}
 
-	
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}

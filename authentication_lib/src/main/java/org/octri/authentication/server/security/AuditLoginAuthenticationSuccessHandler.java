@@ -2,8 +2,6 @@ package org.octri.authentication.server.security;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.entity.User;
@@ -16,9 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * This abstract success handler can be extended to provide auditing of the login and reset the failed attempts flag.
- * 
+ *
  * @author yateam
  */
 @Component
@@ -39,7 +39,8 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 		loginAttemptService.save(attempt);
 	}
 
-	protected void resetUserFailedAttempts(Authentication auth) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	protected void resetUserFailedAttempts(Authentication auth)
+			throws InvalidLdapUserDetailsException, DuplicateEmailException {
 		User user = userService.findByUsername(auth.getName());
 		if (user == null || !(user.getConsecutiveLoginFailures() > 0)) {
 			return;

@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintValidatorContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.passay.CharacterCharacteristicsRule;
@@ -17,6 +15,8 @@ import org.passay.PasswordValidator;
 import org.passay.RuleResult;
 import org.passay.RuleResultDetail;
 import org.springframework.stereotype.Component;
+
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * A password constraint validator. Validates passwords against OHSU standards.

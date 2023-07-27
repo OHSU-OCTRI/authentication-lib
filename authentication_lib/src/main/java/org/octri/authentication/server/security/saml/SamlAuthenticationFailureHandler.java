@@ -3,10 +3,6 @@ package org.octri.authentication.server.security.saml;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.service.LoginAttemptService;
@@ -16,6 +12,10 @@ import org.springframework.security.saml2.core.Saml2Error;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Records failed SAML login attempts. Because invalid credentials are detected by the SAML IdP, only login failures

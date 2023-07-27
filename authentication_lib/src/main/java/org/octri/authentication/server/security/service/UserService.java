@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
@@ -37,6 +35,8 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A service wrapper for the {@link UserRepository}.

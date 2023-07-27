@@ -2,8 +2,6 @@ package org.octri.authentication.server.controller;
 
 import java.util.Calendar;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.octri.authentication.config.SamlProperties;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.utils.ProfileUtils;
@@ -14,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Provides model attributes that are used globally in page templates.

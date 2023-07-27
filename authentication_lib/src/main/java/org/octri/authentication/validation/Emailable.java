@@ -1,6 +1,6 @@
 package org.octri.authentication.validation;
 
-import javax.validation.groups.Default;
+import jakarta.validation.groups.Default;
 
 /**
  * Validation group

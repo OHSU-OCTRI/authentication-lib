@@ -8,11 +8,11 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path.Node;
-
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path.Node;
 
 /**
  * Validation utilities. Autowire this component to use.

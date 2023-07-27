@@ -3,8 +3,6 @@ package org.octri.authentication.server.security.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.entity.UserUserRole;
@@ -12,9 +10,11 @@ import org.octri.authentication.server.security.repository.UserUserRoleRepositor
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+
 /**
  * Service wrapper for the {@link UserUserRoleRepository}.
- * 
+ *
  * @author yateam
  *
  */

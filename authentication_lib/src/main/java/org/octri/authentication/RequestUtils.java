@@ -1,12 +1,12 @@
 package org.octri.authentication;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.util.Assert;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Common methods to interact with a HttpServletRequest
- * 
+ *
  * TODO Refactor to a common utilities library
  *
  */

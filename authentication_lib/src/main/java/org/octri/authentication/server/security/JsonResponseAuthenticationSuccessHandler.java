@@ -3,10 +3,6 @@ package org.octri.authentication.server.security;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -14,6 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This success handler can be used with JSON APIs to record the login event and send a JSON response with

@@ -2,16 +2,16 @@ package org.octri.authentication.server.security.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.repository.UserRoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+
 /**
  * Service wrapper for the {@link UserRoleRepository}.
- * 
+ *
  * @author sams
  */
 @Service
