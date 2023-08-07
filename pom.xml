@@ -4,7 +4,7 @@
 
 	<groupId>org.octri.authentication</groupId>
 	<artifactId>authentication_lib_parent</artifactId>
-	<version>0.10.0</version>
+	<version>0.10.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>authentication_parent</name>
