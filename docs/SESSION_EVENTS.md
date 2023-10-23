@@ -28,7 +28,7 @@ The times when user sessions begin and end are persisted to the `session_event` 
 
 ### Architecture
 
-To allow calcuating how long a user spends on the site, we record an entry in the `session_event` table when the user logs in (a `LOGIN` event), and we record a corresponding entry in the `session_event` table when their session ends (a `LOGOUT` event). The session ID and user ID for these entries should match.
+To allow calculating how long a user spends on the site, we record an entry in the `session_event` table when the user logs in (a `LOGIN` event), and we record a corresponding entry in the `session_event` table when their session ends (a `LOGOUT` event). The session ID and user ID for these entries should match.
 
 Spring Security delivers events when sessions are created, when session IDs are changed, and when sessions are destroyed. However, session event recording cannot be implemented exclusively using event listeners, because session creations and ID changes happen when the security context is not populated with an authenticated user. Thus the start of the user session must be logged by the [`ApplicationAuthenticationSuccessHandler`](./authentication_lib/src/main/java/org/octri/authentication/server/security/ApplicationAuthenticationSuccessHandler.java), because no user is authenticated yet when the session is created or when the session ID is updated.
 
