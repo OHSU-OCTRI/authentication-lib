@@ -4,6 +4,9 @@ pipeline {
     quietPeriod(30)
     buildDiscarder(logRotator(numToKeepStr: '3'))
   }
+  environment {
+    DEFAULT_BRANCH = 'release-0-X'
+  }
   triggers {
     pollSCM('')
   }
@@ -20,7 +23,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        octriMavenBuild(deployArtifacts: env.BRANCH_NAME == 'master')
+        octriMavenBuild(deployArtifacts: env.BRANCH_NAME == env.DEFAULT_BRANCH)
       }
     }
     stage('Test') {
