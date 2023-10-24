@@ -12,6 +12,7 @@ import org.octri.authentication.config.SamlProperties;
 import org.octri.authentication.server.security.ApplicationAuthenticationFailureHandler;
 import org.octri.authentication.server.security.ApplicationAuthenticationSuccessHandler;
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;
+import org.octri.authentication.server.security.SessionDestroyedListener;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
 import org.octri.authentication.server.security.saml.SamlAuthenticationFailureHandler;
 import org.octri.authentication.server.security.saml.SamlAuthenticationSuccessHandler;
@@ -37,6 +38,7 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableMethodSecurity
@@ -140,6 +142,19 @@ public class DefaultSecurityConfigurer {
 		configureSamlWithDefaults(http, authManager);
 
 		return http.build();
+	}
+
+	/**
+	 * Provides a default {@link HttpSessionEventPublisher} bean if the application does not provide a custom one. This
+	 * ensures that Spring Security publishes events used to record when sessions are destroyed.
+	 *
+	 * @see {@link SessionDestroyedListener}
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public HttpSessionEventPublisher defaultHttpSessionEventPublisher() {
+		return new HttpSessionEventPublisher();
 	}
 
 	/**

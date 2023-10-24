@@ -50,9 +50,10 @@ One caveat to this approach is that session event logging can break down if the 
 
 ### Classes
 
-* [`SessionEvent`](./authentication_lib/src/main/java/org/octri/authentication/server/security/entity/SessionEvent.java) - entity representing entries in the `session_event` table
-* [`SessionEventRepository`](./authentication_lib/src/main/java/org/octri/authentication/server/security/repository/SessionEventRepository.java) - JPA repository interface used to work with `SessionEvent` entities
-* [`SessionEventService`](./authentication_lib/src/main/java/org/octri/authentication/server/security/service/SessionEventService.java) - service wrapper for `SessionEventRepository` and business logic for recording session events
-* [`ApplicationAuthenticationSuccessHandler`](./authentication_lib/src/main/java/org/octri/authentication/server/security/ApplicationAuthenticationSuccessHandler.java) - concrete authentication success handler; records the initiation of the user's session after the final ID is assigned and the security context is populated
-* [`SessionDestroyedListener`](./authentication_lib/src/main/java/org/octri/authentication/server/security/SessionDestroyedListener.java) - listens for session destruction events and records the end of the session
+* [`DefaultSecurityConfigurer`](../authentication_lib/src/main/java/org/octri/authentication/DefaultSecurityConfigurer.java) - instantiates the [`HttpSessionEventPublisher`](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/web/session/HttpSessionEventPublisher.html) bean that generates session events
+* [`SessionEvent`](../authentication_lib/src/main/java/org/octri/authentication/server/security/entity/SessionEvent.java) - entity representing entries in the `session_event` table
+* [`SessionEventRepository`](../authentication_lib/src/main/java/org/octri/authentication/server/security/repository/SessionEventRepository.java) - JPA repository interface used to work with `SessionEvent` entities
+* [`SessionEventService`](../authentication_lib/src/main/java/org/octri/authentication/server/security/service/SessionEventService.java) - service wrapper for `SessionEventRepository` and business logic for recording session events
+* [`ApplicationAuthenticationSuccessHandler`](../authentication_lib/src/main/java/org/octri/authentication/server/security/ApplicationAuthenticationSuccessHandler.java) - concrete authentication success handler; records the initiation of the user's session after the final ID is assigned and the security context is populated
+* [`SessionDestroyedListener`](../authentication_lib/src/main/java/org/octri/authentication/server/security/SessionDestroyedListener.java) - listens for session destruction events and records the end of the session
 
