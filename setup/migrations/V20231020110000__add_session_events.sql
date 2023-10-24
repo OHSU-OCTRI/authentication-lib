@@ -8,7 +8,7 @@ CREATE TABLE `session_event` (
 	`event` varchar(255) NOT NULL,
 	`session_id` varchar(255) NOT NULL,
 	`user` bigint NOT NULL,
-	`as_user` bigint NOT NULL,
+	`as_user` bigint,
 	primary key(`id`),
 	CONSTRAINT session_event_user_fk FOREIGN KEY (`user`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
