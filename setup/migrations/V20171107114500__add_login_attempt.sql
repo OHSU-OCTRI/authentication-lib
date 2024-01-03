@@ -1,11 +1,11 @@
 CREATE TABLE `login_attempt` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `attempted_at` datetime NOT NULL,
-  `error_message` text COLLATE utf8_unicode_ci,
-  `error_type` text COLLATE utf8_unicode_ci,
+  `error_message` text,
+  `error_type` text,
   `successful` bit(1) NOT NULL,
-  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `ip_address` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-  `version` int(11) DEFAULT NULL,
+  `username` varchar(255) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `version` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

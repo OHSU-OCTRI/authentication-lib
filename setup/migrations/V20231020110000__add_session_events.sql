@@ -5,10 +5,10 @@ CREATE TABLE `session_event` (
 	`version` int NOT NULL,
 	`created_at` datetime NOT NULL,
 	`updated_at` datetime NOT NULL,
-	`event` varchar(255) NOT NULL,
+	`event` enum('LOGIN', 'LOGOUT', 'IMPERSONATION') NOT NULL,
 	`session_id` varchar(255) NOT NULL,
 	`user` bigint NOT NULL,
 	`as_user` bigint,
 	primary key(`id`),
 	CONSTRAINT session_event_user_fk FOREIGN KEY (`user`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
