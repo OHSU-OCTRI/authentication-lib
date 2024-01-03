@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.entity;
 
+import java.io.Serializable;
+
 import org.octri.authentication.server.view.Identified;
 
 import jakarta.persistence.Column;
@@ -17,7 +19,9 @@ import jakarta.persistence.MappedSuperclass;
  * @author yateam
  */
 @MappedSuperclass
-public abstract class AbstractEntity implements Identified {
+public abstract class AbstractEntity implements Serializable, Identified {
+
+	private static final long serialVersionUID = 3042616837618435959L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
