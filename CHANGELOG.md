@@ -21,32 +21,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unused, long-deprecated `isValidResetToken` method from the `PasswordResetTokenService`. This was replaced by the `isExpired` method of the `PasswordResetToken` entity.
 - Remove unused three-argument version of the `sendPasswordResetTokenEmail` method from the `UserService`. This was only ever used by SHIFT, and was replaced by the four-argument version.
 
-## 0.11.0 - 2023-10-25
+## [0.11.0] - 2023-10-25
 
 ### Added
 
 - **Breaking**: Integrate session event logging from SHIFT. Consuming apps must add a migration for a new table. (AUTHLIB-128)
 
 
-## 0.10.0 - 2023-08-07
+## [0.10.0] - 2023-08-07
 
 ### Changed
 
 - **Breaking**: Upgrade to Spring Security 5.8. Consuming apps must override the Spring Security version in `pom.xml`. (AUTHLIB-123)
 
-## 0.9.3 - 2023-06-09
+## [0.9.3] - 2023-06-09
 
 ### Changed
 
 - Upgrade to Spring Boot 2.7.12 (AUTHLIB-121)
 
-## 0.9.2 - 2023-01-23
+## [0.9.2] - 2023-01-23
 
 ### Fixed
 
 - Fix authentication failure when only LDAP is enabled (AUTHLIB-118)
 
-## 0.9.1 - 2022-08-08
+## [0.9.1] - 2022-08-08
 
 ### Added
 
@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure SAML logout configuration is generated (AUTHLIB-117)
 
-## 0.9.0 - 2022-07-28
+## [0.9.0] - 2022-07-28
 
 ### Added
 
@@ -70,13 +70,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix crash when `spring.main.allow-bean-definition-overriding=false` (AUTHLIB-104)
 
-## 0.8.1 - 2022-07-18
+## [0.8.1] - 2022-07-18
 
 ### Fixed
 
 - Fix missing "Forgot password" link (AUTHLIB-118)
 
-## 0.8.0 - 2022-07-14
+## [0.8.0] - 2022-07-14
 
 ### Added
 
@@ -92,7 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix crash when only table-based auth is enabled (AUTHLIB-112)
 
-## 0.7.3 - 2022-06-30
+## [0.7.3] - 2022-06-30
 
 ### Added
 
@@ -102,13 +102,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Replace inline scripts that caues content security policy violations (CVSS-47)
 
-## 0.7.2 - 2022-06-23
+## [0.7.2] - 2022-06-23
 
 ### Fixed
 
 - Ensure that generated URLs contain the context path (AUTHLIB-108)
 
-## 0.7.1 - 2022-06-21
+## [0.7.1] - 2022-06-21
 
 ### Added
 
@@ -119,7 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix circular reference error involving `PasswordResetTokenService` (AUTHLIB-106)
 - Fix circular reference error involving `FilterBasedLdapUserSearch` (AUTHLIB-107)
 
-## 0.7.0 - 2022-06-16
+## [0.7.0] - 2022-06-16
 
 ### Changed
 
@@ -130,19 +130,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix circular bean reference involving `PasswordEncoder` (AUTHLIB-92)
 
-## 0.6.0 2022-04-09
+## [0.6.0] 2022-04-09
 
 ### Changed
 
 - **Breaking**: Support UI with Bootstrap 4 and Bootstrap 5. Consuming apps must add a UI dependency to `pom.xml`. (AUTHLIB-99)
 
-## 0.5.5 - 2020-03-09
+## [0.5.5] - 2020-03-09
 
 ## Fixed
 
 - Fix a bug in 0.5.4 that prevents application startup (AUTHLIB-87)
 
-## 0.5.4 - 2020-03-09
+## [0.5.4] - 2020-03-09
 
 _DO NOT USE: This release contains a bug that prevents application startup in some cases. Use release 0.5.5 instead._
 
@@ -152,25 +152,25 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Prevent entry of duplicate email addresses (AUTHLIB-83)
 - Prevent password reset using an expired reset token (AUTHLIB-86)
 
-## 0.5.3 - 2020-02-25
+## [0.5.3] - 2020-02-25
 
 ### Fixed
 
 - Prevent runtime exceptions when passwords fail validation (AUTHLIB-82)
 
-## 0.5.2 - 2020-02-10
+## [0.5.2] - 2020-02-10
 
 ### Fixed
 
 - Prevent creation of users with duplicate email addresses (AUTHLIB-78)
 
-## 0.5.1 - 2019-10-18
+## [0.5.1] - 2019-10-18
 
 ### Added
 
 - Include the application's `displayName` in email subjects to better indicate the source of messages (AUTHLIB-76)
 
-## 0.5.0 - 2019-10-07
+## [0.5.0] - 2019-10-07
 
 ### Added
 
@@ -180,26 +180,26 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 
 - **Breaking**: Remove automatic migrations. Consuming apps must opt into migrations by adding files to their migration directory. (AUTHLIB-75)
 
-## 0.4.0 - 2019-09-27
+## [0.4.0] - 2019-09-27
 
 ### Added
 
 - Add support for generating random, single-use passwords matching a pattern (SHIFT-185)
 - If missing, require user to set email address on initial login (SHIFT-189)
 
-## 0.3.0 - 2019-08-29
+## [0.3.0] - 2019-08-29
 
 ### Added
 
 - Improve visibility of password validation rules and give better feedback about invalid passwords (AUTHLIB-31)
 
-## 0.2.1 - 2019-08-06
+## [0.2.1] - 2019-08-06
 
 ### Fixed
 
 - Reset consecutive login failures on password reset (AUTHLIB-67)
 
-## 0.2.0 - 2019-07-11
+## [0.2.0] - 2019-07-11
 
 ### Added
 
@@ -210,37 +210,37 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 
 - Expose Actuator health and Prometheus metrics endpoints
 
-## 0.1.4 - 2019-01-02
+## [0.1.4] - 2019-01-02
 
 - Return to user list when canceling user create / edit form (AUTHLIB-54)
 
-## 0.1.3 - 2018-12-13
+## [0.1.3] - 2018-12-13
 
 ### Changed
 
 - Upgrade to Spring Boot 2.1.0 (AUTHLIB-52)
 
-## 0.1.2 - 2018-08-14
+## [0.1.2] - 2018-08-14
 
 ### Added
 
 - Improve behavior of the LDAP user button (AUTHLIB-41)
 
-## 0.1.1 - 2018-08-13
+## [0.1.1] - 2018-08-13
 
 ### Changed
 
 - Minor changes for Cognitive Demands (AUTHLIB-36)
 - Update dependencies (AUTHLIB-41)
 
-## 0.1.0 - 2018-08-10
+## [0.1.0] - 2018-08-10
 
 ### Changed
 
 - Update dependencies (AUTHLIB-41)
 - **Breaking**: Use mustache for templates
 
-## 0.0.2 - 2018-06-21
+## [0.0.2] - 2018-06-21
 
 ### Added
 
@@ -257,3 +257,34 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
+
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...HEAD
+[0.11.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.10.0...v0.11.0
+[0.10.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.3...v0.10.0
+[0.9.3]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.2...v0.9.3
+[0.9.2]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.1...v0.9.2
+[0.9.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.0...v0.9.1
+[0.9.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.8.1...v0.9.0
+[0.8.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.8.0...v0.8.1
+[0.8.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.7.3...v0.8.0
+[0.7.3]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.7.2...v0.7.3
+[0.7.2]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.7.1...v0.7.2
+[0.7.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.7.0...v0.7.0
+[0.7.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.6.0...v0.7.0
+[0.6.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.5...v0.6.0
+[0.5.5]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.4...v0.5.5
+[0.5.4]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.3...v0.5.4
+[0.5.3]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.2...v0.5.3
+[0.5.2]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.1...v0.5.2
+[0.5.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.5.0...v0.5.1
+[0.5.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.4.0...v0.5.0
+[0.4.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.3.0...v0.4.0
+[0.3.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.2.1...v0.3.0
+[0.2.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.2.0...v0.2.1
+[0.2.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.1.4...v0.2.0
+[0.1.4]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.1.3...v0.1.4
+[0.1.3]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.1.2...v0.1.3
+[0.1.2]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.1.1...v0.1.2
+[0.1.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.1.0...v0.1.1
+[0.1.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.0.2...v0.1.0
+[0.0.2]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/releases/tag/v0.0.2
