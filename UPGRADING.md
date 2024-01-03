@@ -6,6 +6,16 @@ Release 1.0.0 upgrades dependencies to Spring Boot 3, and Spring Security 6. Thi
 
 In addition, this release removes the `@EnableJpaAuditing` annotation from the `DefaultSecurityConfigurer` class. This eliminates the need to set `spring.main.allow-bean-definition-overriding=true` in every consuming app, but it requires consuming apps to be annotated with `@EnableJpaAuditing`. This is the default for applications created using OCTRI's Spring Boot archetype, so you may not need to make application changes to accommodate it.
 
+If your application has not been upgraded to version 0.11.0, you will need to add [the migration for the session events table](./setup/migrations/V20231020110000__add_session_events.sql). Applications that were already upgraded to version 0.11.0 should add the following migration to modify the table for Hibernate 6 and MySQL 8.
+
+```sql
+-- Convert to an enum column for Hibernate 6
+ALTER TABLE `session_event`
+    MODIFY COLUMN `event` enum ('LOGIN', 'LOGOUT', 'IMPERSONATION') NOT NULL;
+```
+
+Any data in the `session_event` table will be preserved. Without this migration, schema validation will fail.
+
 ## Upgrading to 0.11.0
 
 Release 0.11.0 integrates session tracking code from SHIFT into AuthLib for use in other projects. This introduces a new `SessionEvent` entity, so upgrading requires adding the following migration to your application:
