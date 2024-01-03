@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking**: Upgrade to Spring Boot 3 and Java 17. Consuming apps will also need to upgrade their Spring Boot and Java versions. (AUTHLIB-124)
+- **Breaking**: Upgrade to Spring Boot 3.2 and Java 17. Consuming apps will also need to upgrade their Spring Boot and Java versions. (AUTHLIB-124)
 
 ## 0.11.0 - 2023-10-25
 

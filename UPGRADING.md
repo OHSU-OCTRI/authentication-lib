@@ -2,7 +2,7 @@
 
 ## Upgrading to 1.0.0
 
-Release 1.0.0 upgrades dependencies to Spring Boot 3, and Spring Security 6. This also updates minimum Java version to Java 17. To use this version, you must upgrade your application to at least Spring Boot 3.0 and Java 17 as well.
+Release 1.0.0 upgrades dependencies to Spring Boot 3, and Spring Security 6. This also updates minimum Java version to Java 17. To use this version, you must upgrade your application to at least Spring Boot 3.2 and Java 17 as well.
 
 ## Upgrading to 0.11.0
 

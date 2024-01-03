@@ -202,8 +202,8 @@ public class DefaultSecurityConfigurer {
 			throws Exception {
 		if (tableBasedEnabled) {
 			log.info("Enabling table-based authentication.");
-			authBuilder.userDetailsService(userDetailsService).and()
-					.authenticationProvider(tableBasedAuthenticationProvider);
+			authBuilder.userDetailsService(userDetailsService);
+			authBuilder.authenticationProvider(tableBasedAuthenticationProvider);
 		} else {
 			log.info("Not enabling table-based authentication: octri.authentication.enable-table-based was false.");
 		}
@@ -323,15 +323,14 @@ public class DefaultSecurityConfigurer {
 	 * @see {@link ApplicationRouteProperties}
 	 */
 	public void configureRouteSecurityWithDefaults(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-				.requestMatchers(routes.getPublicRoutesWithDefaults())
+		http.authorizeHttpRequests(auth -> auth.requestMatchers(routes.getPublicRoutesWithDefaults())
 				.permitAll()
 				.requestMatchers(HttpMethod.POST).authenticated()
 				.requestMatchers(HttpMethod.PUT).authenticated()
 				.requestMatchers(HttpMethod.PATCH).authenticated()
 				.requestMatchers(HttpMethod.DELETE).denyAll()
 				.anyRequest()
-				.authenticated();
+				.authenticated());
 	}
 
 	/**
