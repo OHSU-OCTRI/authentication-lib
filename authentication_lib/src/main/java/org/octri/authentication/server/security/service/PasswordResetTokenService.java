@@ -99,20 +99,6 @@ public class PasswordResetTokenService {
 	}
 
 	/**
-	 * Checks to ensure a token exists and has not expired.
-	 *
-	 * @deprecated Use other service methods to get the token; then use {@link PasswordResetToken#isExpired()}
-	 *
-	 * @param token
-	 * @return true if the password reset token is valid, false otherwise.
-	 */
-	public boolean isValidPasswordResetToken(final String token) {
-		Assert.notNull(token, "Must provide a token");
-		PasswordResetToken existing = findByToken(token);
-		return existing != null && !existing.isExpired();
-	}
-
-	/**
 	 * Find all active tokens. The transient field 'tokenUrl' is set for use in mustache templates.
 	 *
 	 * @return

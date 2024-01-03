@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implement `Serializable` in `AbstractEntity` to fix warnings when applications reference the `User` entity (AUTHLIB-120)
 
+### Removed
+
+- Remove unused, long-deprecated `isValidResetToken` method from the `PasswordResetTokenService`. This was replaced by the `isExpired` method of the `PasswordResetToken` entity.
+- Remove unused three-argument version of the `sendPasswordResetTokenEmail` method from the `UserService`. This was only ever used by SHIFT, and was replaced by the four-argument version.
+
 ## 0.11.0 - 2023-10-25
 
 ### Added

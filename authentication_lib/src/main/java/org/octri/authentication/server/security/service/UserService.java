@@ -316,23 +316,6 @@ public class UserService {
 	}
 
 	/**
-	 * This is maintained for backward compatibility.
-	 * Use {@link #sendPasswordResetTokenEmail(PasswordResetToken, HttpServletRequest, boolean, boolean)}
-	 *
-	 * @param token
-	 *            the password reset token
-	 * @param request
-	 *            the request so the application url can be constructed
-	 * @param dryRun
-	 *            Will only print email contents to console if true
-	 */
-	@Deprecated
-	public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
-			final boolean dryRun) {
-		sendPasswordResetTokenEmail(token, request, false, dryRun);
-	}
-
-	/**
 	 * Send email confirmation to user. If the user is new, a welcome email is sent. Otherwise a password
 	 * reset is sent.
 	 *
