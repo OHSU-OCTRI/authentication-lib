@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking**: Upgrade to Spring Boot 3.2 and Java 17. Consuming apps will also need to upgrade their Spring Boot and Java versions. (AUTHLIB-124)
+- **Breaking**: Remove `@EnableJpaAuditing` annotation from `DefaultSecurityConfigurer`. This eliminates the need to set `spring.main.allow-bean-definition-overriding=true` in every consuming app, but it requires consuming apps to set `@EnableJpaAuditing`. (AUTHLIB-122)
 
 ### Fixed
 

@@ -4,6 +4,8 @@
 
 Release 1.0.0 upgrades dependencies to Spring Boot 3, and Spring Security 6. This also updates minimum Java version to Java 17. To use this version, you must upgrade your application to at least Spring Boot 3.2 and Java 17 as well.
 
+In addition, this release removes the `@EnableJpaAuditing` annotation from the `DefaultSecurityConfigurer` class. This eliminates the need to set `spring.main.allow-bean-definition-overriding=true` in every consuming app, but it requires consuming apps to be annotated with `@EnableJpaAuditing`. This is the default for applications created using OCTRI's Spring Boot archetype, so you may not need to make application changes to accommodate it.
+
 ## Upgrading to 0.11.0
 
 Release 0.11.0 integrates session tracking code from SHIFT into AuthLib for use in other projects. This introduces a new `SessionEvent` entity, so upgrading requires adding the following migration to your application:
