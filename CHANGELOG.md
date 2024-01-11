@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2024-01-11
+
 ### Changed
 
 - **Breaking**: Upgrade to Spring Boot 3.2 and Java 17. Consuming apps will also need to upgrade their Spring Boot and Java versions. (AUTHLIB-124)
@@ -258,7 +260,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...HEAD
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...HEAD
+[1.0.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...v1.0.0
 [0.11.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.10.0...v0.11.0
 [0.10.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.3...v0.10.0
 [0.9.3]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.2...v0.9.3
