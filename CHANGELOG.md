@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Correct session cookie properties (`server.session.cookie.*` -> `server.servlet.session.cookie.*`). To prevent making a breaking change, the default property values are unchanged.
+
 ## [1.0.0] - 2024-01-11
 
 ### Changed
