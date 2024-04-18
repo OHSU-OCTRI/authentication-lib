@@ -165,22 +165,32 @@ spring.profiles.include=noemail
 
 Lastly copy the migration [`V20190621120000__alter_user.sql`](setup/optional_migrations/noemail/V20190621120000__alter_user.sql) into your application's Flyway migration directory. Usually `src/main/resources/db/migration`.
 
-### Session Timeout
+### Session Timeout and Cookie Settings
 
-Session timeout is managed by the three properties shown below. See the [full list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
+Session timeout and session cookie properties are managed by the properties shown below. See the [full list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
 
-To override any of these values set the corresponding environment variable (e.g. `server.session.cookie.max-age` becomes `SERVER_SESSION_COOKIE_MAX_AGE`), or define them in your own `application.properties` file. The order in which external configuration is loaded may be found [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
+To override any of these values set the corresponding environment variable (e.g. `server.servlet.session.cookie.max-age` becomes `SERVER_SERVLET_SESSION_COOKIE_MAXAGE`), or define them in your own `application.properties` file. The order in which external configuration is loaded may be found [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
 
 ```
-# Session timeout in seconds
-server.session.timeout=1200
+# Session timeout in minutes
+server.servlet.session.timeout=20m
 
-# Cookie max-age in seconds
-server.session.cookie.max-age=1200
+# Cookie max-age in minutes
+server.servlet.session.cookie.max-age=20m
 
-# Set to true for production when using https - false for http
-server.session.cookie.secure=false
+# Set to true to restrict the session cookie to HTTPS
+server.servlet.session.cookie.secure=true
+
+# Set to true to prevent JavaScript from accessing the session cookie; it will still be
+# sent with same-origin Ajax requests
+server.servlet.session.cookie.http-only=true
+
+# Set to "strict" to prevent sending the session cookie with cross-origin requests; set to
+# "none" to allow the cookie to be sent with cross-origin requests
+server.servlet.session.cookie.same-site=strict
 ```
+
+The cookie settings shown above are a secure starting point, and they should only rarely need to be changed.
 
 ### Password Requirements
 
