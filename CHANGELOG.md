@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2024-04-18
+
 ### Fixed
 
 - Correct session cookie properties (`server.session.cookie.*` -> `server.servlet.session.cookie.*`). To prevent making a breaking change, the default property values are unchanged. (AUTHLIB-129) For most applications, you should consider adopting the following secure values:
@@ -270,7 +272,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...HEAD
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.1...HEAD
+[1.0.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...v1.0.1
 [1.0.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...v1.0.0
 [0.11.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.10.0...v0.11.0
 [0.10.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.9.3...v0.10.0
