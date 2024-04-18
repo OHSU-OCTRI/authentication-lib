@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Correct session cookie properties (`server.session.cookie.*` -> `server.servlet.session.cookie.*`). To prevent making a breaking change, the default property values are unchanged. For most applications, you should consider adopting the following secure values:
+- Correct session cookie properties (`server.session.cookie.*` -> `server.servlet.session.cookie.*`). To prevent making a breaking change, the default property values are unchanged. (AUTHLIB-129) For most applications, you should consider adopting the following secure values:
 
-  ```
+  ```properties
   server.servlet.session.cookie.http-only=true
   server.servlet.session.cookie.same-site=strict
   server.servlet.session.cookie.secure=true
