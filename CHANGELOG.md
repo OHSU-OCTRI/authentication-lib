@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a custom `RequestRejectedHandler` implementation that returns an error response without throwing an exception. To use this implementation in your application, add a `@Bean` method that returns an instance of `LoggingRequestRejectedHandler`.
+
 ## [1.0.1] - 2024-04-18
 
 ### Fixed
