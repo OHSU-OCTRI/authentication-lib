@@ -15,6 +15,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | octri.authentication.enable-ldap | OCTRI_AUTHENTICATION_ENABLELDAP | boolean | None | Whether LDAP authentication is enabled. See LDAP Authentication below for more properties. |
 | octri.authentication.enable-table-based | OCTRI_AUTHENTICATION_ENABLETABLEBASED | boolean | None | Whether table-based authentication is enabled. |
 | octri.authentication.max-login-attempts | OCTRI_AUTHENTICATION_MAXLOGINATTEMPTS | integer | 7 | Number of failed login attempts allowed before an account is locked. |
+| octri.authentication.username-style | OCTRI_AUTHENTICATION_USERNAMESTYLE | string | plain | Username style. Valid options are `plain`, `email`, or `mixed`. |
 
 ## Route Configuration
 

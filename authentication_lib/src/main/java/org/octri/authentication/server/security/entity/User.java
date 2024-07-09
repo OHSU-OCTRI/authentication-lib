@@ -77,7 +77,7 @@ public class User extends AbstractEntity implements Labelled {
 
 	@Column(unique = true)
 	@NotNull(message = "Username is required")
-	@Size(max = 50, min = 1, message = "Username must be 1-50 characters")
+	@Size(max = 320, min = 1, message = "Username must be 1-320 characters")
 	private String username;
 
 	private String password;
@@ -113,7 +113,7 @@ public class User extends AbstractEntity implements Labelled {
 	 */
 	@Email(message = INVALID_EMAIL_MESSAGE, regexp = VALID_EMAIL_REGEX, groups = Emailable.class)
 	@NotNull(message = "Email is required", groups = Emailable.class)
-	@Size(max = 100, min = 1, message = "Email must be between 1 and 100 characters", groups = Emailable.class)
+	@Size(max = 320, min = 1, message = "Email must be between 1 and 320 characters", groups = Emailable.class)
 	private String email;
 
 	private Integer consecutiveLoginFailures;

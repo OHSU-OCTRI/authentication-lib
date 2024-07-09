@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add a custom `RequestRejectedHandler` implementation that returns an error response without throwing an exception. To use this implementation in your application, add a `@Bean` method that returns an instance of `LoggingRequestRejectedHandler`. (CIS-2703)
 
+- Allow using email addresses as usernames. To avoid breaking changes, this is disabled by default. See [UPGRADING.md](./UPGRADING.md) for details on how to enable this feature. (AUTHLIB-134)
+
 ## [1.0.1] - 2024-04-18
 
 ### Fixed

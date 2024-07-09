@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.MethodSecurityExpressions;
+import org.octri.authentication.config.LdapContextProperties;
+import org.octri.authentication.config.OctriAuthenticationProperties;
+import org.octri.authentication.config.OctriAuthenticationProperties.UsernameStyle;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
@@ -71,12 +74,6 @@ public class UserController {
 	private PasswordResetTokenService passwordResetTokenService;
 
 	@Autowired
-	private Boolean ldapEnabled;
-
-	@Autowired
-	private Boolean tableBasedEnabled;
-
-	@Autowired
 	private Validator validator;
 
 	@Autowired
@@ -87,6 +84,12 @@ public class UserController {
 
 	@Autowired
 	private PasswordGeneratorService passwordGeneratorService;
+
+	@Autowired
+	private OctriAuthenticationProperties authenticationProperties;
+
+	@Autowired(required = false)
+	private LdapContextProperties ldapContextProperties;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -262,7 +265,7 @@ public class UserController {
 	 */
 	@ModelAttribute("ldapEnabled")
 	public Boolean getLdapEnabled() {
-		return ldapEnabled;
+		return authenticationProperties.getEnableLdap();
 	}
 
 	/**
@@ -270,7 +273,24 @@ public class UserController {
 	 */
 	@ModelAttribute("tableBasedEnabled")
 	public Boolean getTableBasedEnabled() {
-		return tableBasedEnabled;
+		return authenticationProperties.getEnableTableBased();
+	}
+
+	/**
+	 * @return the email domain of LDAP accounts, if LDAP authentication is enabled.
+	 */
+	@ModelAttribute("ldapEmailDomain")
+	public String getLdapEmailDomain() {
+		return ldapContextProperties != null ? ldapContextProperties.getEmailDomain() : null;
+	}
+
+	/**
+	 * @return the style of usernames supported (plain, email address, or mixed)
+	 */
+	@ModelAttribute("usernameStyle")
+	public String getUsernameStyle() {
+		UsernameStyle usernameStyle = authenticationProperties.getUsernameStyle();
+		return usernameStyle != null ? usernameStyle.toString() : null;
 	}
 
 	/**

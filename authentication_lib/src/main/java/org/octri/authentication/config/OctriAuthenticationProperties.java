@@ -9,6 +9,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class OctriAuthenticationProperties {
 
 	/**
+	 * Allowed username styles. Valid options are PLAIN (simple username), EMAIL (must be an email address), or MIXED
+	 * (may be either a plain username or an email adress).
+	 */
+	public static enum UsernameStyle {
+		PLAIN, EMAIL, MIXED
+	}
+
+	/**
 	 * The default value of "octri.authentication.base-url".
 	 */
 	public static final String DEFAULT_BASE_URL = "http://localhost:8080";
@@ -39,6 +47,12 @@ public class OctriAuthenticationProperties {
 	 * to change their password.
 	 */
 	private Integer credentialsExpirationPeriod = 180;
+
+	/**
+	 * Style of usernames allowed. Valid options are PLAIN (simple username), EMAIL (must be an email address), or MIXED
+	 * (may be either a plain username or an email adress). Defaults to PLAIN.
+	 */
+	private UsernameStyle usernameStyle = UsernameStyle.PLAIN;
 
 	public Boolean getEnableLdap() {
 		return enableLdap;
@@ -80,11 +94,19 @@ public class OctriAuthenticationProperties {
 		this.credentialsExpirationPeriod = credentialsExpirationPeriod;
 	}
 
+	public UsernameStyle getUsernameStyle() {
+		return usernameStyle;
+	}
+
+	public void setUsernameStyle(UsernameStyle usernameStyle) {
+		this.usernameStyle = usernameStyle;
+	}
+
 	@Override
 	public String toString() {
-		return "OctriAuthenticationProperties [baseUrl=" + baseUrl + ", credentialsExpirationPeriod="
-				+ credentialsExpirationPeriod + ", enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
-				+ ", maxLoginAttempts=" + maxLoginAttempts + "]";
+		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
+				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
+				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + "]";
 	}
 
 }

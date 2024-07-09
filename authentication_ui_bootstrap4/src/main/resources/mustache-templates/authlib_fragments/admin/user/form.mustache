@@ -2,18 +2,18 @@
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12">
 			<h3>{{pageTitle}}</h3>
-			
-			{{! These errors are parsed by default.js }}
+
+			{{! These errors are parsed by authlib.js }}
 			{{#errors}}
 				<input type="hidden" data-error="true" data-field="{{field}}" data-message="{{defaultMessage}}" />
 			{{/errors}}
-			
+
 			{{>authlib_fragments/forms/user/user_save_error}}
 
 			<div class="text-muted">
 				<p>* denotes a required field</p>
 			</div>
-			
+
 			{{#passwordResetUrl}}
 			<div class="alert alert-info">
 				The following URL may be sent to the user allowing them to reset their password.
@@ -22,16 +22,15 @@
 			</div>
 			{{/passwordResetUrl}}
 			{{#showNewTokenButton}}
-			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/token/refresh?userId={{#user}}{{id}}{{/user}}">
+			<form id="password_token_form" role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/token/refresh?userId={{#user}}{{id}}{{/user}}">
 				{{>authlib_fragments/forms/csrf_input}}
 				<button type="submit" class="btn btn-outline-primary">Generate password reset token</button>
 				<p class="small text-secondary mt-2">Navigating to the generated url allows a user to set their login credentials.</p>
 			</form>
 			{{/showNewTokenButton}}
-			
-			
+
 			{{#allowPasswordGeneration}}
-			<form role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/generate?userId={{#user}}{{id}}{{/user}}">
+			<form id="temporary_password_form" role="form" class="form mb-2" method="post" action="{{req.contextPath}}/admin/password/generate?userId={{#user}}{{id}}{{/user}}">
 				{{>authlib_fragments/forms/csrf_input}}
 				<button type="submit" class="btn btn-outline-primary">Generate temporary password</button>
 				<p class="small text-secondary mt-2">Expire the user's existing credentials and set the password to a new generated value. Users will be prompted for a password change on login.</p>
@@ -44,13 +43,21 @@
 			</div>
 			{{/generatedPassword}}
 			{{/allowPasswordGeneration}}
-			
+
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12">
-			<form role="form" class="form" method="post" action="{{req.contextPath}}/admin/user/form">
+			<form id="user_form"
+				role="form"
+				class="form"
+				method="post"
+				action="{{req.contextPath}}/admin/user/form"
+				novalidate
+				{{#ldapEmailDomain}}data-ldap-email-domain="{{.}}"{{/ldapEmailDomain}}
+				{{#usernameStyle}}data-username-style="{{.}}"{{/usernameStyle}}
+			>
 				<div class="row">
 					<div class="col-lg-3 col-md-3 col-sm-12">
 						<h4>User Details</h4>
@@ -58,21 +65,24 @@
 						{{#newUser}}
 						<div class="form-group">
 							<label for="username">Username*</label>
-							<input id="username" class="form-control lookup-user" autocomplete="off" type="text" name="username" value="{{#user.username}}{{.}}{{/user.username}}" />
+							<input id="username" class="form-control lookup-user" autocomplete="off" type="text" name="username" value="{{#user.username}}{{.}}{{/user.username}}" required maxlength="320" />
+							<div class="valid-feedback">Username is available</div>
+							<div class="invalid-feedback">Value must be present</div>
 						</div>
 							{{#ldapEnabled}}
 								{{#tableBasedEnabled}}
 								<div class="form-group">
 									<input type="checkbox" id="ldap_user" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
-									<label for="ldap_user">OHSU User</label>
+									<label for="ldap_user">LDAP User</label>
 								</div>
 								{{/tableBasedEnabled}}
 								<div class="form-group">
+									<div id="ldap_error" class="text-danger small invisble mb-1"></div>
 									<button id="ldap_lookup" class="btn btn-primary">LDAP Lookup</button>
 								</div>
 							{{/ldapEnabled}}
 						{{/newUser}}
-						
+
 						{{^newUser}}
 						<div class="form-group">
 							<label for="username">Username*</label>
@@ -85,22 +95,31 @@
 
 						<div class="form-group">
 							<label for="first_name">First Name*</label>
-							<input id="first_name" class="form-control" type="text" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" />
+							<input id="first_name" class="form-control" type="text" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" required maxlength="50" />
+							<div class="invalid-feedback">Value must be present and &lt;= 50 characters</div>
 						</div>
 
 						<div class="form-group">
 							<label for="last_name">Last Name*</label>
-							<input id="last_name" class="form-control" type="text" name="lastName" value="{{#user.lastName}}{{.}}{{/user.lastName}}" />
+							<input id="last_name" class="form-control" type="text" name="lastName" value="{{#user.lastName}}{{.}}{{/user.lastName}}" required maxlength="50" />
+							<div class="invalid-feedback">Value must be present and &lt;= 50 characters</div>
 						</div>
 
 						<div class="form-group">
 							<label for="institution">Institution*</label>
-							<input id="institution" class="form-control" type="text" id="institution" name="institution" value="{{#user.institution}}{{.}}{{/user.institution}}" />
+							<input id="institution" class="form-control" type="text" id="institution" name="institution" value="{{#user.institution}}{{.}}{{/user.institution}}" required maxlength="100" />
+							<div class="invalid-feedback">Value must be present and &lt;= 100 characters</div>
 						</div>
 
 						<div class="form-group">
 							<label for="email">Email{{#emailRequired}}*{{/emailRequired}}</label>
-							<input id="email" class="form-control" type="email" id="email" name="email" value="{{#user.email}}{{.}}{{/user.email}}" />
+							<input id="email" class="form-control" type="email" id="email" name="email" value="{{#user.email}}{{.}}{{/user.email}}" {{#emailRequired}}required{{/emailRequired}} maxlength="320" />
+							{{#emailRequired}}
+							<div class="invalid-feedback">Value must be present and &lt;= 320 characters</div>
+							{{/emailRequired}}
+							{{^emailRequired}}
+							<div class="invalid-feedback">Value must be &lt;= 320 characters</div>
+							{{/emailRequired}}
 						</div>
 
 						<h4>User Roles</h4>
@@ -120,7 +139,7 @@
 
 						<div class="form-group">
 							<label for="enabled">Enabled*</label>
-							<select class="form-control" id="enabled" name="enabled">
+							<select class="form-control" id="enabled" name="enabled" required>
 								<option value="true" {{#user.enabled}}selected="selected"{{/user.enabled}}>Yes</option>
 								<option value="false" {{^user.enabled}}selected="selected"{{/user.enabled}}>No</option>
 							</select>
@@ -128,7 +147,7 @@
 
 						<div class="form-group">
 							<label for="account_locked">Account Locked*</label>
-							<select class="form-control" id="account_locked" name="accountLocked">
+							<select class="form-control" id="account_locked" name="accountLocked" required>
 								<option value="true" {{#user.accountLocked}}selected="selected"{{/user.accountLocked}}>Yes</option>
 								<option value="false" {{^user.accountLocked}}selected="selected"{{/user.accountLocked}}>No</option>
 							</select>
@@ -136,7 +155,7 @@
 
 						<div class="form-group">
 							<label for="account_expired">Account Expired*</label>
-							<select class="form-control" id="account_expired" name="accountExpired">
+							<select class="form-control" id="account_expired" name="accountExpired" required>
 								<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
 								<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
 							</select>
@@ -144,7 +163,7 @@
 
 						<div class="form-group">
 							<label for="credentials_expired">Credentials Expired*</label>
-							<select class="form-control" id="credentials_expired" name="credentialsExpired">
+							<select class="form-control" id="credentials_expired" name="credentialsExpired" required>
 								<option value="true" {{#user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>Yes</option>
 								<option value="false" {{^user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>No</option>
 							</select>

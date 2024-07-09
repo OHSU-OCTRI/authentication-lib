@@ -1,5 +1,11 @@
 # Upgrading
 
+## Upgrading to 1.1.0
+
+Release 1.1.0 includes support for using email addresses as usernames. To upgrade to this version, add [the migration to increase the size of the username column](./setup/migrations/V20240709104000__alter_user_enlarge_columns.sql) to your application. Then, to allow using email addresses as usernames, set `octri.authentication.username-style` to `email` or `mixed`.
+
+Support for using email address for the username of LDAP is not supported in this release, but this may change in the future.
+
 ## Upgrading to 1.0.0
 
 Release 1.0.0 upgrades dependencies to Spring Boot 3, and Spring Security 6. This also updates minimum Java version to Java 17. To use this version, you must upgrade your application to at least Spring Boot 3.2 and Java 17 as well.
