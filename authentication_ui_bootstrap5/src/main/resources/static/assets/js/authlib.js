@@ -70,14 +70,10 @@
   function setUsernamePattern(usernameInput, usernameStyle) {
     if (usernameStyle === 'MIXED') {
       usernameInput.setAttribute('pattern', mixedPattern);
-      usernameInput.dataset.patternErrorMessage = 'Mixed mode error message';
     } else if (usernameStyle === 'EMAIL') {
       usernameInput.setAttribute('pattern', emailPattern);
-      usernameInput.dataset.patternErrorMessage = 'Must be an email address';
     } else {
       usernameInput.setAttribute('pattern', usernamePattern);
-      usernameInput.dataset.patternErrorMessage =
-        'May only contain the characters a-z0-9.+_-';
     }
   }
 
