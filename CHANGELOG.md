@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-07-11
+
 ### Added
 
 - Add a custom `RequestRejectedHandler` implementation that returns an error response without throwing an exception. To use this implementation in your application, add a `@Bean` method that returns an instance of `LoggingRequestRejectedHandler`. (CIS-2703)
@@ -278,7 +280,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.1...HEAD
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.1.0...HEAD
+[1.1.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...v1.1.0
 [1.0.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...v1.0.1
 [1.0.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...v1.0.0
 [0.11.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.10.0...v0.11.0
