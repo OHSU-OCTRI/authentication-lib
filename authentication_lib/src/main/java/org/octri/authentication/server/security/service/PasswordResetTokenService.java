@@ -1,11 +1,13 @@
 package org.octri.authentication.server.security.service;
 
 import java.time.Instant;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.octri.authentication.config.OctriRegistrationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -27,6 +29,9 @@ public class PasswordResetTokenService {
 
 	@Autowired
 	private AuthenticationUrlHelper urlHelper;
+
+	@Autowired
+	private OctriRegistrationProperties registrationProperties;
 
 	@Resource
 	private PasswordResetTokenRepository passwordResetTokenRepository;
@@ -79,23 +84,13 @@ public class PasswordResetTokenService {
 	/**
 	 * Generates a password reset token for a user. Tokens are persisted in the database.
 	 *
-	 * @param email
+	 * @param user					The user for which the token is being generated
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
 	 */
 	public PasswordResetToken generatePasswordResetToken(final User user) {
 		Assert.notNull(user, "User cannot be null");
-		return save(new PasswordResetToken(user));
-	}
-
-	/**
-	 * Generates a password reset token for a user. Tokens are persisted in the database.
-	 *
-	 * @param email
-	 * @return Returns a new {@link PasswordResetToken} for the given email address.
-	 */
-	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
-		Assert.notNull(user, "User cannot be null");
-		return save(new PasswordResetToken(user, expireInMinutes));
+		Duration tokenValidDuration = registrationProperties.getTokenValidDuration();
+		return save(new PasswordResetToken(user, tokenValidDuration.toMinutes()));
 	}
 
 	/**

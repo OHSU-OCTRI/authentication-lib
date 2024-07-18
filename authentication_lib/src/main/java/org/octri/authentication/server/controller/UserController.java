@@ -1,7 +1,5 @@
 package org.octri.authentication.server.controller;
 
-import static org.octri.authentication.server.security.entity.PasswordResetToken.LONG_EXPIRE_IN_MINUTES;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -215,12 +213,14 @@ public class UserController {
 				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
 				if (!ldapUser) {
-					if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-						passwordResetTokenService.save(new PasswordResetToken(savedUser, LONG_EXPIRE_IN_MINUTES));
-					} else {
-						PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
-						userService.sendPasswordResetTokenEmail(token, request, true, false);
-					}
+					//if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
+					//	passwordResetTokenService.save(new PasswordResetToken(savedUser, LONG_EXPIRE_IN_MINUTES));
+					//} else {
+					//	PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
+					//	userService.sendPasswordResetTokenEmail(token, request, true, false);
+					//}
+					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
+					userService.sendPasswordResetTokenEmail(token, request, true, false);
 
 				}
 			}

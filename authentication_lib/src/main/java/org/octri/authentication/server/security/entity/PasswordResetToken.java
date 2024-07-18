@@ -67,22 +67,13 @@ public class PasswordResetToken {
 	/**
 	 * This constructor sets all required fields based on the passed in {@link User}. The default expiration period,
 	 * {@link #EXPIRE_IN_MINUTES}, is used.
-	 *
-	 * @param user
-	 */
-	public PasswordResetToken(User user) {
-		this.token = UUID.randomUUID().toString();
-		this.expiryDate = Date.from(Instant.now().plus(PasswordResetToken.EXPIRE_IN_MINUTES, ChronoUnit.MINUTES));
-		this.user = user;
-	}
-
-	/**
-	 * Optionally used by applications to control the expiration date of the password reset token.
+	 * This constructor sets all required fields based on the passed in {@link User}. Bases the expiration 
+	 * date on {@code expireInMinutes}
 	 *
 	 * @param user
 	 * @param expireInMinutes
 	 */
-	public PasswordResetToken(User user, int expireInMinutes) {
+	public PasswordResetToken(User user, long expireInMinutes) {
 		this.token = UUID.randomUUID().toString();
 		this.expiryDate = Date.from(Instant.now().plus(expireInMinutes, ChronoUnit.MINUTES));
 		this.user = user;
