@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -214,11 +215,12 @@ public class UserController {
 			if (newUser) {
 				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
+				Duration passwordResetTokeExpiration = getPasswordTokenValidity();
 				if (!ldapUser) {
 					if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
 						passwordResetTokenService.save(new PasswordResetToken(savedUser, LONG_EXPIRE_IN_MINUTES));
 					} else {
-						PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
+						PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser, (int) passwordResetTokeExpiration.toMinutes());
 						userService.sendPasswordResetTokenEmail(token, request, true, false);
 					}
 
@@ -291,6 +293,14 @@ public class UserController {
 	public String getUsernameStyle() {
 		UsernameStyle usernameStyle = authenticationProperties.getUsernameStyle();
 		return usernameStyle != null ? usernameStyle.toString() : null;
+	}
+
+	/**
+	*@return the value for the password token validity
+	*/
+	@ModelAttribute("passwordTokenValidity")
+	public Duration getPasswordTokenValidity() {
+		return authenticationProperties.getPasswordTokenValidity(); 
 	}
 
 	/**
