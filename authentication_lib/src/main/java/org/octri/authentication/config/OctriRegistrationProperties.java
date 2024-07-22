@@ -13,7 +13,7 @@ public class OctriRegistrationProperties {
     /**
      * Default value for tokenValidDuration
      */
-    private Duration tokenValidDuration = Duration.parse("30m");
+    private Duration tokenValidDuration = Duration.parse("PT30M");
     
     public Duration getTokenValidDuration() {
         return this.tokenValidDuration;
