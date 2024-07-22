@@ -90,7 +90,7 @@ public class PasswordResetTokenService {
 	public PasswordResetToken generatePasswordResetToken(final User user) {
 		Assert.notNull(user, "User cannot be null");
 		Duration tokenValidDuration = registrationProperties.getTokenValidDuration();
-		return save(new PasswordResetToken(user, tokenValidDuration/*.toMinutes()*/));
+		return save(new PasswordResetToken(user, tokenValidDuration.toMinutes()));
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package org.octri.authentication.server.security.entity;
 
 import java.time.Instant;
-import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
@@ -30,13 +29,13 @@ public class PasswordResetToken {
 	/**
 	 * This property is used to create a {@link PasswordResetToken}. It is also presented in templates.
 	 */
-	public static final Duration EXPIRE_IN_MINUTES = Duration.ofMinutes(30);
+	public static final Integer EXPIRE_IN_MINUTES = 30;
 
 	/**
 	 * A long expiration period. Intended for use when the 'noemail' profile is active. Admins will manually send the
 	 * reset token to users so the expiration period needs to be longer to account for the handoff.
 	 */
-	public static final Duration LONG_EXPIRE_IN_MINUTES = Duration.ofMinutes(20160);
+	public static final Integer LONG_EXPIRE_IN_MINUTES = 20160;
 
 	@Id
 	@Column(name = "id")
@@ -74,9 +73,9 @@ public class PasswordResetToken {
 	 * @param user
 	 * @param expireInMinutes
 	 */
-	public PasswordResetToken(User user, Duration expiryDuration) {
+	public PasswordResetToken(User user, long expireInMinutes) {
 		this.token = UUID.randomUUID().toString();
-		this.expiryDate = Date.from(Instant.now().plus(expiryDuration.toMinutes(), ChronoUnit.MINUTES));
+		this.expiryDate = Date.from(Instant.now().plus(expireInMinutes, ChronoUnit.MINUTES));
 		this.user = user;
 	}
 

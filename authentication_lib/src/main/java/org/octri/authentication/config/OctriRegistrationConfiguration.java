@@ -1,6 +1,5 @@
 package org.octri.authentication.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +12,5 @@ public class OctriRegistrationConfiguration {
 
 	public OctriRegistrationConfiguration(Environment env, OctriAuthenticationProperties authenticationProperties) {
 		this.authenticationProperties = authenticationProperties;
-	}
-
-	@Bean
-	public OctriAuthenticationProperties authenticationProperties() {
-		return authenticationProperties;
 	}
 }
