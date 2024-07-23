@@ -28,8 +28,7 @@ public class OctriAuthenticationProperties {
 	/*
 	The default value in minutes for "octri.authentication.password-token-validity"
 	*/
-	@DurationUnit(ChronoUnit.MINUTES)
-	public static final Duration DEFAULT_TOKEN_VALIDATION = Duration.ofMinutes(30);
+	public static final Duration DEFAULT_PASSWORD_TOKEN_DURATION = Duration.ofMinutes(30);
 
 	/**
 	 * Whether LDAP authentication should be enabled.
@@ -64,7 +63,11 @@ public class OctriAuthenticationProperties {
 	 */
 	private UsernameStyle usernameStyle = UsernameStyle.PLAIN;
 
-	private Duration passwordTokenValidity = DEFAULT_TOKEN_VALIDATION;
+	/**
+	 * Time limit for password token's validity duration
+	 */
+	@DurationUnit(ChronoUnit.MINUTES)
+	private Duration passwordTokenValidFor = DEFAULT_PASSWORD_TOKEN_DURATION;
 
 	public Boolean getEnableLdap() {
 		return enableLdap;
@@ -114,22 +117,19 @@ public class OctriAuthenticationProperties {
 		this.usernameStyle = usernameStyle;
 	}
 
-	public void setPasswordTokenValidity(String validityTime){
-		//Maybe TODO: To change the argument type to int and have a DurationUnit of hours/days (the default uses minutes)?
-		//Alternative possible TODO: To handle strings from the properties, that can be minutes, hours or days, we need
-		//a class that will use a regex to extract the chrono unit and then convert it to the ISO format to use Duration.parse()
-		this.passwordTokenValidity = Duration.parse(validityTime);
+	public void setPasswordTokenValidFor(Duration validityTime){
+		this.passwordTokenValidFor = validityTime;
 	}
 
-	public Duration getPasswordTokenValidity() {
-		return passwordTokenValidity;
+	public Duration getPasswordTokenValidFor() {
+		return passwordTokenValidFor;
 	}
 
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
 				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
-				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidity=" + passwordTokenValidity + "]";
+				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor=" + passwordTokenValidFor + "]";
 	}
 
 }

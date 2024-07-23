@@ -215,15 +215,13 @@ public class UserController {
 			if (newUser) {
 				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
-				Duration passwordResetTokeExpiration = getPasswordTokenValidity();
+				Boolean noemailProfileIsNotActive = !profileUtils.isActive(ProfileUtils.AuthProfile.noemail);
+				Duration passwordResetTokenExpiration = getPasswordTokenValidFor();
+				PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser, passwordResetTokenExpiration);
 				if (!ldapUser) {
-					if (profileUtils.isActive(ProfileUtils.AuthProfile.noemail)) {
-						passwordResetTokenService.save(new PasswordResetToken(savedUser, LONG_EXPIRE_IN_MINUTES));
-					} else {
-						PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser, (int) passwordResetTokeExpiration.toMinutes());
+					if (noemailProfileIsNotActive) {
 						userService.sendPasswordResetTokenEmail(token, request, true, false);
 					}
-
 				}
 			}
 
@@ -298,9 +296,9 @@ public class UserController {
 	/**
 	*@return the value for the password token validity
 	*/
-	@ModelAttribute("passwordTokenValidity")
-	public Duration getPasswordTokenValidity() {
-		return authenticationProperties.getPasswordTokenValidity(); 
+	@ModelAttribute("passwordTokenValidFor")
+	public Duration getPasswordTokenValidFor() {
+		return authenticationProperties.getPasswordTokenValidFor(); 
 	}
 
 	/**

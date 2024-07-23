@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.time.Duration;
 
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
@@ -81,7 +82,7 @@ public class PasswordResetTokenService {
 	 *
 	 * @param email
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
-	 */
+	*/
 	public PasswordResetToken generatePasswordResetToken(final User user) {
 		Assert.notNull(user, "User cannot be null");
 		return save(new PasswordResetToken(user));
@@ -90,12 +91,15 @@ public class PasswordResetTokenService {
 	/**
 	 * Generates a password reset token for a user. Tokens are persisted in the database.
 	 *
-	 * @param email
+	 * @param user
+	 * @param expireInMinutes
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
 	 */
-	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
+	public PasswordResetToken generatePasswordResetToken(final User user, Duration expireInMinutes) {
 		Assert.notNull(user, "User cannot be null");
-		return save(new PasswordResetToken(user, expireInMinutes));
+		PasswordResetToken token = new PasswordResetToken(user);
+		token.setExpiryDate(Date.from(Instant.now().plus(expireInMinutes)));
+		return save(token);
 	}
 
 	/**
