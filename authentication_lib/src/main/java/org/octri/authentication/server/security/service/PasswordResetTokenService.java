@@ -1,12 +1,13 @@
 package org.octri.authentication.server.security.service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.time.Duration;
 
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -25,6 +26,9 @@ import jakarta.annotation.Resource;
  */
 @Service
 public class PasswordResetTokenService {
+
+	@Autowired
+	private OctriAuthenticationProperties authenticationProperties;
 
 	@Autowired
 	private AuthenticationUrlHelper urlHelper;
@@ -78,25 +82,18 @@ public class PasswordResetTokenService {
 	}
 
 	/**
-	 * Generates a password reset token for a user. Tokens are persisted in the database.
-	 *
-	 * @param email
-	 * @return Returns a new {@link PasswordResetToken} for the given email address.
-	*/
-	public PasswordResetToken generatePasswordResetToken(final User user) {
-		Assert.notNull(user, "User cannot be null");
-		return save(new PasswordResetToken(user));
-	}
-
-	/**
-	 * Generates a password reset token for a user. Tokens are persisted in the database.
+	 * Generates a password reset token for a user. The token will be valid for the duration configured in
+	 * {@link OctriAuthenticationProperties}. Tokens are persisted in the database.
 	 *
 	 * @param user
-	 * @return Returns a new {@link PasswordResetToken} for the given email address.
+	 * @return Returns a new {@link PasswordResetToken} for the given user.
 	 */
-	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
+	public PasswordResetToken generatePasswordResetToken(final User user) {
+		Duration tokenDuration = authenticationProperties.getPasswordTokenValidFor();
 		Assert.notNull(user, "User cannot be null");
-		return save(new PasswordResetToken(user, expireInMinutes));
+		PasswordResetToken token = new PasswordResetToken(user);
+		token.setExpiryDate(Date.from(Instant.now().plus(tokenDuration)));
+		return save(token);
 	}
 
 	/**
@@ -104,12 +101,26 @@ public class PasswordResetTokenService {
 	 *
 	 * @param user
 	 * @param expireInMinutes
-	 * @return Returns a new {@link PasswordResetToken} for the given email address.
+	 * @return Returns a new {@link PasswordResetToken} for the given user.
 	 */
-	public PasswordResetToken generatePasswordResetToken(final User user, Duration expireInMinutes) {
+	@Deprecated
+	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
+		Assert.notNull(user, "User cannot be null");
+		return save(new PasswordResetToken(user, expireInMinutes));
+	}
+
+	/**
+	 * Generates a password reset token for a user that will be valid for the specified duration. Tokens are persisted
+	 * in the database.
+	 *
+	 * @param user
+	 * @param tokenDuration
+	 * @return Returns a new {@link PasswordResetToken} for the given user.
+	 */
+	public PasswordResetToken generatePasswordResetToken(final User user, Duration tokenDuration) {
 		Assert.notNull(user, "User cannot be null");
 		PasswordResetToken token = new PasswordResetToken(user);
-		token.setExpiryDate(Date.from(Instant.now().plus(expireInMinutes)));
+		token.setExpiryDate(Date.from(Instant.now().plus(tokenDuration)));
 		return save(token);
 	}
 

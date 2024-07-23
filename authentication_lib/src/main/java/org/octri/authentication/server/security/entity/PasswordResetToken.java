@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
+import org.octri.authentication.config.OctriAuthenticationProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,12 +31,14 @@ public class PasswordResetToken {
 	/**
 	 * This property is used to create a {@link PasswordResetToken}. It is also presented in templates.
 	 */
+	@Deprecated
 	public static final Integer EXPIRE_IN_MINUTES = 30;
 
 	/**
 	 * A long expiration period. Intended for use when the 'noemail' profile is active. Admins will manually send the
 	 * reset token to users so the expiration period needs to be longer to account for the handoff.
 	 */
+	@Deprecated
 	public static final Integer LONG_EXPIRE_IN_MINUTES = 20160;
 
 	@Id
@@ -68,6 +72,9 @@ public class PasswordResetToken {
 	 * This constructor sets all required fields based on the passed in {@link User}. The default expiration period,
 	 * {@link #EXPIRE_IN_MINUTES}, is used.
 	 *
+	 * TODO: Consider deprecating this constructor as well. The default value token duration conflicts with the behavior
+	 * configured through {@link OctriAuthenticationProperties}.
+	 *
 	 * @param user
 	 */
 	public PasswordResetToken(User user) {
@@ -82,6 +89,7 @@ public class PasswordResetToken {
 	 * @param user
 	 * @param expireInMinutes
 	 */
+	@Deprecated
 	public PasswordResetToken(User user, int expireInMinutes) {
 		this.token = UUID.randomUUID().toString();
 		this.expiryDate = Date.from(Instant.now().plus(expireInMinutes, ChronoUnit.MINUTES));

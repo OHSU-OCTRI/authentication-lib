@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a configuration property that controls how long password reset tokens are valid, `octri.authentication.password-token-valid-for`. The property defaults to 30 minutes to preserve the behavior of existing applications. See [`CONFIGURATION_PROPERTIES.md`](docs/CONFIGURATION_PROPERTIES.md) for valid values. (AUTHLIB-119)
+
+### Deprecated
+
+The following methods have been deprecated and will be removed in version 2.0.0.
+
+- The two-argument `PasswordResetToken` constructor that passes the token duration as an integer number of minutes is deprecated. Applications should construct a token and set its expiration date explicitly or use one of the convenience methods in [`PasswordTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
+- The two-argument version of `PasswordResetTokenService.generatePasswordResetToken` that passes the token duration as an integer number of minutes is deprecated. Applications should use one of the other convenience methods of [`PasswordResetTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
+
 ## [1.1.0] - 2024-07-11
 
 ### Added

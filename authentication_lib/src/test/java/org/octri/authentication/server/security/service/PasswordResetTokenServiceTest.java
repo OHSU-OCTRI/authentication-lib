@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
@@ -24,6 +28,9 @@ public class PasswordResetTokenServiceTest {
 
 	@InjectMocks
 	private PasswordResetTokenService passwordResetTokenService;
+
+	@Mock
+	private OctriAuthenticationProperties authenticationProperties;
 
 	@Mock
 	private UserService userService;
@@ -41,15 +48,20 @@ public class PasswordResetTokenServiceTest {
 
 	@Test
 	public void testGeneratePasswordResetToken() {
+		var expectedDuration = Duration.ofMinutes(30);
+		when(authenticationProperties.getPasswordTokenValidFor()).thenReturn(expectedDuration);
 		when(passwordResetTokenRepository.save(any(PasswordResetToken.class)))
 				.then(i -> (PasswordResetToken) i.getArgument(0));
 
-		PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
+		var token = passwordResetTokenService.generatePasswordResetToken(user);
 		assertTrue(token.getToken().matches(UUID_REGEX), "Token matches expected scheme");
 		assertEquals(user, token.getUser(), "Linked with correct User");
 		assertNotNull(token.getExpiryDate(), "There should be an expiration date");
-		assertTrue(token.getExpiryDate().after(new Date()),
-				"The expiration date should be far enough in the future for this test to pass");
+
+		var expectedExpiration = Instant.now().plus(expectedDuration);
+		var tokenExpiration = token.getExpiryDate().toInstant();
+		var difference = ChronoUnit.MINUTES.between(tokenExpiration, expectedExpiration);
+		assertTrue(difference >= 0 && difference <= 1, "The token should be valid for the expected amount of time");
 	}
 
 	@Test

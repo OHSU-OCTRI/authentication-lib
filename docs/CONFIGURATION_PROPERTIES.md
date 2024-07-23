@@ -15,6 +15,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | octri.authentication.enable-ldap | OCTRI_AUTHENTICATION_ENABLELDAP | boolean | None | Whether LDAP authentication is enabled. See LDAP Authentication below for more properties. |
 | octri.authentication.enable-table-based | OCTRI_AUTHENTICATION_ENABLETABLEBASED | boolean | None | Whether table-based authentication is enabled. |
 | octri.authentication.max-login-attempts | OCTRI_AUTHENTICATION_MAXLOGINATTEMPTS | integer | 7 | Number of failed login attempts allowed before an account is locked. |
+| octri.authentication.password-token-valid-for | OCTRI_AUTHENTICATION_PASSWORD_TOKEN_VALID_FOR | duration | 30m | Length of time that password reset tokens will be valid. See the [Spring Boot documentation](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) for valid formats. |
 | octri.authentication.username-style | OCTRI_AUTHENTICATION_USERNAMESTYLE | string | plain | Username style. Valid options are `plain`, `email`, or `mixed`. |
 
 ## Route Configuration
