@@ -92,6 +92,17 @@ public class PasswordResetTokenService {
 	 * Generates a password reset token for a user. Tokens are persisted in the database.
 	 *
 	 * @param user
+	 * @return Returns a new {@link PasswordResetToken} for the given email address.
+	 */
+	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
+		Assert.notNull(user, "User cannot be null");
+		return save(new PasswordResetToken(user, expireInMinutes));
+	}
+
+	/**
+	 * Generates a password reset token for a user. Tokens are persisted in the database.
+	 *
+	 * @param user
 	 * @param expireInMinutes
 	 * @return Returns a new {@link PasswordResetToken} for the given email address.
 	 */

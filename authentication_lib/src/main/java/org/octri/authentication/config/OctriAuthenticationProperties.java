@@ -64,7 +64,7 @@ public class OctriAuthenticationProperties {
 	private UsernameStyle usernameStyle = UsernameStyle.PLAIN;
 
 	/**
-	 * Time limit for password token's validity duration
+	 * Length of time that password tokens will be valid for
 	 */
 	@DurationUnit(ChronoUnit.MINUTES)
 	private Duration passwordTokenValidFor = DEFAULT_PASSWORD_TOKEN_DURATION;
