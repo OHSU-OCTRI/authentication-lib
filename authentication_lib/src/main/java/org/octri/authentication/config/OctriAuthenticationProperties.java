@@ -1,6 +1,10 @@
 package org.octri.authentication.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Configuration properties for the authentication library.
@@ -20,6 +24,11 @@ public class OctriAuthenticationProperties {
 	 * The default value of "octri.authentication.base-url".
 	 */
 	public static final String DEFAULT_BASE_URL = "http://localhost:8080";
+
+	/*
+	The default value in minutes for "octri.authentication.password-token-validity"
+	*/
+	public static final Duration DEFAULT_PASSWORD_TOKEN_DURATION = Duration.ofMinutes(30);
 
 	/**
 	 * Whether LDAP authentication should be enabled.
@@ -53,6 +62,12 @@ public class OctriAuthenticationProperties {
 	 * (may be either a plain username or an email adress). Defaults to PLAIN.
 	 */
 	private UsernameStyle usernameStyle = UsernameStyle.PLAIN;
+
+	/**
+	 * Length of time that password tokens will be valid for
+	 */
+	@DurationUnit(ChronoUnit.MINUTES)
+	private Duration passwordTokenValidFor = DEFAULT_PASSWORD_TOKEN_DURATION;
 
 	public Boolean getEnableLdap() {
 		return enableLdap;
@@ -102,11 +117,19 @@ public class OctriAuthenticationProperties {
 		this.usernameStyle = usernameStyle;
 	}
 
+	public void setPasswordTokenValidFor(Duration validityTime){
+		this.passwordTokenValidFor = validityTime;
+	}
+
+	public Duration getPasswordTokenValidFor() {
+		return passwordTokenValidFor;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
 				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
-				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + "]";
+				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor=" + passwordTokenValidFor + "]";
 	}
 
 }
