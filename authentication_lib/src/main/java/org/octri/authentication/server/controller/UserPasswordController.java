@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -38,10 +39,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @Scope("session")
 public class UserPasswordController {
 
-	public static final String EMAIL_SENT_CONFIRMATION_MESSAGE = "An email was sent to your address containing instructions to change your password. This request will expire in "
-			+ PasswordResetToken.EXPIRE_IN_MINUTES + " minutes. If you do not receive an email within "
-			+ PasswordResetToken.EXPIRE_IN_MINUTES
-			+ " minutes please try again or contact your system administrator.";
+	public static final String EMAIL_SENT_CONFIRMATION_TEMPLATE = "An email was sent to your address containing instructions to change your password. This request will expire %s "
+			+ ". If you do not receive an email in a few minutes please try again or contact your system administrator.";
 
 	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. "
 			+ "Please try again or contact your system administrator if this persists.";
@@ -183,9 +182,12 @@ public class UserPasswordController {
 				return "redirect:/user/password/forgot";
 			}
 
+			PrettyTime formatter = new PrettyTime();
 			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
+			String successMessage = String.format(EMAIL_SENT_CONFIRMATION_TEMPLATE,
+					formatter.format(token.getExpiryDate()));
 			userService.sendPasswordResetTokenEmail(token, request, false, false);
-			redirectAttributes.addFlashAttribute("successMessage", EMAIL_SENT_CONFIRMATION_MESSAGE);
+			redirectAttributes.addFlashAttribute("successMessage", successMessage);
 			return "redirect:/user/password/forgot";
 		} catch (Exception ex) {
 			log.error("Unexpected error while processing forgotten password", ex);
