@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The following methods have been deprecated and will be removed in version 2.0.0.
 
-- The two-argument `PasswordResetToken` constructor that passes the token duration as an integer number of minutes is deprecated. Applications should construct a token and set its expiration date explicitly or use one of the convenience methods in [`PasswordTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
+- The `PasswordResetToken` convenience constructors are deprecated. Applications should construct a token and set its properties explicitly or use one of the methods in [`PasswordResetTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
 - The two-argument version of `PasswordResetTokenService.generatePasswordResetToken` that passes the token duration as an integer number of minutes is deprecated. Applications should use one of the other convenience methods of [`PasswordResetTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
 
 ## [1.1.0] - 2024-07-11

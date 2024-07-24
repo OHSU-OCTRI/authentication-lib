@@ -91,7 +91,8 @@ public class PasswordResetTokenService {
 	public PasswordResetToken generatePasswordResetToken(final User user) {
 		Duration tokenDuration = authenticationProperties.getPasswordTokenValidFor();
 		Assert.notNull(user, "User cannot be null");
-		PasswordResetToken token = new PasswordResetToken(user);
+		PasswordResetToken token = new PasswordResetToken();
+		token.setUser(user);
 		token.setExpiryDate(Date.from(Instant.now().plus(tokenDuration)));
 		return save(token);
 	}
@@ -99,11 +100,12 @@ public class PasswordResetTokenService {
 	/**
 	 * Generates a password reset token for a user. Tokens are persisted in the database.
 	 *
+	 * @deprecated The overload that takes a {@link Duration} should be used instead.
 	 * @param user
 	 * @param expireInMinutes
 	 * @return Returns a new {@link PasswordResetToken} for the given user.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "1.2.0")
 	public PasswordResetToken generatePasswordResetToken(final User user, Integer expireInMinutes) {
 		Assert.notNull(user, "User cannot be null");
 		return save(new PasswordResetToken(user, expireInMinutes));
@@ -119,7 +121,8 @@ public class PasswordResetTokenService {
 	 */
 	public PasswordResetToken generatePasswordResetToken(final User user, Duration tokenDuration) {
 		Assert.notNull(user, "User cannot be null");
-		PasswordResetToken token = new PasswordResetToken(user);
+		PasswordResetToken token = new PasswordResetToken();
+		token.setUser(user);
 		token.setExpiryDate(Date.from(Instant.now().plus(tokenDuration)));
 		return save(token);
 	}

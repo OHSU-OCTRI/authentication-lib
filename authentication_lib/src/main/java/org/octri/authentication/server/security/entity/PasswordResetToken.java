@@ -30,6 +30,8 @@ public class PasswordResetToken {
 
 	/**
 	 * This property is used to create a {@link PasswordResetToken}. It is also presented in templates.
+	 *
+	 * @deprecated Use {@link OctriAuthenticationProperties.passwordTokenValidFor} instead.
 	 */
 	@Deprecated
 	public static final Integer EXPIRE_IN_MINUTES = 30;
@@ -37,6 +39,8 @@ public class PasswordResetToken {
 	/**
 	 * A long expiration period. Intended for use when the 'noemail' profile is active. Admins will manually send the
 	 * reset token to users so the expiration period needs to be longer to account for the handoff.
+	 *
+	 * @deprecated Use {@link OctriAuthenticationProperties.passwordTokenValidFor} instead.
 	 */
 	@Deprecated
 	public static final Integer LONG_EXPIRE_IN_MINUTES = 20160;
@@ -48,7 +52,7 @@ public class PasswordResetToken {
 
 	@NotNull
 	@Column(name = "token", unique = true)
-	private String token;
+	private String token = UUID.randomUUID().toString();
 
 	@NotNull
 	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
@@ -72,11 +76,10 @@ public class PasswordResetToken {
 	 * This constructor sets all required fields based on the passed in {@link User}. The default expiration period,
 	 * {@link #EXPIRE_IN_MINUTES}, is used.
 	 *
-	 * TODO: Consider deprecating this constructor as well. The default value token duration conflicts with the behavior
-	 * configured through {@link OctriAuthenticationProperties}.
-	 *
+	 * @deprecated The no-argument constructor and property setters should be used instead.
 	 * @param user
 	 */
+	@Deprecated(forRemoval = true, since = "1.2.0")
 	public PasswordResetToken(User user) {
 		this.token = UUID.randomUUID().toString();
 		this.expiryDate = Date.from(Instant.now().plus(PasswordResetToken.EXPIRE_IN_MINUTES, ChronoUnit.MINUTES));
@@ -86,10 +89,11 @@ public class PasswordResetToken {
 	/**
 	 * Optionally used by applications to control the expiration date of the password reset token.
 	 *
+	 * @deprecated The no-argument constructor and property setters should be used instead.
 	 * @param user
 	 * @param expireInMinutes
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "1.2.0")
 	public PasswordResetToken(User user, int expireInMinutes) {
 		this.token = UUID.randomUUID().toString();
 		this.expiryDate = Date.from(Instant.now().plus(expireInMinutes, ChronoUnit.MINUTES));
