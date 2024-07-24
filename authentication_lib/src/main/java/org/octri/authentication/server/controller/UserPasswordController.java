@@ -39,7 +39,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Scope("session")
 public class UserPasswordController {
 
-	public static final String EMAIL_SENT_CONFIRMATION_TEMPLATE = "An email was sent to your address containing instructions to change your password. This request will expire %s "
+	public static final String EMAIL_SENT_CONFIRMATION_TEMPLATE = "An email was sent to your address containing instructions to change your password. This request will expire %s"
 			+ ". If you do not receive an email in a few minutes please try again or contact your system administrator.";
 
 	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. "
