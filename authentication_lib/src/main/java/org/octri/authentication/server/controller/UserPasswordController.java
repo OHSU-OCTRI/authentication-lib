@@ -1,5 +1,6 @@
 package org.octri.authentication.server.controller;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -182,8 +183,11 @@ public class UserPasswordController {
 				return "redirect:/user/password/forgot";
 			}
 
+			// User-initiated password resets get a shorter timeout
+			// TODO: Introduce another configuration property if study teams want to customize this
+			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user,
+					Duration.ofMinutes(30));
 			PrettyTime formatter = new PrettyTime();
-			PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
 			String successMessage = String.format(EMAIL_SENT_CONFIRMATION_TEMPLATE,
 					formatter.format(token.getExpiryDate()));
 			userService.sendPasswordResetTokenEmail(token, request, false, false);
