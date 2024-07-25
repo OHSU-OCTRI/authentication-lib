@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2024-07-25
+
 ### Added
 
 - Added a configuration property that controls how long password reset tokens are valid, `octri.authentication.password-token-valid-for`. The property defaults to 30 minutes to preserve the behavior of existing applications. See [`CONFIGURATION_PROPERTIES.md`](docs/CONFIGURATION_PROPERTIES.md) for valid values. (AUTHLIB-119)
@@ -291,7 +293,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.1.0...HEAD
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.2.0...HEAD
+[1.2.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.1.0...v1.2.0
 [1.1.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...v1.1.0
 [1.0.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.0.0...v1.0.1
 [1.0.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v0.11.0...v1.0.0
