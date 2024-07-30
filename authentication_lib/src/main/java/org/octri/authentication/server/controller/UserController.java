@@ -12,6 +12,7 @@ import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.config.LdapContextProperties;
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.config.OctriAuthenticationProperties.UsernameStyle;
+import org.octri.authentication.server.customizer.UserManagementCustomizer;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
@@ -85,6 +86,9 @@ public class UserController {
 
 	@Autowired
 	private OctriAuthenticationProperties authenticationProperties;
+
+	@Autowired
+	private UserManagementCustomizer userManagementCustomizer;
 
 	@Autowired(required = false)
 	private LdapContextProperties ldapContextProperties;
@@ -220,8 +224,9 @@ public class UserController {
 						emailNotificationService.sendPasswordResetTokenEmail(token, request, true);
 					}
 				}
+				return userManagementCustomizer.postCreateAction(savedUser);
 			}
-
+			return userManagementCustomizer.postUpdateAction(savedUser);
 		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
 			log.info("Checked exception thrown", ex);
 			model.addAttribute("error", true);
@@ -238,7 +243,6 @@ public class UserController {
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
 			return "admin/user/form";
 		}
-		return "redirect:/admin/user/list";
 	}
 
 	/**
