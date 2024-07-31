@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,9 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.octri.authentication.config.EmailConfiguration;
 import org.octri.authentication.config.OctriAuthenticationProperties;
-import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
@@ -37,12 +34,8 @@ import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -54,22 +47,10 @@ public class UserServiceTest {
 	private OctriAuthenticationProperties authenticationProperties = new OctriAuthenticationProperties();
 
 	@Spy
-	private AuthenticationUrlHelper urlHelper = new AuthenticationUrlHelper(BASE_URL, CONTEXT_PATH);
-
-	@Spy
 	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Mock
 	private UserRepository userRepository;
-
-	@Mock
-	private HttpServletRequest request;
-
-	@Mock
-	private JavaMailSender mailSender;
-
-	@Mock
-	private EmailConfiguration emailConfig;
 
 	@Mock
 	private PasswordResetTokenService passwordResetTokenService;
@@ -92,8 +73,6 @@ public class UserServiceTest {
 	private static final String VALID_PASSWORD = "Abcdefg.1";
 	private static final String INVALID_PASSWORD_WITH_USERNAME = "Abcdefg.1" + USERNAME;
 
-	private static final String BASE_URL = "http://localhost:8080";
-	private static final String CONTEXT_PATH = "/app";
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@BeforeEach
@@ -257,24 +236,6 @@ public class UserServiceTest {
 
 		spyUserService.resetPassword(password, password, TOKEN);
 		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
-	}
-
-	@Test
-	public void testSendPasswordResetTokenEmail() {
-		when(emailConfig.getFrom()).thenReturn("foo@example.com");
-		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
-		userService.sendPasswordResetTokenEmail(new PasswordResetToken(user), request, false, false);
-		verify(mailSender).send(any(SimpleMailMessage.class));
-	}
-
-	@Test
-	public void testSendPasswordResetEmailConfirmation() {
-		when(emailConfig.getFrom()).thenReturn("foo@example.com");
-		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
-		when(passwordResetToken.getUser()).thenReturn(user);
-		doNothing().when(mailSender).send(any(SimpleMailMessage.class));
-		userService.sendPasswordResetEmailConfirmation("mock token", request, false);
-		verify(mailSender).send(any(SimpleMailMessage.class));
 	}
 
 	@Test

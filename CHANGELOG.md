@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking**: Removed requirement for institution field on User. Consuming apps must add a migration to remove the constraint since the form will no longer validate. (AUTHLIB-57)
+- **Breaking**: The following UserService methods have been moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and the method signature changed: sendPasswordResetTokenEmail, sendPasswordResetEmailConfirmation. For both methods, the dryRun parameter has been removed and replaced with the configuration property octri.authentication.email.dry-run.
+- **Breaking**: The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated. 
 
 ### Deprecated
 
 - The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.
+- The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
 
 ## [1.2.0] - 2024-07-25
 
