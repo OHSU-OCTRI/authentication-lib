@@ -82,7 +82,6 @@ public class UserConstraintValidationTest {
 		testUser.setUsername("foo");
 		testUser.setFirstName("Foo");
 		testUser.setLastName("Bar");
-		testUser.setInstitution("OHSU");
 		testUser.setEmail("foo.bar@example.com");
 		testUser.setPassword(null);
 	}
@@ -95,7 +94,6 @@ public class UserConstraintValidationTest {
 		assertTrue(messages.contains(EMAIL_REQUIRED), EMAIL_REQUIRED);
 		assertTrue(messages.contains(FIRSTNAME_REQUIRED), FIRSTNAME_REQUIRED);
 		assertTrue(messages.contains(LAST_NAME_REQUIRED), LAST_NAME_REQUIRED);
-		assertTrue(messages.contains(INSTITUTION_REQUIRED), INSTITUTION_REQUIRED);
 	}
 
 	@Test

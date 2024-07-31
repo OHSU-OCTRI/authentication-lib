@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking**: Removed requirement for institution field on User. Consuming apps must add a migration to remove the constraint since the form will no longer validate. (AUTHLIB-57)
+
+### Deprecated
+
+- The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.
+
 ## [1.2.0] - 2024-07-25
 
 ### Added

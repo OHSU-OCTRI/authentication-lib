@@ -46,13 +46,15 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * Required fields constructor. Defaults are set for other fields - same as
 	 * default constructor.
-	 *
+	 * 
+	 * @deprecated The no-argument constructor and property setters should be used instead.
 	 * @param username
 	 * @param firstName
 	 * @param lastName
 	 * @param institution
 	 * @param email
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public User(String username, String firstName, String lastName, String institution, String email) {
 		super();
 		this.username = username;
@@ -102,7 +104,6 @@ public class User extends AbstractEntity implements Labelled {
 	@Size(max = 50, min = 1, message = "Last name must be 1-50 characters")
 	protected String lastName;
 
-	@NotNull(message = "Institution is required")
 	@Size(max = 100, min = 1, message = "Institution must be 1-50 characters")
 	private String institution;
 
