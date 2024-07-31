@@ -19,6 +19,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
+import org.octri.authentication.server.security.service.EmailNotificationService;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
@@ -70,6 +71,9 @@ public class UserController {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
+
+	@Autowired
+	private EmailNotificationService emailNotificationService;
 
 	@Autowired
 	private Validator validator;
@@ -216,7 +220,7 @@ public class UserController {
 				if (!ldapUser) {
 					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
 					if (noemailProfileIsNotActive) {
-						userService.sendPasswordResetTokenEmail(token, request, true, false);
+						emailNotificationService.sendPasswordResetTokenEmail(token, request, true);
 					}
 				}
 			}

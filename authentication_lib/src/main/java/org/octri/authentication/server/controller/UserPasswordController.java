@@ -13,6 +13,7 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.password.Messages;
+import org.octri.authentication.server.security.service.EmailNotificationService;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
@@ -59,6 +60,9 @@ public class UserPasswordController {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
+
+	@Autowired
+	private EmailNotificationService emailNotificationService;
 
 	@Autowired
 	private PasswordGeneratorService generator;
@@ -190,7 +194,7 @@ public class UserPasswordController {
 			PrettyTime formatter = new PrettyTime();
 			String successMessage = String.format(EMAIL_SENT_CONFIRMATION_TEMPLATE,
 					formatter.format(token.getExpiryDate()));
-			userService.sendPasswordResetTokenEmail(token, request, false, false);
+			emailNotificationService.sendPasswordResetTokenEmail(token, request, false);
 			redirectAttributes.addFlashAttribute("successMessage", successMessage);
 			return "redirect:/user/password/forgot";
 		} catch (Exception ex) {
@@ -269,7 +273,7 @@ public class UserPasswordController {
 					request.getParameterMap());
 
 			if (result.right.isEmpty()) {
-				userService.sendPasswordResetEmailConfirmation(token, request, false);
+				emailNotificationService.sendPasswordResetEmailConfirmation(token, request);
 				redirectAttributes.addFlashAttribute("passwordReset", true);
 				model.clear();
 				return "redirect:/login";
