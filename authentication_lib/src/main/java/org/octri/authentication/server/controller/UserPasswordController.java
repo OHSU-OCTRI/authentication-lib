@@ -314,7 +314,7 @@ public class UserPasswordController {
 			RedirectAttributes redirectAttributes) {
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");
-		passwordResetTokenService.save(new PasswordResetToken(user, PasswordResetToken.LONG_EXPIRE_IN_MINUTES));
+		passwordResetTokenService.generatePasswordResetToken(user);
 		return "redirect:/admin/user/form?id=" + userId;
 	}
 
