@@ -114,12 +114,7 @@
 						<div class="form-group">
 							<label for="email" class="form-label">Email{{#emailRequired}}*{{/emailRequired}}</label>
 							<input id="email" class="form-control" type="email" id="email" name="email" value="{{#user.email}}{{.}}{{/user.email}}" {{#emailRequired}}required{{/emailRequired}} maxlength="320" />
-							{{#emailRequired}}
-							<div class="invalid-feedback">Value must be present and &lt;= 320 characters</div>
-							{{/emailRequired}}
-							{{^emailRequired}}
-							<div class="invalid-feedback">Value must be &lt;= 320 characters</div>
-							{{/emailRequired}}
+							<div class="invalid-feedback">Email must be valid and &lt;= 320 characters</div>
 						</div>
 
 						<h4>User Roles</h4>

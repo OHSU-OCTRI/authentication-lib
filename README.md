@@ -90,18 +90,11 @@ public class SecurityConfiguration extends FormSecurityConfiguration {
 
 The example project has a few other pieces of configuration, including a sample landing page `home.html` and a controller to handle request mappings. These are not strictly necessary.
 
-Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. If using LDAP, also configure it through properties or environment variables:
+### Configuration
 
-```
-ldap.context-source.url=
-ldap.context-source.user-dn=
-ldap.context-source.password=
-ldap.context-source.search-base=
-ldap.context-source.search-filter=
-ldap.context-source.organization=
-```
+Configure the Spring Datasource in your Boot application. [https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html]. You can use a mix of table-based, LDAP, and SAML authentication, and several properties are exposed for customization of your app. All application configuration can be set through properties or environment variables documented on [this page](docs/CONFIGURATION_PROPERTIES.md).
 
-If using the standard Docker/MySQL setup, start the MySQL container first and create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
+If using the standard Docker/MySQL setup, start the MySQL container first to create the database and user. Then start up your application and Flyway migrations for the authentication library should create some structure for users and roles.
 
 ### JavaScript
 
@@ -110,60 +103,6 @@ If using the standard Docker/MySQL setup, start the MySQL container first and cr
 ```html
 <meta name="ctx" content="{{req.contextPath}}/" />
 ```
-
-### Email Configuration
-
-Configure email using standard Spring Mail properties. Place these in your `application.properties` file.
-
-```
-spring.mail.enabled=false
-spring.mail.from=octrihlp@ohsu.edu
-spring.mail.default-encoding=UTF-8
-spring.mail.host=smtpout.ohsu.edu
-spring.mail.port=25
-spring.mail.protocol=smtp
-spring.mail.test-connection=false
-spring.mail.username=octrihlp@ohsu.edu
-spring.mail.password=secret
-spring.mail.properties.mail.smtp.auth=false
-spring.mail.properties.mail.smtp.starttls.enable=false
-spring.mail.properties.mail.smtp.starttls.required=false
-```
-
-## Default Behavior
-
-The library enables both LDAP and table based authentication by default. One or the other can be toggled off using these application properties, but at least one must be enabled:
-
-```
-octri.authentication.enable-ldap=false
-octri.authentication.enable-table-based=true
-```
-
-Users will be locked out after 7 login attempts. This limit can be configured as well:
-
-```
-octri.authentication.max-login-attempts=3
-```
-
-The default is to set the credentials expiration date 180 days in the future when changing a password. To override this, set the following property:
-
-```
-octri.authentication.credentials-expiration-period=180
-```
-
-User email is required by default, but can be made optional by using the spring profile `noemail`. See no email mode section below for details.
-
-### No email mode
-
-For applications that don't require an email address on user creation, do the following to configure your application.
-
-Set the spring profile `noemail`. You can do this a few ways. The easiest is to define the following property in your application. This activates the profile by default. Other profiles can still be activated by setting `spring.profiles.active`.
-
-```
-spring.profiles.include=noemail
-```
-
-Lastly copy the migration [`V20190621120000__alter_user.sql`](setup/optional_migrations/noemail/V20190621120000__alter_user.sql) into your application's Flyway migration directory. Usually `src/main/resources/db/migration`.
 
 ### Session Timeout and Cookie Settings
 

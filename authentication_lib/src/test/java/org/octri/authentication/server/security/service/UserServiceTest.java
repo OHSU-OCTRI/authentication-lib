@@ -32,7 +32,6 @@ import org.octri.authentication.server.security.exception.InvalidLdapUserDetails
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.repository.UserRepository;
-import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
@@ -63,9 +62,6 @@ public class UserServiceTest {
 
 	@Mock
 	private FilterBasedLdapUserSearch ldapSearch;
-
-	@Mock
-	private ProfileUtils profileUtils;
 
 	private User user;
 	private static final String USERNAME = "foo";
