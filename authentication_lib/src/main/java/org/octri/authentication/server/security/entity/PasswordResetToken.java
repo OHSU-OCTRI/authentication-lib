@@ -37,7 +37,7 @@ public class PasswordResetToken {
 	public static final Integer EXPIRE_IN_MINUTES = 30;
 
 	/**
-	 * A long expiration period. Intended for use when the 'noemail' profile is active. Admins will manually send the
+	 * A long expiration period. Intended for use when email is not required. Admins will manually send the
 	 * reset token to users so the expiration period needs to be longer to account for the handoff.
 	 *
 	 * @deprecated Use {@link OctriAuthenticationProperties.passwordTokenValidFor} instead.

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.octri.authentication.config.EmailConfiguration;
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -20,7 +21,6 @@ import org.octri.authentication.server.security.exception.DuplicateEmailExceptio
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -32,6 +32,9 @@ public class EmailNotificationServiceTest {
 
     @Mock
     private PasswordResetTokenService passwordResetTokenService;
+
+    @Mock
+    private OctriAuthenticationProperties authenticationProperties;
 
     @Spy
     private AuthenticationUrlHelper urlHelper = new AuthenticationUrlHelper(BASE_URL, CONTEXT_PATH);
@@ -55,7 +58,7 @@ public class EmailNotificationServiceTest {
         user = user();
         passwordResetToken = new PasswordResetToken();
         passwordResetToken.setUser(user);
-        ReflectionTestUtils.setField(emailNotificationService, "dryRun", false);
+        when(authenticationProperties.getEmailDryRun()).thenReturn(false);
     }
 
     private User user() {

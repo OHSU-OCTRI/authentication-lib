@@ -11,7 +11,9 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | Property | Environment Variable | Type | Default value | Description |
 | - | - | - | - | - |
 | octri.authentication.base-url | OCTRI_AUTHENTICATION_BASEURL | string | http://localhost:8080 | Base URL of the application, without the context path. Used to construct URLs, particularly in email messages. An error is logged if this is set to the default value to encourage proper configuration. |
-| octri.authentication.credentialsExpirationPeriod | OCTRI_AUTHENTICATION_CREDENTIALSEXPIRATIONPERIOD | integer | 180 | Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be required to change their password. |
+| octri.authentication.credentials-expiration-period | OCTRI_AUTHENTICATION_CREDENTIALSEXPIRATIONPERIOD | integer | 180 | Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be required to change their password. |
+| octri.authentication.email-dry-run | OCTRI_AUTHENTICATION_EMAILDRYRUN | boolean | FALSE | Whether user account emails should be logged to the console instead of being sent. |
+| octri.authentication.email-required | OCTRI_AUTHENTICATION_EMAILREQUIRED | boolean | TRUE | Whether the email field on the user form should be treated as required. Applications wishing to make email optional should run the additional migration scripts in `setup/optional_migrations/noemail/`. |
 | octri.authentication.enable-ldap | OCTRI_AUTHENTICATION_ENABLELDAP | boolean | None | Whether LDAP authentication is enabled. See LDAP Authentication below for more properties. |
 | octri.authentication.enable-table-based | OCTRI_AUTHENTICATION_ENABLETABLEBASED | boolean | None | Whether table-based authentication is enabled. |
 | octri.authentication.max-login-attempts | OCTRI_AUTHENTICATION_MAXLOGINATTEMPTS | integer | 7 | Number of failed login attempts allowed before an account is locked. |

@@ -25,7 +25,6 @@ import org.octri.authentication.server.security.service.PasswordResetTokenServic
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.view.OptionList;
-import org.octri.authentication.utils.ProfileUtils;
 import org.octri.authentication.utils.ValidationUtils;
 import org.octri.authentication.validation.Emailable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +76,6 @@ public class UserController {
 
 	@Autowired
 	private Validator validator;
-
-	@Autowired
-	private ProfileUtils profileUtils;
 
 	@Autowired
 	private ValidationUtils<User> validationUtils;
@@ -199,7 +195,9 @@ public class UserController {
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		model.addAttribute("formView", true);
 
-		Set<ConstraintViolation<User>> validationResult = profileUtils.isActive(ProfileUtils.AuthProfile.noemail)
+		Boolean emailRequired = authenticationProperties.getEmailRequired();
+
+		Set<ConstraintViolation<User>> validationResult = !emailRequired
 				&& StringUtils.isBlank(user.getEmail())
 						? validator.validate(user, Default.class)
 						: validator.validate(user, Emailable.class);
@@ -216,10 +214,9 @@ public class UserController {
 			if (newUser) {
 				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
 				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
-				Boolean noemailProfileIsNotActive = !profileUtils.isActive(ProfileUtils.AuthProfile.noemail);
 				if (!ldapUser) {
 					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
-					if (noemailProfileIsNotActive) {
+					if (emailRequired) {
 						emailNotificationService.sendPasswordResetTokenEmail(token, request, true);
 					}
 				}

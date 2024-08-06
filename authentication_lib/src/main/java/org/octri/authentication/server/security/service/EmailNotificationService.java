@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.EmailConfiguration;
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
@@ -27,8 +28,8 @@ public class EmailNotificationService {
     @Value("${app.displayName}")
     private String displayName;
 
-    @Value("${octri.authentication.email.dry-run}")
-    private Boolean dryRun;
+    @Autowired
+    OctriAuthenticationProperties authenticationProperties;
 
     @Autowired
     private AuthenticationUrlHelper urlHelper;
@@ -52,8 +53,6 @@ public class EmailNotificationService {
      *            the request so the application url can be constructed
      * @param isNewUser
      *            whether the user is new and should receive a welcome email instead of a password reset
-     * @param dryRun
-     *            Will only print email contents to console if true
      */
     public void sendPasswordResetTokenEmail(final PasswordResetToken token, final HttpServletRequest request,
             final boolean isNewUser) {
@@ -76,7 +75,7 @@ public class EmailNotificationService {
         email.setText(body);
         email.setTo(user.getEmail());
         email.setFrom(emailConfig.getFrom());
-        if (isEmailDryRun(dryRun, user.getEmail())) {
+        if (isEmailDryRunOrBlank(authenticationProperties.getEmailDryRun(), user.getEmail())) {
             logDryRunEmail(email);
         } else {
             mailSender.send(email);
@@ -87,10 +86,8 @@ public class EmailNotificationService {
     /**
      * Send email confirmation to user.
      *
-     * @param user
+     * @param token
      * @param request
-     * @param dryRun
-     *            Will only print email contents to console if true
      */
     public void sendPasswordResetEmailConfirmation(final String token, final HttpServletRequest request) {
         Assert.notNull(token, "Must provide a token");
@@ -110,7 +107,7 @@ public class EmailNotificationService {
         email.setTo(userEmail);
         email.setFrom(emailConfig.getFrom());
 
-        if (isEmailDryRun(dryRun, userEmail)) {
+        if (isEmailDryRunOrBlank(authenticationProperties.getEmailDryRun(), userEmail)) {
             logDryRunEmail(email);
         } else {
             mailSender.send(email);
@@ -118,11 +115,11 @@ public class EmailNotificationService {
         }
     }
 
-    private boolean isEmailDryRun(final boolean dryRun, final String toEmail) {
+    private static boolean isEmailDryRunOrBlank(final boolean dryRun, final String toEmail) {
         return dryRun || StringUtils.isBlank(toEmail);
     }
 
-    private void logDryRunEmail(SimpleMailMessage message) {
+    private static void logDryRunEmail(SimpleMailMessage message) {
         final String format = "DRY RUN, would have sent email to %s from %s with subject \"%s\" and contents \"%s\"";
         log.info(String.format(format, String.join(", ", message.getTo()), message.getFrom(), message.getSubject(),
                 message.getText()));

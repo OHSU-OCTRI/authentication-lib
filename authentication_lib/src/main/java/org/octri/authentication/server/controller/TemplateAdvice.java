@@ -2,9 +2,9 @@ package org.octri.authentication.server.controller;
 
 import java.util.Calendar;
 
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.config.SamlProperties;
 import org.octri.authentication.server.security.SecurityHelper;
-import org.octri.authentication.utils.ProfileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,13 +31,10 @@ public class TemplateAdvice {
 	@Value("${app.displayName}")
 	private String displayName;
 
-	@Autowired
-	private Boolean tableBasedEnabled;
-
 	private SecurityHelper securityHelper;
 
 	@Autowired
-	private ProfileUtils profileUtils;
+	private OctriAuthenticationProperties authenticationProperties;
 
 	@Autowired(required = false)
 	private SamlProperties samlProperties;
@@ -52,13 +49,13 @@ public class TemplateAdvice {
 		model.addAttribute("displayName", displayName);
 		model.addAttribute("currentYear", Calendar.getInstance().get(Calendar.YEAR));
 
-		model.addAttribute("tableBasedEnabled", tableBasedEnabled);
+		model.addAttribute("tableBasedEnabled", authenticationProperties.getEnableTableBased());
 		model.addAttribute("samlEnabled", samlEnabled);
 		model.addAttribute("samlRegistrationId", samlEnabled ? samlProperties.getRegistrationId() : "");
 		model.addAttribute("isLoggedIn", securityHelper.isLoggedIn());
 		model.addAttribute("username", securityHelper.username());
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
-		model.addAttribute("emailRequired", !profileUtils.isActive(ProfileUtils.AuthProfile.noemail));
+		model.addAttribute("emailRequired", authenticationProperties.getEmailRequired());
 
 	}
 }

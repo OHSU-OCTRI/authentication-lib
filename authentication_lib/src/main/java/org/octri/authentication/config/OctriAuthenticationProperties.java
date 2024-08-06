@@ -1,10 +1,10 @@
 package org.octri.authentication.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationUnit;
-
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for the authentication library.
@@ -26,8 +26,8 @@ public class OctriAuthenticationProperties {
 	public static final String DEFAULT_BASE_URL = "http://localhost:8080";
 
 	/*
-	The default value in minutes for "octri.authentication.password-token-validity"
-	*/
+	 * The default value in minutes for "octri.authentication.password-token-validity"
+	 */
 	public static final Duration DEFAULT_PASSWORD_TOKEN_DURATION = Duration.ofMinutes(30);
 
 	/**
@@ -68,6 +68,16 @@ public class OctriAuthenticationProperties {
 	 */
 	@DurationUnit(ChronoUnit.MINUTES)
 	private Duration passwordTokenValidFor = DEFAULT_PASSWORD_TOKEN_DURATION;
+
+	/**
+	 * Whether the email field on the user form is required.
+	 */
+	private Boolean emailRequired = true;
+
+	/**
+	 * Whether email should be sent or logged to the server instead.
+	 */
+	private Boolean emailDryRun = false;
 
 	public Boolean getEnableLdap() {
 		return enableLdap;
@@ -117,7 +127,7 @@ public class OctriAuthenticationProperties {
 		this.usernameStyle = usernameStyle;
 	}
 
-	public void setPasswordTokenValidFor(Duration validityTime){
+	public void setPasswordTokenValidFor(Duration validityTime) {
 		this.passwordTokenValidFor = validityTime;
 	}
 
@@ -125,11 +135,28 @@ public class OctriAuthenticationProperties {
 		return passwordTokenValidFor;
 	}
 
+	public Boolean getEmailDryRun() {
+		return emailDryRun;
+	}
+
+	public void setEmailDryRun(Boolean emailDryRun) {
+		this.emailDryRun = emailDryRun;
+	}
+
+	public Boolean getEmailRequired() {
+		return emailRequired;
+	}
+
+	public void setEmailRequired(Boolean emailRequired) {
+		this.emailRequired = emailRequired;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
 				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
-				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor=" + passwordTokenValidFor + "]";
+				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor="
+				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun + "]";
 	}
 
 }
