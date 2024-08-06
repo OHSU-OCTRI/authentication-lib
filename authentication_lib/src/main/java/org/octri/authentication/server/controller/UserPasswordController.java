@@ -8,7 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.octri.authentication.MethodSecurityExpressions;
-import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
@@ -58,9 +57,6 @@ public class UserPasswordController {
 
 	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private OctriAuthenticationProperties authenticationProperties;
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
