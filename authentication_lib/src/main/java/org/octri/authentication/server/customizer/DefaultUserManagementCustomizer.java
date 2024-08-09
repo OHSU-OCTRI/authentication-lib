@@ -1,7 +1,13 @@
 package org.octri.authentication.server.customizer;
 
+import java.util.Optional;
+
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class DefaultUserManagementCustomizer implements UserManagementCustomizer {
 
@@ -18,13 +24,21 @@ public class DefaultUserManagementCustomizer implements UserManagementCustomizer
     }
 
     @Override
-    public String postCreateAction(User user) {
-        return "redirect:/admin/user/list";
+    public Optional<ModelAndView> beforeSaveAction(User user, ModelMap model,
+            HttpServletRequest request) {
+        return Optional.empty();
     }
 
     @Override
-    public String postUpdateAction(User user) {
-        return "redirect:/admin/user/list";
+    public ModelAndView postCreateAction(User user, ModelMap model,
+            HttpServletRequest request) {
+        return new ModelAndView("redirect:/admin/user/list");
+    }
+
+    @Override
+    public ModelAndView postUpdateAction(User user, ModelMap model,
+            HttpServletRequest request) {
+        return new ModelAndView("redirect:/admin/user/list");
     }
 
 }

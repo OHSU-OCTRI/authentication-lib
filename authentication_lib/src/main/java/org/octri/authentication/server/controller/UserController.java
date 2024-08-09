@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -182,7 +183,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/form")
-	public String userForm(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+	public ModelAndView userForm(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
 			HttpServletRequest request) {
 		Assert.notNull(user, "User must not be null");
 
@@ -209,10 +210,14 @@ public class UserController {
 		if (validationResult.size() > 0) {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
-			return "admin/user/form";
+			return new ModelAndView("admin/user/form", model);
 		}
 
 		try {
+			var optionalView = userManagementCustomizer.beforeSaveAction(user, model, request);
+			if (optionalView.isPresent()) {
+				return optionalView.get();
+			}
 			User savedUser = userService.save(user);
 
 			if (newUser) {
@@ -224,24 +229,24 @@ public class UserController {
 						emailNotificationService.sendPasswordResetTokenEmail(token, request, true);
 					}
 				}
-				return userManagementCustomizer.postCreateAction(savedUser);
+				return userManagementCustomizer.postCreateAction(savedUser, model, request);
 			}
-			return userManagementCustomizer.postUpdateAction(savedUser);
+			return userManagementCustomizer.postUpdateAction(savedUser, model, request);
 		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
 			log.info("Checked exception thrown", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", ex.getMessage());
-			return "admin/user/form";
+			return new ModelAndView("admin/user/form", model);
 		} catch (UsernameNotFoundException ex) {
 			log.info("User not found", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
-			return "admin/user/form";
+			return new ModelAndView("admin/user/form", model);
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return "admin/user/form";
+			return new ModelAndView("admin/user/form", model);
 		}
 	}
 
