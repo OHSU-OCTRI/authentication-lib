@@ -20,7 +20,6 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
-import org.octri.authentication.server.security.service.EmailNotificationService;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
@@ -72,9 +71,6 @@ public class UserController {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
-
-	@Autowired
-	private EmailNotificationService emailNotificationService;
 
 	@Autowired
 	private Validator validator;
@@ -221,14 +217,6 @@ public class UserController {
 			User savedUser = userService.save(user);
 
 			if (newUser) {
-				// The new user is LDAP if table-based auth is not enabled or if LDAP was indicated in the form
-				Boolean ldapUser = !getTableBasedEnabled() || user.getLdapUser();
-				if (!ldapUser) {
-					PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(savedUser);
-					if (emailRequired) {
-						emailNotificationService.sendPasswordResetTokenEmail(token, request, true);
-					}
-				}
 				return userManagementCustomizer.postCreateAction(savedUser, model, request);
 			}
 			return userManagementCustomizer.postUpdateAction(savedUser, model, request);
