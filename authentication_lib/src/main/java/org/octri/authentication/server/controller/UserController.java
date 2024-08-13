@@ -99,11 +99,11 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/list")
-	public String listUsers(ModelMap model) {
+	public ModelAndView listUsers(ModelMap model) {
 		model.addAttribute("users", users());
 		model.addAttribute("userRoles", userRoles());
 		model.addAttribute("listView", true);
-		return "admin/user/list";
+		return new ModelAndView("admin/user/list", model);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class UserController {
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@GetMapping("admin/user/form")
-	public String userForm(HttpServletRequest request, ModelMap model) {
+	public ModelAndView userForm(HttpServletRequest request, ModelMap model) {
 		String id = request.getParameter("id");
 		if (id == null) {
 			model.addAttribute("user", new User());
@@ -158,10 +158,10 @@ public class UserController {
 				model.addAttribute("error", "Access Denied");
 				model.addAttribute("message", "You may not edit yourself.");
 				model.addAttribute("timestamp", new Date());
-				return "error";
+				return new ModelAndView("error", model);
 			}
 		}
-		return "admin/user/form";
+		return new ModelAndView("admin/user/form", model);
 	}
 
 	/**
