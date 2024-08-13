@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the [`UserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/UserManagementCustomizer.java) interface, which provides hooks to modify behavior when user accounts are created or updated. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](./docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
+
 ### Changed
 
 - **Breaking**: Removed requirement for institution field on User. Consuming apps must add a migration to remove the constraint since the form will no longer validate. (AUTHLIB-57)
 - **Breaking**: The following UserService methods have been moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and the method signature changed: sendPasswordResetTokenEmail, sendPasswordResetEmailConfirmation. For both methods, the dryRun parameter has been removed and replaced with the configuration property octri.authentication.email-dry-run.
 - **Breaking**: The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated.
 - **Breaking**: Support for the Spring profile 'noemail' was removed and replaced with the configuration property octri.authentication.email-required. Applications relying on the profile should update their configuration accordingly.
+- Logic for the default user management workflow has been extracted from `UserController.java` and moved to the [`DefaultUserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/DefaultUserManagementCustomizer.java) class. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
 
 ### Deprecated
 
