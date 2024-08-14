@@ -18,11 +18,14 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
+import org.octri.authentication.server.security.exception.UserDirectorySearchException;
+import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.stereotype.Service;
@@ -108,10 +111,9 @@ public class UserService {
 	 * @param user
 	 *            the user model to save
 	 * @return the saved user model
-	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException
+	 * @throws UserManagementException
 	 */
-	public User save(User user) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public User save(User user) throws UserManagementException {
 		Assert.notNull(user, "Must provide a user");
 
 		final boolean newUser = user.getId() == null;
@@ -125,11 +127,16 @@ public class UserService {
 		}
 
 		if (!tableBasedEnabled) {
-			DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
-			final String ldapEmail = ldapUser.getStringAttribute("mail");
-			final boolean emailsMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
-			if (!emailsMatch) {
-				throw new InvalidLdapUserDetailsException(InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
+			try {
+				DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
+				final String ldapEmail = ldapUser.getStringAttribute("mail");
+				final boolean emailsMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
+				if (!emailsMatch) {
+					throw new InvalidLdapUserDetailsException(
+							InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
+				}
+			} catch (UsernameNotFoundException ex) {
+				throw new UserDirectorySearchException(ex);
 			}
 		}
 
@@ -211,12 +218,11 @@ public class UserService {
 	 * @param newPassword
 	 * @param confirmPassword
 	 * @return Updated user
-	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException
+	 * @throws UserManagementException
 	 */
 	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword,
 			final String newPassword, final String confirmPassword)
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			throws UserManagementException {
 		List<String> reasons = validatePassword(user, currentPassword, newPassword, confirmPassword);
 		if (!reasons.isEmpty()) {
 			return ImmutablePair.of(user, reasons);
@@ -299,13 +305,12 @@ public class UserService {
 	 * @param confirmPassword
 	 * @param token
 	 * @throws InvalidPasswordException
-	 * @throws InvalidLdapUserDetailsException
-	 * @throws DuplicateEmailException
+	 * @throws UserManagementException
 	 * @return ImmutablePair with the first entry the saved User and the second a list of validation error messages.
 	 */
 	public ImmutablePair<User, List<String>> resetPassword(final String newPassword,
 			final String confirmPassword, final String token)
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			throws UserManagementException {
 		Assert.notNull(newPassword, "Password is required");
 		Assert.notNull(confirmPassword, "Password confirmation is required");
 		Assert.notNull(token, "Password reset token is required");
@@ -347,13 +352,13 @@ public class UserService {
 
 	public ImmutablePair<User, List<String>> changePassword(User user, String currentPassword, String newPassword,
 			String confirmPassword, Map<String, String[]> map)
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			throws UserManagementException {
 		return this.changePassword(user, currentPassword, newPassword, confirmPassword);
 	}
 
 	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
 			String token, Map<String, String[]> parameterMap)
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			throws UserManagementException {
 		return this.resetPassword(newPassword, confirmPassword, token);
 	}
 

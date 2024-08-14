@@ -10,8 +10,8 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
+import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.service.EmailNotificationService;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
@@ -137,7 +137,7 @@ public class UserPasswordController {
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}
-		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+		} catch (UserManagementException ex) {
 			log.info("Exception while changing password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
@@ -283,7 +283,7 @@ public class UserPasswordController {
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
 			}
-		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+		} catch (UserManagementException ex) {
 			log.info("Exception while resetting password", ex);
 			model.addAttribute("errorMessage", ex.getMessage());
 			return "user/password/form";
@@ -321,7 +321,7 @@ public class UserPasswordController {
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/password/generate")
 	public String generatePassword(final ModelMap model, @RequestParam(name = "userId") Long userId,
-			RedirectAttributes redirectAttributes) throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			RedirectAttributes redirectAttributes) throws UserManagementException {
 
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");

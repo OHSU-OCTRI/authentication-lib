@@ -18,8 +18,7 @@ import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
-import org.octri.authentication.server.security.exception.DuplicateEmailException;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
+import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
@@ -32,7 +31,6 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -220,15 +218,10 @@ public class UserController {
 				return userManagementCustomizer.postCreateAction(savedUser, model, request);
 			}
 			return userManagementCustomizer.postUpdateAction(savedUser, model, request);
-		} catch (InvalidLdapUserDetailsException | DuplicateEmailException ex) {
+		} catch (UserManagementException ex) {
 			log.info("Checked exception thrown", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", ex.getMessage());
-			return new ModelAndView("admin/user/form", model);
-		} catch (UsernameNotFoundException ex) {
-			log.info("User not found", ex);
-			model.addAttribute("error", true);
-			model.addAttribute("errorMessage", "The username provided could not be found in LDAP");
 			return new ModelAndView("admin/user/form", model);
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);

@@ -5,8 +5,7 @@ import java.util.Date;
 import org.octri.authentication.RequestUtils;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.DuplicateEmailException;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
+import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.service.LoginAttemptService;
 import org.octri.authentication.server.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 	}
 
 	protected void resetUserFailedAttempts(Authentication auth)
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+			throws UserManagementException {
 		User user = userService.findByUsername(auth.getName());
 		if (user == null || !(user.getConsecutiveLoginFailures() > 0)) {
 			return;

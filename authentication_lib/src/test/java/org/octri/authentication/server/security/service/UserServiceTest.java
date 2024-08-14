@@ -27,9 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.DuplicateEmailException;
 import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
+import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.ldap.core.DirContextOperations;
@@ -72,7 +72,7 @@ public class UserServiceTest {
 	private static final String TOKEN = "9465565b-7150-4f95-9855-7997a2f6124a";
 
 	@BeforeEach
-	public void beforeEach() throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void beforeEach() throws UserManagementException {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
@@ -80,7 +80,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSuccessfulPasswordChange() throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testSuccessfulPasswordChange() throws UserManagementException {
 		when(userService.save(user)).thenReturn(user);
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD,
 				VALID_PASSWORD);
@@ -90,8 +90,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testPasswordChangeResetsCredentialMetadata()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testPasswordChangeResetsCredentialMetadata() throws UserManagementException {
 		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
@@ -108,8 +107,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewAndConfirmPasswordsMustMatchOnChange()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testNewAndConfirmPasswordsMustMatchOnChange() throws UserManagementException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, VALID_PASSWORD,
 				"invalid_confirm_password");
 		assertFalse(result.right.isEmpty(), "Should return errors");
@@ -119,8 +117,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testCurrentPasswordMustMatchExistingOnChange()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testCurrentPasswordMustMatchExistingOnChange() throws UserManagementException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, "not_current_password",
 				VALID_PASSWORD, VALID_PASSWORD);
 		assertFalse(result.right.isEmpty(), "Should return errors");
@@ -130,8 +127,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewPasswordMustNotContainUsernameOnChange()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testNewPasswordMustNotContainUsernameOnChange() throws UserManagementException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD,
 				INVALID_PASSWORD_WITH_USERNAME, INVALID_PASSWORD_WITH_USERNAME);
 		assertFalse(result.right.isEmpty(), "Should return errors");
@@ -141,8 +137,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testNewPasswordMustNotBeCurrentPasswordOnChange()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testNewPasswordMustNotBeCurrentPasswordOnChange() throws UserManagementException {
 		ImmutablePair<User, List<String>> result = userService.changePassword(user, CURRENT_PASSWORD, CURRENT_PASSWORD,
 				CURRENT_PASSWORD);
 		assertFalse(result.right.isEmpty(), "Should return errors");
@@ -152,7 +147,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPassword() throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testResetPassword() throws UserManagementException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -171,8 +166,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testPasswordResetResetsCredentialMetadata()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testPasswordResetResetsCredentialMetadata() throws UserManagementException {
 		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
@@ -191,8 +185,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidConfirmPassword()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testResetPasswordWithInvalidConfirmPassword() throws UserManagementException {
 		final String password = "Abcdefg.1";
 		final String confirmPassword = "Abcdefg.2";
 		UserService spyUserService = spy(userService);
@@ -207,8 +200,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testResetPasswordWithInvalidToken()
-			throws InvalidPasswordException, InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testResetPasswordWithInvalidToken() throws InvalidPasswordException, UserManagementException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -222,8 +214,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testTokenIsExpiredOnFirstUse()
-			throws InvalidPasswordException, InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException, UserManagementException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
@@ -235,8 +226,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSuccessfulSaveWithLdapOnlyEnabled()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testSuccessfulSaveWithLdapOnlyEnabled() throws UserManagementException {
 		userService.setTableBasedEnabled(false);
 		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
 		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
@@ -249,8 +239,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testExceptionOnSaveWithLdapOnlyEnabled()
-			throws InvalidLdapUserDetailsException, DuplicateEmailException {
+	public void testExceptionOnSaveWithLdapOnlyEnabled() throws UserManagementException {
 		userService.setTableBasedEnabled(false);
 		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
 		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
