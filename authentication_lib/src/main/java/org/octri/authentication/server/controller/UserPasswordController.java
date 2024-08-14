@@ -315,7 +315,7 @@ public class UserPasswordController {
 		final User user = userService.find(userId);
 		Assert.notNull(user, "Could not find a user");
 		passwordResetTokenService.generatePasswordResetToken(user);
-		return "redirect:/admin/user/form?id=" + userId;
+		return "redirect:/admin/user/" + userId;
 	}
 
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
@@ -335,6 +335,6 @@ public class UserPasswordController {
 
 		redirectAttributes.addFlashAttribute("generatedPassword", newPassword);
 
-		return "redirect:/admin/user/form?id=" + userId;
+		return "redirect:/admin/user/" + userId;
 	}
 }

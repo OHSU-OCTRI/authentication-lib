@@ -53,7 +53,12 @@
 				role="form"
 				class="form needs-validation"
 				method="post"
-				action="{{req.contextPath}}/admin/user/form"
+				{{#newUser}}
+				action="{{req.contextPath}}/admin/user/create"
+				{{/newUser}}
+				{{^newUser}}
+				action="{{req.contextPath}}/admin/user/update"
+				{{/newUser}}
 				novalidate
 				{{#ldapEmailDomain}}data-ldap-email-domain="{{.}}"{{/ldapEmailDomain}}
 				{{#usernameStyle}}data-username-style="{{.}}"{{/usernameStyle}}

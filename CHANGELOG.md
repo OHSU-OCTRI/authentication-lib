@@ -19,9 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: Support for the Spring profile 'noemail' was removed and replaced with the configuration property octri.authentication.email-required. Applications relying on the profile should update their configuration accordingly.
 - **Breaking**: The interface of `UserController` has changed to return `ModelAndView` objects instead of strings. This will break applications that extend this class. Applications that rely on extending `UserController` should update the affected methods to return a `ModelAndView` or implement a [`UserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/UserManagementCustomizer.java) instead. (AUTHLIB-136)
 - Logic for the default user management workflow has been extracted from `UserController.java` and moved to the [`DefaultUserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/DefaultUserManagementCustomizer.java) class. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
+- **Breaking**: The user controller has been refactored to separate the logic for creating new users from the logic used to update existing users, with different URLs. Applications should update their templates to reflect the new URLs. The new user form has been relocated to `{{req.contextPath}}/admin/user/new`, and the edit form has been relocated to `{{req.contextPath}}/admin/user/{{id}}`. (AUTHLIB-146)
 
 ### Deprecated
-
 - The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.
 - The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
 

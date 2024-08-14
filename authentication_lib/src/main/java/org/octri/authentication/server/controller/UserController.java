@@ -39,6 +39,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -57,6 +58,7 @@ import jakarta.validation.groups.Default;
 public class UserController {
 
 	private static final Log log = LogFactory.getLog(UserController.class);
+	private static final String FORM_TEMPLATE = "admin/user/form";
 
 	@Autowired
 	private AuthenticationUrlHelper urlHelper;
@@ -105,7 +107,7 @@ public class UserController {
 	}
 
 	/**
-	 * User create/edit form.
+	 * Renders the new user form.
 	 *
 	 * @param request
 	 *            The {@link HttpServletRequest}
@@ -114,56 +116,14 @@ public class UserController {
 	 * @return User form template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@GetMapping("admin/user/form")
-	public ModelAndView userForm(HttpServletRequest request, ModelMap model) {
-		String id = request.getParameter("id");
-		if (id == null) {
-			model.addAttribute("user", new User());
-			model.addAttribute("userRoles", userRoles());
-			model.addAttribute("pageTitle", "New User");
-			model.addAttribute("newUser", true);
-			model.addAttribute("formView", true);
-		} else {
-			SecurityHelper securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
-			if (securityHelper.canEditUser(Long.valueOf(id))) {
-				User user = userService.find(Long.valueOf(id));
-				Assert.notNull(user, "Could not find a user for id " + id);
-				model.addAttribute("user", user);
-				model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
-				model.addAttribute("pageTitle", "Edit User");
-				model.addAttribute("newUser", false);
-				model.addAttribute("formView", true);
-
-				// If the user can reset the password, show admin additional options
-				if (userService.canResetPassword(user)) {
-					// Show either a valid reset URL or allow the admin to generate one
-					Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
-					if (latestToken.isPresent()
-							&& !latestToken.get().isExpired()) {
-						final String url = urlHelper.getPasswordResetUrl(latestToken.get().getToken());
-						model.addAttribute("passwordResetUrl", url);
-					} else {
-						model.addAttribute("showNewTokenButton", true);
-					}
-
-					if (passwordGeneratorService.isEnabled()) {
-						model.addAttribute("allowPasswordGeneration", true);
-					}
-				}
-			} else {
-				log.info(securityHelper.username() + " does not have access to edit user " + id);
-				model.addAttribute("status", 403);
-				model.addAttribute("error", "Access Denied");
-				model.addAttribute("message", "You may not edit yourself.");
-				model.addAttribute("timestamp", new Date());
-				return new ModelAndView("error", model);
-			}
-		}
-		return new ModelAndView("admin/user/form", model);
+	@GetMapping("admin/user/new")
+	public ModelAndView createForm(HttpServletRequest request, ModelMap model) {
+		setUserFormAttributes(model, new User());
+		return new ModelAndView(FORM_TEMPLATE, model);
 	}
 
 	/**
-	 * Persists a new or existing user.
+	 * Persists a new user.
 	 *
 	 * @param user
 	 *            User being created
@@ -176,35 +136,19 @@ public class UserController {
 	 * @return new user template on error, or redirects to user list
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
-	@PostMapping("admin/user/form")
-	public ModelAndView userForm(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+	@PostMapping("admin/user/create")
+	public ModelAndView create(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
 			HttpServletRequest request) {
 		Assert.notNull(user, "User must not be null");
 
-		final boolean newUser = user.getId() == null;
+		setUserFormAttributes(model, user);
+		var errorView = new ModelAndView(FORM_TEMPLATE, model);
 
-		if (newUser) {
-			model.addAttribute("pageTitle", "New User");
-		} else {
-			model.addAttribute("pageTitle", "Edit User");
-		}
-
-		model.addAttribute("newUser", newUser);
-		model.addAttribute("user", user);
-		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
-		model.addAttribute("formView", true);
-
-		Boolean emailRequired = authenticationProperties.getEmailRequired();
-
-		Set<ConstraintViolation<User>> validationResult = !emailRequired
-				&& StringUtils.isBlank(user.getEmail())
-						? validator.validate(user, Default.class)
-						: validator.validate(user, Emailable.class);
-
+		var validationResult = validateUser(user);
 		if (validationResult.size() > 0) {
 			model.addAttribute("error", true);
 			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
-			return new ModelAndView("admin/user/form", model);
+			return errorView;
 		}
 
 		try {
@@ -212,23 +156,118 @@ public class UserController {
 			if (optionalView.isPresent()) {
 				return optionalView.get();
 			}
-			User savedUser = userService.save(user);
 
-			if (newUser) {
-				return userManagementCustomizer.postCreateAction(savedUser, model, request);
+			User savedUser = userService.save(user);
+			return userManagementCustomizer.postCreateAction(savedUser, model, request);
+		} catch (UserManagementException ex) {
+			log.info("Checked exception thrown", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", ex.getMessage());
+		} catch (RuntimeException ex) {
+			log.error("Unexpected runtime exception while adding new user", ex);
+			model.addAttribute("error", true);
+			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
+		}
+
+		return errorView;
+	}
+
+	/**
+	 * Renders the user update form.
+	 *
+	 * @param request
+	 *            The {@link HttpServletRequest}
+	 * @param model
+	 *            Object holding view data
+	 * @return User form template
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
+	@GetMapping("admin/user/{id}")
+	public ModelAndView updateForm(HttpServletRequest request, ModelMap model, @PathVariable Long id) {
+		Assert.notNull(id, "User ID must not be null");
+
+		SecurityHelper securityHelper = new SecurityHelper(SecurityContextHolder.getContext());
+		if (!securityHelper.canEditUser(id)) {
+			log.info(securityHelper.username() + " does not have access to edit user " + id);
+			model.addAttribute("status", 403);
+			model.addAttribute("error", "Access Denied");
+			model.addAttribute("message", "You may not edit yourself.");
+			model.addAttribute("timestamp", new Date());
+			return new ModelAndView("error", model);
+		}
+
+		User user = userService.find(id);
+		Assert.notNull(user, "Could not find a user for id " + id);
+		setUserFormAttributes(model, user);
+
+		// If the user can reset the password, show admin additional options
+		if (userService.canResetPassword(user)) {
+			// Show either a valid reset URL or allow the admin to generate one
+			Optional<PasswordResetToken> latestToken = passwordResetTokenService.findLatest(user.getId());
+			if (latestToken.isPresent()
+					&& !latestToken.get().isExpired()) {
+				final String url = urlHelper.getPasswordResetUrl(latestToken.get().getToken());
+				model.addAttribute("passwordResetUrl", url);
+			} else {
+				model.addAttribute("showNewTokenButton", true);
 			}
+
+			if (passwordGeneratorService.isEnabled()) {
+				model.addAttribute("allowPasswordGeneration", true);
+			}
+		}
+
+		return new ModelAndView(FORM_TEMPLATE, model);
+	}
+
+	/**
+	 * Persists an updated user.
+	 *
+	 * @param user
+	 *            User being created
+	 * @param bindingResult
+	 *            Binding result for 'user' parameter
+	 * @param model
+	 *            Object holding view data
+	 * @param request
+	 *            The {@link HttpServletRequest} for the request
+	 * @return new user template on error, or redirects to user list
+	 */
+	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
+	@PostMapping("admin/user/update")
+	public ModelAndView update(@ModelAttribute User user, BindingResult bindingResult, final ModelMap model,
+			HttpServletRequest request) {
+		Assert.notNull(user, "User must not be null");
+
+		setUserFormAttributes(model, user);
+		var errorView = new ModelAndView(FORM_TEMPLATE, model);
+
+		var validationResult = validateUser(user);
+		if (validationResult.size() > 0) {
+			model.addAttribute("error", true);
+			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
+			return errorView;
+		}
+
+		try {
+			var optionalView = userManagementCustomizer.beforeSaveAction(user, model, request);
+			if (optionalView.isPresent()) {
+				return optionalView.get();
+			}
+
+			User savedUser = userService.save(user);
 			return userManagementCustomizer.postUpdateAction(savedUser, model, request);
 		} catch (UserManagementException ex) {
 			log.info("Checked exception thrown", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", ex.getMessage());
-			return new ModelAndView("admin/user/form", model);
 		} catch (RuntimeException ex) {
 			log.error("Unexpected runtime exception while adding new user", ex);
 			model.addAttribute("error", true);
 			model.addAttribute("errorMessage", "Unexpected exception while adding new user");
-			return new ModelAndView("admin/user/form", model);
 		}
+
+		return errorView;
 	}
 
 	/**
@@ -245,6 +284,40 @@ public class UserController {
 	 */
 	private List<User> users() {
 		return userService.findAll();
+	}
+
+	/**
+	 * Sets ModelMap attributes needed to render the user form.
+	 *
+	 * @param model
+	 * @param user
+	 */
+	private void setUserFormAttributes(ModelMap model, User user) {
+		var newUser = user.getId() == null;
+		var pageTitle = newUser ? "New User" : "Edit User";
+
+		model.addAttribute("user", user);
+		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
+		model.addAttribute("pageTitle", pageTitle);
+		model.addAttribute("newUser", newUser);
+		model.addAttribute("formView", true);
+	}
+
+	/**
+	 * Validates the user entity and returns any violations found.
+	 *
+	 * @param user
+	 * @return any constraint violations found when validating the user. May be empty.
+	 */
+	private Set<ConstraintViolation<User>> validateUser(User user) {
+		Boolean emailRequired = authenticationProperties.getEmailRequired();
+
+		Set<ConstraintViolation<User>> validationResult = !emailRequired
+				&& StringUtils.isBlank(user.getEmail())
+						? validator.validate(user, Default.class)
+						: validator.validate(user, Emailable.class);
+
+		return validationResult;
 	}
 
 	/**
