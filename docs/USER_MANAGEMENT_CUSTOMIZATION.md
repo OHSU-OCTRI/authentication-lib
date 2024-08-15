@@ -53,7 +53,7 @@ Because the [`DefaultUserManagementCustomizer`][default_customizer] implements t
 
 ### Customizer Methods
 
-The [`UserManagementCustomizer`][customizer_interface] interface provides hooks for custom logic after user accounts are created, after user accounts are updated, and before user accounts are saved (create or update). When called, each hook is provided the user entity being acted upon and the form submission request, allowing implementors to dispatch to custom logic based on properties of the user. The hook then returns a `ModelAndView` object that is used to render the response.
+The [`UserManagementCustomizer`][customizer_interface] interface provides hooks for custom logic after user accounts are created, after user accounts are updated, and before user accounts are saved (create or update). When called, each hook is provided the user entity being acted upon and the form submission request, allowing implementers to dispatch to custom logic based on properties of the user. The hook then returns a `ModelAndView` object that is used to render the response.
 
 All methods have a default implementation, so you only need to implement the methods you want to override.
 
