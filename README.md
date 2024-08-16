@@ -37,16 +37,6 @@ Add the library's packages to the depdencies in your application's `pom.xml` fil
 		<artifactId>authentication_lib</artifactId>
 		<version>${authentication_lib.version}</version>
 	</dependency>
-```
-
-You should also add one of the UI packages (`authentication_ui_bootstrap4` or `authentication_lib_bootstrap5`).
-
-```xml
-	<dependency>
-		<groupId>org.octri.authentication</groupId>
-		<artifactId>authentication_lib</artifactId>
-		<version>${authentication_lib.version}</version>
-	</dependency>
 	<dependency>
 		<groupId>org.octri.authentication</groupId>
 		<artifactId>authentication_ui_bootstrap5</artifactId>
@@ -220,8 +210,6 @@ If you provide the `listView` model property it will include:
 <link rel="stylesheet" type="text/css" href="{{req.contextPath}}/webjars/datatables/css/dataTables.bootstrap5.min.css" />
 ```
 
-Note that the exact CSS file used will depend on your selection of UI package (Bootstrap 4 or Bootstrap 5).
-
 Likewise, JavaScript is included in the `authlib_fragments/assets.mustache` template. By default it includes the following:
 
 ```html
@@ -255,7 +243,7 @@ This functionality has not yet been tested or used in an example project, but sh
 
 The authentication library provides these pages: `admin/user/form.mustache`, `admin/user/list.mustache`, `error.mustache`, `login.mustache`, `user/password/change.mustache`, `user/password/forgot.mustache`, and `user/password/reset.mustache`. You'll likely need to implement these in your own project if you use a custom layout and navbar.
 
-See above in the "Webjars" section for how to include the required CSS and JavaScript. For all pages assume Bootstrap 4, Font Awesome, and jQuery 3 are required.
+See above in the "Webjars" section for how to include the required CSS and JavaScript. For all pages assume Bootstrap, Font Awesome, and jQuery 3 are required.
 
 Create `mustache-templates/login.mustache` and in the body include the fragment: `{{>authlib_fragments/login}}`.
 

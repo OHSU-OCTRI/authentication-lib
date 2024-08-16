@@ -9,14 +9,13 @@ This package contains the core logic of the authentication library, including:
 * Default controllers for user management
 * Default URL security rules
 
-Default user interface templates for login and user management styled using Bootstrap 4 and Bootstrap 5 are provided by separate packages.
+Default user interface templates for login and user management styled using Bootstrap 5 is provided by a separate package.
 
-* [Authentication UI for Bootstrap 4](../authentication_ui_bootstrap4/)
 * [Authentication UI for Bootstrap 5](../authentication_ui_bootstrap5/)
 
 ## Using This Package
 
-To use this package, add it to your `pom.xml` file, along with one of the UI packages. The following example uses the Bootstrap 5 UI.
+To use this package, add it to your `pom.xml` file, along with the UI package.
 
 ```xml
 	<dependency>
@@ -26,7 +25,7 @@ To use this package, add it to your `pom.xml` file, along with one of the UI pac
 	</dependency>
 	<dependency>
 		<groupId>org.octri.authentication</groupId>
-		<artifactId>authentication_ui_bootstrap4</artifactId>
+		<artifactId>authentication_ui_bootstrap5</artifactId>
 		<version>${authentication_lib.version}</version>
 	</dependency>
 ```

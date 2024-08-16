@@ -99,7 +99,7 @@ The properties below are used to configure [SAML authentication](https://docs.sp
 
 ## Template Configuration
 
-The Mustache templates used to render the library's user interface are provided by a separate package (`authentication_ui_bootstrap5` or `authentication_ui_bootstrap4`). To customize the appearance of pages rendered by the library, the templates can be overridden in part or in full. The property below is provided to facilitate this process.
+The Mustache templates used to render the library's user interface are provided by a separate package (`authentication_ui_bootstrap5`). To customize the appearance of pages rendered by the library, the templates can be overridden in part or in full. The property below is provided to facilitate this process.
 
 See [`TemplateConfiguration.TEMPLATE_PATHS`](../authentication_lib/src/main/java/org/octri/authentication/config/TemplateConfiguration.java) for the full list of paths, and see the [`mustache-templates` directory of `authentication_ui_bootstrap5`](../authentication_ui_bootstrap5/src/main/resources/mustache-templates/) for example templates.
 
