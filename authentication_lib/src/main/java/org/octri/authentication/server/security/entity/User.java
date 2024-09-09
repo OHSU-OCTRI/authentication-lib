@@ -46,7 +46,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * Required fields constructor. Defaults are set for other fields - same as
 	 * default constructor.
-	 * 
+	 *
 	 * @deprecated The no-argument constructor and property setters should be used instead.
 	 * @param username
 	 * @param firstName
@@ -72,8 +72,6 @@ public class User extends AbstractEntity implements Labelled {
 		// enabled with credentials expired by default
 		this.enabled = true;
 		this.accountLocked = false;
-		this.accountExpired = false;
-		this.credentialsExpired = true;
 		this.consecutiveLoginFailures = 0;
 	}
 
@@ -89,12 +87,6 @@ public class User extends AbstractEntity implements Labelled {
 
 	@NotNull(message = "Account locked must be Yes or No")
 	private Boolean accountLocked;
-
-	@NotNull(message = "Account expired must be Yes or No")
-	private Boolean accountExpired;
-
-	@NotNull(message = "Credentials expired must be Yes or No")
-	private Boolean credentialsExpired;
 
 	@NotNull(message = "First name is required")
 	@Size(max = 50, min = 1, message = "First name must be 1-50 characters")
@@ -314,19 +306,11 @@ public class User extends AbstractEntity implements Labelled {
 	}
 
 	public Boolean getAccountExpired() {
-		return accountExpired;
-	}
-
-	public void setAccountExpired(Boolean accountExpired) {
-		this.accountExpired = accountExpired;
+		return accountExpirationDate != null && accountExpirationDate.before(Date.from(Instant.now()));
 	}
 
 	public Boolean getCredentialsExpired() {
-		return credentialsExpired;
-	}
-
-	public void setCredentialsExpired(Boolean credentialsExpired) {
-		this.credentialsExpired = credentialsExpired;
+		return credentialsExpirationDate != null && credentialsExpirationDate.before(Date.from(Instant.now()));
 	}
 
 	public void setConsecutiveLoginFailures(Integer consecutiveLoginFailures) {
@@ -382,9 +366,8 @@ public class User extends AbstractEntity implements Labelled {
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", enabled=" + enabled + ", accountLocked=" + accountLocked
-				+ ", accountExpired=" + accountExpired + ", credentialsExpired=" + credentialsExpired + ", firstName="
-				+ firstName + ", lastName=" + lastName + ", institution=" + institution + ", email=" + email
-				+ ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", institution=" + institution + ", email="
+				+ email + ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
 				+ accountExpirationDate + ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles="
 				+ userRoles + ", ldapUser=" + ldapUser + ", id=" + id + "]";
 	}

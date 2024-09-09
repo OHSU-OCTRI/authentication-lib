@@ -97,7 +97,6 @@
 						</div>
 						{{/newUser}}
 
-
 						<div class="form-group">
 							<label for="first_name" class="form-label">First Name*</label>
 							<input id="first_name" class="form-control" type="text" name="firstName" value="{{#user.firstName}}{{.}}{{/user.firstName}}" required maxlength="50" />
@@ -154,29 +153,13 @@
 						</div>
 
 						<div class="form-group">
-							<label for="account_expired" class="form-label">Account Expired*</label>
-							<select class="form-select" id="account_expired" name="accountExpired" required>
-								<option value="true" {{#user.accountExpired}}selected="selected"{{/user.accountExpired}}>Yes</option>
-								<option value="false" {{^user.accountExpired}}selected="selected"{{/user.accountExpired}}>No</option>
-							</select>
-						</div>
-
-						<div class="form-group">
-							<label for="credentials_expired" class="form-label">Credentials Expired*</label>
-							<select class="form-select" id="credentials_expired" name="credentialsExpired" required>
-								<option value="true" {{#user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>Yes</option>
-								<option value="false" {{^user.credentialsExpired}}selected="selected"{{/user.credentialsExpired}}>No</option>
-							</select>
-						</div>
-
-						<div class="form-group">
 							<label for="account_expiration_date" class="form-label">Account Expiration Date</label>
-							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="account_expiration_date" name="accountExpirationDate" value="{{#user.accountExpirationDateView}}{{.}}{{/user.accountExpirationDateView}}" />
+							<input class="form-control" type="text" placeholder="e.g. 01/01/2024" id="account_expiration_date" name="accountExpirationDate" value="{{#user.accountExpirationDateView}}{{.}}{{/user.accountExpirationDateView}}" />
 						</div>
 
 						<div class="form-group">
 							<label for="credentials_expiration_date" class="form-label">Credentials Expiration Date</label>
-							<input class="form-control" type="text" placeholder="e.g. 1/3/18" id="credentials_expiration_date" name="credentialsExpirationDate" value="{{#user.credentialsExpirationDateView}}{{.}}{{/user.credentialsExpirationDateView}}" />
+							<input class="form-control" type="text" placeholder="e.g. 01/01/2024" id="credentials_expiration_date" name="credentialsExpirationDate" value="{{#user.credentialsExpirationDateView}}{{.}}{{/user.credentialsExpirationDateView}}" />
 						</div>
 
 						<div class="form-group">

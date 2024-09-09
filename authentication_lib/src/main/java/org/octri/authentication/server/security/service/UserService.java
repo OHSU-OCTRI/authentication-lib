@@ -340,7 +340,6 @@ public class UserService {
 	 */
 	private void resetCredentialMetadata(User user) {
 		Integer credentialsExpirationPeriod = authenticationProperties.getCredentialsExpirationPeriod();
-		user.setCredentialsExpired(false);
 		Instant now = Instant.now();
 		user.setCredentialsExpirationDate(Date.from(now.plus(credentialsExpirationPeriod, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(0);

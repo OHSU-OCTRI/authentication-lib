@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking**: Removed requirement for institution field on User. Consuming apps must add a migration to remove the constraint since the form will no longer validate. (AUTHLIB-57)
+- **Breaking**: Removed requirement for institution field on User. Consuming apps must add [a migration to remove the constraint](setup/migrations/V20240731121000__alter_user_optional_institution.sql) since the form will no longer validate. (AUTHLIB-57)
 - **Breaking**: The following UserService methods have been moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and the method signature changed: sendPasswordResetTokenEmail, sendPasswordResetEmailConfirmation. For both methods, the dryRun parameter has been removed and replaced with the configuration property octri.authentication.email-dry-run.
 - **Breaking**: The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated.
 - **Breaking**: Support for the Spring profile 'noemail' was removed and replaced with the configuration property octri.authentication.email-required. Applications relying on the profile should update their configuration accordingly.
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logic for the default user management workflow has been extracted from `UserController.java` and moved to the [`DefaultUserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/DefaultUserManagementCustomizer.java) class. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
 - **Breaking**: The user controller has been refactored to separate the logic for creating new users from the logic used to update existing users, with different URLs. Applications should update their templates to reflect the new URLs. The new user form has been relocated to `{{req.contextPath}}/admin/user/new`, and the edit form has been relocated to `{{req.contextPath}}/admin/user/{{id}}`. (AUTHLIB-146)
 - **Breaking**: Support for Bootstrap 4 has been dropped. Applications should upgrade to`authentication_ui_bootstrap5` and update their templates for Bootstrap 5 or [override all of the AuthLib templates](docs/CONFIGURATION_PROPERTIES.md#template-configuration). (AUTHLIB-135)
+- **Breaking**: Dropped redundant boolean flags for account and credential expiration from the user entity. Consuming applications must add [a migration to drop the columns and reconcile expiration dates](setup/migrations/V20240904110000__drop_redundant_user_metadata.sql). (AUTHLIB-143)
 
 ### Deprecated
 - The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.

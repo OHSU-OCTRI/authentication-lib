@@ -91,7 +91,6 @@ public class UserServiceTest {
 
 	@Test
 	public void testPasswordChangeResetsCredentialMetadata() throws UserManagementException {
-		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
 
@@ -167,7 +166,6 @@ public class UserServiceTest {
 
 	@Test
 	public void testPasswordResetResetsCredentialMetadata() throws UserManagementException {
-		user.setCredentialsExpired(true);
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
 

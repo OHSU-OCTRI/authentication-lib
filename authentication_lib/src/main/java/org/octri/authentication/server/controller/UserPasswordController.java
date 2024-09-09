@@ -1,6 +1,7 @@
 package org.octri.authentication.server.controller;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -330,7 +331,8 @@ public class UserPasswordController {
 		String newPassword = generator.generatePassword();
 
 		userService.setEncodedPassword(user, newPassword);
-		user.setCredentialsExpired(true);
+		// set to the epoch date to ensure credentials are expired
+		user.setCredentialsExpirationDate(new Date(0L));
 		userService.save(user);
 
 		redirectAttributes.addFlashAttribute("generatedPassword", newPassword);
