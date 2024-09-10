@@ -12,7 +12,6 @@ import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.view.Labelled;
 import org.octri.authentication.validation.Emailable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.Assert;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -160,69 +159,6 @@ public class User extends AbstractEntity implements Labelled {
 			return 0;
 		}
 		return consecutiveLoginFailures;
-	}
-
-	// Used for Spring security accountNonLocked
-	public Boolean isAccountNonLocked() {
-		return getAccountNonLocked();
-	}
-
-	public Boolean getAccountNonLocked() {
-		return !getAccountLocked();
-	}
-
-	public void setAccountNonLocked(Boolean accountNonLocked) {
-		Assert.notNull(accountNonLocked, "accountNonLocked may not be null");
-		setAccountLocked(!accountNonLocked);
-	}
-
-	// Spring Security accountNonExpired
-	/**
-	 * Checks the user accountExpired boolean as well as the accountExpirationDate
-	 *
-	 * @return
-	 */
-	public Boolean isAccountNonExpired() {
-		boolean accountExpired = getAccountExpired()
-				|| (getAccountExpirationDate() != null && getAccountExpirationDate().compareTo(new Date()) <= 0);
-		return !accountExpired;
-	}
-
-	public Boolean getAccountNonExpired() {
-		return !getAccountExpired();
-	}
-
-	public void setAccountNonExpired(Boolean accountNonExpired) {
-		Assert.notNull(accountNonExpired, "accountNonExpired may not be null");
-		setAccountNonExpired(!accountNonExpired);
-	}
-
-	// Spring Security credentialsNonExpired
-
-	/**
-	 * @return
-	 */
-	public Boolean isCredentialsNonExpired() {
-		return !isCredentialsExpired();
-	}
-
-	/**
-	 * TODO: Not sure if this is needed - LDAP only auth
-	 *
-	 * @return
-	 */
-	public Boolean isCredentialsExpired() {
-		return getCredentialsExpired()
-				|| (getCredentialsExpirationDate() != null
-						&& getCredentialsExpirationDate().compareTo(new Date()) <= 0);
-	}
-
-	public Boolean getCredentialsNonExpired() {
-		return !getCredentialsExpired();
-	}
-
-	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
-		setCredentialsNonExpired(!credentialsNonExpired);
 	}
 
 	/**
