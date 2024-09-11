@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.octri.authentication.server.security.entity.AuthenticationMethod;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.validation.Emailable;
 
@@ -34,7 +35,6 @@ public class UserConstraintValidationTest {
 	PasswordConstraintValidator passwordConstraintValidator = new PasswordConstraintValidator();
 
 	private static String LAST_NAME_REQUIRED = "Last name is required";
-	private static String INSTITUTION_REQUIRED = "Institution is required";
 	private static String INVALID_EMAIL = "Please provide a valid email address";
 	private static String EMAIL_REQUIRED = "Email is required";
 	private static String USERNAME_REQUIRED = "Username is required";
@@ -84,6 +84,7 @@ public class UserConstraintValidationTest {
 		testUser.setLastName("Bar");
 		testUser.setEmail("foo.bar@example.com");
 		testUser.setPassword(null);
+		testUser.setAuthenticationMethod(AuthenticationMethod.TABLE_BASED);
 	}
 
 	@Test

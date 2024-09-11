@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.view.Labelled;
 import org.octri.authentication.validation.Emailable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,12 +15,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -122,15 +122,16 @@ public class User extends AbstractEntity implements Labelled {
 	@JoinTable(name = "user_user_role", joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_role", referencedColumnName = "id"))
 	private List<UserRole> userRoles;
 
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private AuthenticationMethod authenticationMethod;
+
 	public boolean isEnabled() {
 		if (this.enabled != null && this.enabled) {
 			return true;
 		}
 		return false;
 	}
-
-	@Transient
-	private boolean ldapUser;
 
 	/**
 	 * NOTE the type has to match isEnabled which is considered a "getter" by the java bean world
@@ -149,11 +150,6 @@ public class User extends AbstractEntity implements Labelled {
 		return accountLocked;
 	}
 
-	/**
-	 * This is only incremented by the ChimeraAuthenticationProvider on a BadCredentials exception.
-	 *
-	 * @return
-	 */
 	public Integer getConsecutiveLoginFailures() {
 		if (consecutiveLoginFailures == null) {
 			return 0;
@@ -176,8 +172,6 @@ public class User extends AbstractEntity implements Labelled {
 				.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
 	}
 
-	///////////////////////////
-	// Getters and setters
 	public String getUsername() {
 		return this.username;
 	}
@@ -190,9 +184,6 @@ public class User extends AbstractEntity implements Labelled {
 		return this.password;
 	}
 
-	/**
-	 * @param password
-	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -285,27 +276,34 @@ public class User extends AbstractEntity implements Labelled {
 		this.userRoles = userRoles;
 	}
 
-	/**
-	 * This is a transient property. It is only accurate at the time the user form is submitted and should
-	 * not be used for any other logic. A better option is {@link UserService#isLdapUser(User)}.
-	 *
-	 * @return whether the checkbox in the form indicates that the user is LDAP
-	 */
-	public boolean getLdapUser() {
-		return ldapUser;
+	public AuthenticationMethod getAuthenticationMethod() {
+		return this.authenticationMethod;
 	}
 
-	public void setLdapUser(boolean ldapUser) {
-		this.ldapUser = ldapUser;
+	public void setAuthenticationMethod(AuthenticationMethod authenticationMethod) {
+		this.authenticationMethod = authenticationMethod;
+	}
+
+	public boolean getLdapUser() {
+		return AuthenticationMethod.LDAP.equals(authenticationMethod);
+	}
+
+	public boolean isLdapUser() {
+		return this.getLdapUser();
+	}
+
+	public boolean isTableBasedUser() {
+		return AuthenticationMethod.TABLE_BASED.equals(authenticationMethod);
 	}
 
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", enabled=" + enabled + ", accountLocked=" + accountLocked
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", institution=" + institution + ", email="
-				+ email + ", consecutiveLoginFailures=" + consecutiveLoginFailures + ", accountExpirationDate="
-				+ accountExpirationDate + ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles="
-				+ userRoles + ", ldapUser=" + ldapUser + ", id=" + id + "]";
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", enabled=" + enabled
+				+ ", accountLocked=" + accountLocked + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", institution=" + institution + ", email=" + email + ", consecutiveLoginFailures="
+				+ consecutiveLoginFailures + ", accountExpirationDate=" + accountExpirationDate
+				+ ", credentialsExpirationDate=" + credentialsExpirationDate + ", userRoles=" + userRoles
+				+ ", authenticationMethod=" + authenticationMethod + "]";
 	}
 
 	@Override

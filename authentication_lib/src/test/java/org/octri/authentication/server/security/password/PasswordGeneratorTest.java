@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.octri.authentication.server.security.entity.AuthenticationMethod;
 import org.octri.authentication.server.security.entity.User;
 
 import jakarta.validation.ConstraintViolation;
@@ -37,6 +38,7 @@ public class PasswordGeneratorTest {
 		testUser.setInstitution("OHSU");
 		testUser.setEmail("foo.bar@example.com");
 		testUser.setPassword("foo42");
+		testUser.setAuthenticationMethod(AuthenticationMethod.TABLE_BASED);
 	}
 
 	@Test

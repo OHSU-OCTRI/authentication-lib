@@ -47,12 +47,10 @@ public class DefaultUserManagementCustomizer implements UserManagementCustomizer
      */
     @Override
     public ModelAndView postCreateAction(User user, ModelMap model, HttpServletRequest request) {
-        // The new user is LDAP if table-based auth is not enabled or the email domain matches the LDAP config
-        Boolean ldapUser = !authenticationProperties.getEnableTableBased() || userService.isLdapUser(user);
+        Boolean tableBasedUser = authenticationProperties.getEnableTableBased() && user.isTableBasedUser();
         Boolean emailRequired = authenticationProperties.getEmailRequired();
 
-        // TODO: reverse this logic when we have explicit credential types (AUTHLIB-73)
-        if (!ldapUser) {
+        if (tableBasedUser) {
             PasswordResetToken token = passwordResetTokenService.generatePasswordResetToken(user);
             if (emailRequired) {
                 emailNotificationService.sendPasswordResetTokenEmail(token, request, true);

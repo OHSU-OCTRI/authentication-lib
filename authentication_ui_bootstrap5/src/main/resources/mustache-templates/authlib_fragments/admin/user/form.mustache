@@ -74,28 +74,47 @@
 							<div class="valid-feedback">Username is available</div>
 							<div class="invalid-feedback">Value must be present</div>
 						</div>
-							{{#ldapEnabled}}
-								{{#tableBasedEnabled}}
-								<div class="form-group">
-									<input type="checkbox" id="ldap_user" name="ldapUser" {{#user.ldapUser}}checked="checked"{{/user.ldapUser}} />
-									<label for="ldap_user" class="form-label">LDAP User</label>
-								</div>
-								{{/tableBasedEnabled}}
-								<div class="form-group">
-									<div id="ldap_error" class="text-danger small invisble mb-1"></div>
-									<button id="ldap_lookup" class="btn btn-primary">LDAP Lookup</button>
-								</div>
-							{{/ldapEnabled}}
+
+							{{#multipleAuthenticationMethods}}
+							<div class="form-group">
+								<label for="authentication_method" class="form-label">Account Type*</label>
+								<select id="authentication_method" name="authenticationMethod" class="form-select" required>
+									<option value="">Select an account type</option>
+									{{#authenticationMethods}}
+									<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+									{{/authenticationMethods}}
+								</select>
+							</div>
+							{{/multipleAuthenticationMethods}}
+
+							{{^multipleAuthenticationMethods}}
+							{{#authenticationMethods}}
+							<input type="hidden" id="authentication_method" name="authenticationMethod" value="{{value}}">
+							{{/authenticationMethods}}
+							{{/multipleAuthenticationMethods}}
 						{{/newUser}}
 
 						{{^newUser}}
 						<div class="form-group">
 							<label for="username" class="form-label">Username*</label>
-							<input class="form-control" value="{{user.username}}" type="text" disabled="disabled" />
-							<input type="hidden" id="username" name="username" value="{{user.username}}" />
-							<input class="form-control" type="hidden" id="id" name="id" value="{{user.id}}" />
+							<input class="form-control" value="{{user.username}}" type="text" disabled>
+							<input type="hidden" id="username" name="username" value="{{user.username}}">
+							<input class="form-control" type="hidden" id="id" name="id" value="{{user.id}}">
+						</div>
+
+						<div class="form-class">
+							<label for="authentication_method" class="form-label">Account Type*</label>
+							<input class="form-control" value="{{user.authenticationMethod.label}}" type="text" disabled>
+							<input type="hidden" id="authentication_method" name="authenticationMethod" value="{{user.authenticationMethod}}">
 						</div>
 						{{/newUser}}
+
+						{{#ldapEnabled}}
+						<div class="form-group">
+							<div id="ldap_error" class="text-danger small invisble mb-1"></div>
+							<button id="ldap_lookup" class="btn btn-primary" disabled>Search for User</button>
+						</div>
+						{{/ldapEnabled}}
 
 						<div class="form-group">
 							<label for="first_name" class="form-label">First Name*</label>

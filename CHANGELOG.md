@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2024-09-11
+
 ### Added
 
 - Added the [`UserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/UserManagementCustomizer.java) interface, which provides hooks to modify behavior when user accounts are created or updated. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](./docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
+- **Breaking**: Added a required property to the `User` entity that explicitly identifies the method used to authenticate the user. Consuming applications must add [a migration to add the field and backfill data for existing accounts](setup/migrations/V20240910090000__add_user_auth_type.sql). (AUTHLIB-73)
 
 ### Changed
 
@@ -23,9 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking**: Support for Bootstrap 4 has been dropped. Applications should upgrade to`authentication_ui_bootstrap5` and update their templates for Bootstrap 5 or [override all of the AuthLib templates](docs/CONFIGURATION_PROPERTIES.md#template-configuration). (AUTHLIB-135)
 - **Breaking**: Dropped redundant boolean flags for account and credential expiration from the user entity. Consuming applications must add [a migration to drop the columns and reconcile expiration dates](setup/migrations/V20240904110000__drop_redundant_user_metadata.sql). (AUTHLIB-143)
 
+## [1.3.0] - 2024-09-11
+
 ### Deprecated
+
+The following methods have been deprecated and will be removed in version 2.0.0.
+
 - The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.
-- The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
+- The `UserService` method `sendNotificationEmail` is deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
+- The `UserService` method `isLdapUser` is deprecated. As of version 2.0.0, whether a user authenticates using LDAP can be determined reliably using methods of the `User` entity directly.
+
 
 ## [1.2.0] - 2024-07-25
 

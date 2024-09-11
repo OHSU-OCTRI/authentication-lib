@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
@@ -76,7 +75,6 @@ public class UserServiceTest {
 		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
-		userService.setTableBasedEnabled(true);
 	}
 
 	@Test
@@ -221,32 +219,6 @@ public class UserServiceTest {
 
 		spyUserService.resetPassword(password, password, TOKEN);
 		verify(passwordResetTokenService).expireToken(any(PasswordResetToken.class));
-	}
-
-	@Test
-	public void testSuccessfulSaveWithLdapOnlyEnabled() throws UserManagementException {
-		userService.setTableBasedEnabled(false);
-		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
-		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
-		when(userService.save(user)).thenReturn(user);
-
-		User user = new User("foo", "Foo", "Bar", "OHSU", "foo@example.com");
-		userService.save(user);
-
-		verify(userRepository).save(user);
-	}
-
-	@Test
-	public void testExceptionOnSaveWithLdapOnlyEnabled() throws UserManagementException {
-		userService.setTableBasedEnabled(false);
-		when(ldapSearch.searchForUser(any())).thenReturn(ldapUser);
-		when(ldapUser.getStringAttribute("mail")).thenReturn("foo@example.com");
-
-		User user = new User("foo", "Foo", "Bar", "OHSU", "foobar@example.com");
-
-		assertThrows(InvalidLdapUserDetailsException.class, () -> {
-			userService.save(user);
-		});
 	}
 
 	@Test

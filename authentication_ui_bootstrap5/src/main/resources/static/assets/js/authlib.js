@@ -281,15 +281,17 @@
     }
   });
 
-  // Enable/disable LDAP Lookup based on whether ldapUser exists and is checked
-  const ldapUserCheckbox = document.getElementById('ldap_user');
+  // Enable LDAP lookup when appropriate authentication method is selected
+  const authenticationMethodInput = document.getElementById('authentication_method');
   const ldapLookupButton = document.getElementById('ldap_lookup');
-  const ldapNotChecked = ldapUserCheckbox && !ldapUserCheckbox.checked;
+  const enableLdapSearch = authenticationMethodInput && authenticationMethodInput.value &&
+    authenticationMethodInput.value !== 'TABLE_BASED';
 
   if (ldapLookupButton) {
-    ldapLookupButton.disabled = ldapNotChecked;
-    ldapUserCheckbox.addEventListener('change', function (_evt) {
-      ldapLookupButton.disabled = !this.checked;
+    ldapLookupButton.disabled = !enableLdapSearch;
+    authenticationMethodInput.addEventListener('change', function(_evt) {
+      const enableLdapSearch = this.value && this.value !== 'TABLE_BASED';
+      ldapLookupButton.disabled = !enableLdapSearch;
     });
 
     // Look up by username in LDAP and prepopulate user fields
@@ -319,7 +321,7 @@
       })
         .then(response => {
           if (!response.ok) {
-            const errorMessage = 'LDAP search request failed';
+            const errorMessage = 'Search request failed';
             showLdapError(errorMessage);
             throw new Error(errorMessage);
           }

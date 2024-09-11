@@ -10,24 +10,17 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.octri.authentication.config.LdapContextProperties;
 import org.octri.authentication.config.OctriAuthenticationProperties;
-import org.octri.authentication.server.security.SecurityHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.InvalidPasswordException;
-import org.octri.authentication.server.security.exception.UserDirectorySearchException;
 import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -52,18 +45,6 @@ public class UserService {
 
 	@Autowired
 	private PasswordResetTokenService passwordResetTokenService;
-
-	@Autowired(required = false)
-	private LdapContextProperties ldapContextProperties;
-
-	@Autowired(required = false)
-	private FilterBasedLdapUserSearch ldapSearch;
-
-	@Autowired
-	private Boolean tableBasedEnabled;
-
-	@Autowired
-	private Boolean ldapEnabled;
 
 	/**
 	 * Get the user account with the given ID.
@@ -103,8 +84,7 @@ public class UserService {
 
 	/**
 	 * Saves the given user account to the database. Handles logic for throwing an exception if the email already exists
-	 * or if the
-	 * LDAP user doesn't match the form input. Also handles not expiring passwords when a password changes.
+	 * Also handles not expiring passwords when a password changes.
 	 *
 	 * This method is not Transactional. The checked exceptions don't work properly within a single transaction.
 	 *
@@ -123,20 +103,6 @@ public class UserService {
 			User existing = findByEmail(user.getEmail());
 			if (existing != null && (newUser || !existing.getId().equals(user.getId()))) {
 				throw new DuplicateEmailException();
-			}
-		}
-
-		if (!tableBasedEnabled) {
-			try {
-				DirContextOperations ldapUser = ldapSearch.searchForUser(user.getUsername());
-				final String ldapEmail = ldapUser.getStringAttribute("mail");
-				final boolean emailsMatch = ldapEmail.equalsIgnoreCase(user.getEmail());
-				if (!emailsMatch) {
-					throw new InvalidLdapUserDetailsException(
-							InvalidLdapUserDetailsException.INVALID_USER_DETAILS_MESSAGE);
-				}
-			} catch (UsernameNotFoundException ex) {
-				throw new UserDirectorySearchException(ex);
 			}
 		}
 
@@ -345,10 +311,6 @@ public class UserService {
 		user.setConsecutiveLoginFailures(0);
 	}
 
-	public void setTableBasedEnabled(Boolean tableBasedEnabled) {
-		this.tableBasedEnabled = tableBasedEnabled;
-	}
-
 	public ImmutablePair<User, List<String>> changePassword(User user, String currentPassword, String newPassword,
 			String confirmPassword, Map<String, String[]> map)
 			throws UserManagementException {
@@ -362,25 +324,13 @@ public class UserService {
 	}
 
 	/**
-	 * Determines whether or not the user is an LDAP user. This is based off of the email address domain. If the user's
-	 * email address domain matches the domain configured in the LDAP properties, then the user is an LDAP user.
-	 *
-	 * TODO: Consider adding a persisted flag on the `user` record. AUTHLIB-73
-	 *
-	 * @return true if the user is an LDAP user.
-	 */
-	public boolean isLdapUser(User user) {
-		return ldapEnabled && SecurityHelper.hasEmailDomain(user, ldapContextProperties.getEmailDomain());
-	}
-
-	/**
 	 * Determines whether the user can reset a password. They must be table based and not be disabled in any way.
 	 *
 	 * @param user
 	 * @return
 	 */
 	public boolean canResetPassword(User user) {
-		return !isLdapUser(user) && user.getEnabled() && !user.getAccountLocked() && !user.getAccountExpired();
+		return user.isTableBasedUser() && user.getEnabled() && !user.getAccountLocked() && !user.getAccountExpired();
 	}
 
 }

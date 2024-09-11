@@ -1,6 +1,7 @@
 package org.octri.authentication.server.controller;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.octri.authentication.config.OctriAuthenticationProperties.UsernameSty
 import org.octri.authentication.server.customizer.UserManagementCustomizer;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.SecurityHelper;
+import org.octri.authentication.server.security.entity.AuthenticationMethod;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
@@ -23,6 +25,7 @@ import org.octri.authentication.server.security.service.PasswordGeneratorService
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
+import org.octri.authentication.server.view.EnumOptionList;
 import org.octri.authentication.server.view.OptionList;
 import org.octri.authentication.utils.ValidationUtils;
 import org.octri.authentication.validation.Emailable;
@@ -83,6 +86,9 @@ public class UserController {
 
 	@Autowired
 	private OctriAuthenticationProperties authenticationProperties;
+
+	@Autowired
+	private Set<AuthenticationMethod> enabledAuthenticationMethods;
 
 	@Autowired
 	private UserManagementCustomizer userManagementCustomizer;
@@ -295,12 +301,16 @@ public class UserController {
 	private void setUserFormAttributes(ModelMap model, User user) {
 		var newUser = user.getId() == null;
 		var pageTitle = newUser ? "New User" : "Edit User";
+		var authenticationMethods = EnumOptionList.fromEnum(EnumSet.copyOf(enabledAuthenticationMethods),
+				user.getAuthenticationMethod());
 
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
 		model.addAttribute("pageTitle", pageTitle);
 		model.addAttribute("newUser", newUser);
 		model.addAttribute("formView", true);
+		model.addAttribute("authenticationMethods", authenticationMethods);
+		model.addAttribute("multipleAuthenticationMethods", authenticationMethods.size() > 1);
 	}
 
 	/**
@@ -325,7 +335,7 @@ public class UserController {
 	 */
 	@ModelAttribute("ldapEnabled")
 	public Boolean getLdapEnabled() {
-		return authenticationProperties.getEnableLdap();
+		return enabledAuthenticationMethods.contains(AuthenticationMethod.LDAP);
 	}
 
 	/**
@@ -333,7 +343,7 @@ public class UserController {
 	 */
 	@ModelAttribute("tableBasedEnabled")
 	public Boolean getTableBasedEnabled() {
-		return authenticationProperties.getEnableTableBased();
+		return enabledAuthenticationMethods.contains(AuthenticationMethod.TABLE_BASED);
 	}
 
 	/**

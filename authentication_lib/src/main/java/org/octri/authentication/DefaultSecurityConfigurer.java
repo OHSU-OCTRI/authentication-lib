@@ -2,6 +2,9 @@ package org.octri.authentication;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.AuthenticationRouteProperties;
@@ -14,6 +17,7 @@ import org.octri.authentication.server.security.ApplicationAuthenticationSuccess
 import org.octri.authentication.server.security.AuthenticationUserDetailsService;
 import org.octri.authentication.server.security.SessionDestroyedListener;
 import org.octri.authentication.server.security.TableBasedAuthenticationProvider;
+import org.octri.authentication.server.security.entity.AuthenticationMethod;
 import org.octri.authentication.server.security.saml.SamlAuthenticationFailureHandler;
 import org.octri.authentication.server.security.saml.SamlAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +157,30 @@ public class DefaultSecurityConfigurer {
 	@ConditionalOnMissingBean
 	public HttpSessionEventPublisher defaultHttpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
+	}
+
+	/**
+	 * Provides a set containing the enabled authentication methods to simplify lookup and for use in the UI.
+	 *
+	 * @return
+	 */
+	@Bean
+	public Set<AuthenticationMethod> enabledAuthenticationMethods() {
+		var enabledMethods = EnumSet.noneOf(AuthenticationMethod.class);
+
+		if (ldapEnabled) {
+			enabledMethods.add(AuthenticationMethod.LDAP);
+		}
+
+		if (tableBasedEnabled) {
+			enabledMethods.add(AuthenticationMethod.TABLE_BASED);
+		}
+
+		if (samlEnabled()) {
+			enabledMethods.add(AuthenticationMethod.SAML);
+		}
+
+		return enabledMethods;
 	}
 
 	/**
