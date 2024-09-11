@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '3'))
+  }
+  environment {
+    GIT_URL = 'https://source.ohsu.edu/OCTRI-Apps/authentication-lib.git'
+    GIT_CREDENTIALS = 'gcrcicore-ghe-token'
+    GIT_BRANCH = 'release-1-X'
+  }
+  parameters {
+    string(name: 'VERSION', description: 'The version of the authentication_lib to release.')
+  }
+  tools {
+    maven '3.8.2'
+    jdk 'JDK17'
+  }
+  stages {
+    stage('Check Parameters') {
+      steps {
+        deleteDir()
+        checkParams(params)
+      }
+    }
+    stage('Release') {
+      steps {
+        checkoutBranch(env.GIT_URL, env.GIT_CREDENTIALS, env.GIT_BRANCH)
+        octriMavenReleasePrep(params.VERSION, env.GIT_BRANCH)
+        octriMavenBuild()
+      }
+    }
+    stage('Next Version') {
+      steps {
+        octriMavenVersionBump(params.VERSION, env.GIT_BRANCH)
+        octriMavenBuild()
+      }
+    }
+  }
+}

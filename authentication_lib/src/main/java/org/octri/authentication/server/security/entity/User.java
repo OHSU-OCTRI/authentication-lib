@@ -53,6 +53,7 @@ public class User extends AbstractEntity implements Labelled {
 	 * @param institution
 	 * @param email
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public User(String username, String firstName, String lastName, String institution, String email) {
 		super();
 		this.username = username;
@@ -170,14 +171,17 @@ public class User extends AbstractEntity implements Labelled {
 	}
 
 	// Used for Spring security accountNonLocked
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean isAccountNonLocked() {
 		return getAccountNonLocked();
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean getAccountNonLocked() {
 		return !getAccountLocked();
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public void setAccountNonLocked(Boolean accountNonLocked) {
 		Assert.notNull(accountNonLocked, "accountNonLocked may not be null");
 		setAccountLocked(!accountNonLocked);
@@ -189,16 +193,19 @@ public class User extends AbstractEntity implements Labelled {
 	 *
 	 * @return
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean isAccountNonExpired() {
 		boolean accountExpired = getAccountExpired()
 				|| (getAccountExpirationDate() != null && getAccountExpirationDate().compareTo(new Date()) <= 0);
 		return !accountExpired;
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean getAccountNonExpired() {
 		return !getAccountExpired();
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public void setAccountNonExpired(Boolean accountNonExpired) {
 		Assert.notNull(accountNonExpired, "accountNonExpired may not be null");
 		setAccountNonExpired(!accountNonExpired);
@@ -209,6 +216,7 @@ public class User extends AbstractEntity implements Labelled {
 	/**
 	 * @return
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean isCredentialsNonExpired() {
 		return !isCredentialsExpired();
 	}
@@ -218,16 +226,19 @@ public class User extends AbstractEntity implements Labelled {
 	 *
 	 * @return
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean isCredentialsExpired() {
 		return getCredentialsExpired()
 				|| (getCredentialsExpirationDate() != null
 						&& getCredentialsExpirationDate().compareTo(new Date()) <= 0);
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public Boolean getCredentialsNonExpired() {
 		return !getCredentialsExpired();
 	}
 
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
 		setCredentialsNonExpired(!credentialsNonExpired);
 	}

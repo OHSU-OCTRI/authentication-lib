@@ -471,9 +471,14 @@ public class UserService {
 	 * Send a notification to the original/current email address letting the user know their email address has been
 	 * changed.
 	 *
+	 * NOTE: This method is deprecated and will be removed in AuthLib 2.0.0. Applications should send their own
+	 * notifications for use cases that aren't fully supported by this library.
+	 *
 	 * @param user
 	 * @param currentEmail
+	 * @deprecated
 	 */
+	@Deprecated(forRemoval = true, since = "1.3.0")
 	public void sendNotificationEmail(final User user, final String currentEmail) {
 		SimpleMailMessage email = new SimpleMailMessage();
 		email.setSubject("Your " + displayName + " email was changed");

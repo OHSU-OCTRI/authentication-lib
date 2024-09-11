@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-09-11
+
+### Deprecated
+
+Support for Bootstrap 4 is deprecated and will be dropped in version 2.0.0. Applications that depend on `authentication_ui_bootstrap4` should upgrade to`authentication_ui_bootstrap5` and update their templates for Bootstrap 5 or [override all of the AuthLib templates](docs/CONFIGURATION_PROPERTIES.md#template-configuration).
+
+Additionally, the following methods have been deprecated and will be removed in version 2.0.0.
+
+- The `User` convenience constructor is deprecated. Applications should construct a User and set its properties explicitly.
+- The following little-used methods of the `User` entity have been deprecated. For a similar interface, use an instance of `AuthenticationUserDetails` instead.
+  - `isAccountNonLocked`
+  - `getAccountNonLocked`
+  - `setAccountNonLocked`
+  - `isAccountNonExpired`
+  - `getAccountNonExpired`
+  - `setAccountNonExpired`
+  - `isCredentialsNonExpired`
+  - `isCredentialsExpired`
+  - `getCredentialsNonExpired`
+  - `setCredentialsNonExpired`
+- The `UserService` method `sendNotificationEmail` is deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
+- The `UserService` method `isLdapUser` is deprecated. In AuthLib 2.0.0, the methods `User.isLdapUser` or `User.getLdapUser` can be used to reliably determine whether the user authenticates with LDAP.
+
 ## [1.2.0] - 2024-07-25
 
 ### Added
