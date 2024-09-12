@@ -125,28 +125,4 @@ public class EmailNotificationService {
                 message.getText()));
     }
 
-    /**
-     * 
-     * Send a notification to the original/current email address letting the user know their email address has been
-     * changed.
-     *
-     * @deprecated This library allows email changes without notification. Applications needing a different behavior
-     *             should override forms and logic and implement notifications.
-     * @param user
-     * @param currentEmail
-     */
-    @Deprecated(forRemoval = true, since = "1.3.0")
-    public void sendNotificationEmail(final User user, final String currentEmail) {
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setSubject("Your " + displayName + " email was changed");
-        final String body = "Hello " + user.getFirstName()
-                + ",\n\nWe are writing to let you know that your email address was changed on the " + displayName
-                + " site. If this was you, no action is needed.\n\nIf this was not you please contact your system administrator.";
-        email.setText(body);
-        email.setTo(currentEmail);
-        email.setFrom(emailConfig.getFrom());
-        mailSender.send(email);
-        log.info("Email changed for user id " + user.getId() + ". Email confirmation sent.");
-    }
-
 }

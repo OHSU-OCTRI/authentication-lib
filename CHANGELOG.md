@@ -18,13 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Breaking**: Removed requirement for institution field on User. Consuming apps must add [a migration to remove the constraint](setup/migrations/V20240731121000__alter_user_optional_institution.sql) since the form will no longer validate. (AUTHLIB-57)
 - **Breaking**: The following UserService methods have been moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and the method signature changed: sendPasswordResetTokenEmail, sendPasswordResetEmailConfirmation. For both methods, the dryRun parameter has been removed and replaced with the configuration property octri.authentication.email-dry-run.
-- **Breaking**: The UserService method sendNotificationEmail was moved to [`EmailNotificationService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/EmailNotificationService.java) and deprecated.
 - **Breaking**: Support for the Spring profile 'noemail' was removed and replaced with the configuration property octri.authentication.email-required. Applications relying on the profile should update their configuration accordingly.
 - **Breaking**: The interface of `UserController` has changed to return `ModelAndView` objects instead of strings. This will break applications that extend this class. Applications that rely on extending `UserController` should update the affected methods to return a `ModelAndView` or implement a [`UserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/UserManagementCustomizer.java) instead. (AUTHLIB-136)
 - Logic for the default user management workflow has been extracted from `UserController.java` and moved to the [`DefaultUserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/DefaultUserManagementCustomizer.java) class. See [docs/USER_MANAGEMENT_CUSTOMIZATION.md](docs/USER_MANAGEMENT_CUSTOMIZATION.md) for details. (AUTHLIB-136)
 - **Breaking**: The user controller has been refactored to separate the logic for creating new users from the logic used to update existing users, with different URLs. Applications should update their templates to reflect the new URLs. The new user form has been relocated to `{{req.contextPath}}/admin/user/new`, and the edit form has been relocated to `{{req.contextPath}}/admin/user/{{id}}`. (AUTHLIB-146)
 - **Breaking**: Support for Bootstrap 4 has been dropped. Applications should upgrade to`authentication_ui_bootstrap5` and update their templates for Bootstrap 5 or [override all of the AuthLib templates](docs/CONFIGURATION_PROPERTIES.md#template-configuration). (AUTHLIB-135)
 - **Breaking**: Dropped redundant boolean flags for account and credential expiration from the user entity. Consuming applications must add [a migration to drop the columns and reconcile expiration dates](setup/migrations/V20240904110000__drop_redundant_user_metadata.sql). (AUTHLIB-143)
+
+### Removed
+
+- **Breaking**: The `PasswordResetToken` convenience constructors have been removed. Applications should construct a token and set its properties explicitly or use one of the methods in [`PasswordResetTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
+- **Breaking**: The two-argument version of `PasswordResetTokenService.generatePasswordResetToken` that passes the token duration as an integer has been removed. Applications should use one of the other convenience methods of [`PasswordResetTokenService`](authentication_lib/src/main/java/org/octri/authentication/server/security/service/PasswordResetTokenService.java) to construct tokens instead.
+- **Breaking**: The deprecated `User` convenience constructor has been removed. Applications should construct a User and set its properties explicitly.
+- **Breaking**: Deprecated `User` entity methods have been removed. For a similar interface, use an instance of `AuthenticationUserDetails` instead.
+  - `isAccountNonLocked`
+  - `getAccountNonLocked`
+  - `setAccountNonLocked`
+  - `isAccountNonExpired`
+  - `getAccountNonExpired`
+  - `setAccountNonExpired`
+  - `isCredentialsNonExpired`
+  - `isCredentialsExpired`
+  - `getCredentialsNonExpired`
+  - `setCredentialsNonExpired`
+- **Breaking**: The `UserService` method `sendNotificationEmail` has been removed. Applications should send their own notifications for use cases that aren't fully supported by this library.
+- **Breaking**: The `UserService` method `isLdapUser` has been removed. The methods `User.isLdapUser` or `User.getLdapUser` can be used to reliably determine whether the user authenticates with LDAP.
 
 ## [1.3.0] - 2024-09-11
 

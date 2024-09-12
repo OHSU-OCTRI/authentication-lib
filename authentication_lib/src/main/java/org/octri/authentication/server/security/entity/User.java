@@ -43,28 +43,6 @@ public class User extends AbstractEntity implements Labelled {
 	}
 
 	/**
-	 * Required fields constructor. Defaults are set for other fields - same as
-	 * default constructor.
-	 *
-	 * @deprecated The no-argument constructor and property setters should be used instead.
-	 * @param username
-	 * @param firstName
-	 * @param lastName
-	 * @param institution
-	 * @param email
-	 */
-	@Deprecated(forRemoval = true, since = "1.3.0")
-	public User(String username, String firstName, String lastName, String institution, String email) {
-		super();
-		this.username = username;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.institution = institution;
-		this.email = email;
-		setDefaults();
-	}
-
-	/**
 	 * Set default values. Used in each constructor.
 	 */
 	private void setDefaults() {

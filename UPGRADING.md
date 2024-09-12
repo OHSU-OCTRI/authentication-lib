@@ -1,5 +1,54 @@
 # Upgrading
 
+## Upgrading to 2.0.0
+
+Release 2.0.0 significantly improves the flexibility of the user management interface. Many old and infrequently-used methods have also been eliminated.
+
+Before upgrading to this release, you may want to upgrade your application to AuthLib 1.3.0 and fix any code that uses deprecated methods. This will reduce the number of breaking changes that will need to be addressed.
+
+### Database Changes
+
+This release includes several changes to the `User` entity that will require database migration. This includes:
+
+* Removal of the `NOT NULL` constraint on the `institution` column
+* Removal of redundant columns `account_expired` and `credentials_expired` in favor of the corresponding timestamp columns
+* Addition of a column that stores the method that should be used to authenticate the user account
+
+The following example migrations are provided to facilitate upgrading existing applications.
+
+* [`setup/migrations/V20240731121000__alter_user_optional_institution.sql`](setup/migrations/V20240731121000__alter_user_optional_institution.sql)
+* [`setup/migrations/V20240904110000__drop_redundant_user_metadata.sql`](setup/migrations/V20240904110000__drop_redundant_user_metadata.sql)
+* [`setup/migrations/V20240910090000__add_user_auth_type.sql`](setup/migrations/V20240910090000__add_user_auth_type.sql)
+
+The migrations may need to be modified for your application, so you should carefully review each migration and consider how your application will be impacted before upgrading.
+
+### User Management Changes
+
+The [`UserController` class](authentication_lib/src/main/java/org/octri/authentication/server/controller/UserController.java) has been refactored to allow overriding the default user management workflow without extending the `UserController` class. This should greatly reduce the number of cases where applications need to duplicate or extend the `UserController` class, but consuming applications will need to make changes to accommodate the updated controller.
+
+The `UserController` class now provides separate endpoints for user creation and user updates, which requires updates to application templates. To upgrade, search for the old path (`{{req.contextPath}}/admin/user/form`), then replace it with the correct new URL for the action being taken:
+
+* To get the new user form: `{{req.contextPath}}/admin/user/new`
+* To submit the new user form: `{{req.contextPath}}/admin/user/create`
+* To get the user update form: `{{req.contextPath}}/admin/user/{id}`
+* To submit the user udpate form: `{{req.contextPath}}/admin/user/update`
+
+The methods of `UserController` now consistently return a `ModelAndView` object instead of a template path string. Applications that have extended the `UserController` class will need to update their method signatures accordingly. Alternatively, you may be able to eliminate your custom `UserController` by using the extension mechanism described below.
+
+The most consequential change in this release is the new [`UserManagementCustomizer`](authentication_lib/src/main/java/org/octri/authentication/server/customizer/UserManagementCustomizer.java) interface. This interface provides hooks into the `UserController, allowing consuming applications to modify the behavior when user accounts are created or updated, simply by providing a custom `UserManagementCustomizer` bean. This should enable a wide range of custom behavior, including:
+
+* Custom validation
+* Application-specific notifications
+* Creation of additional records related to the user (with or without a custom form)
+* Calls to external services
+
+A detailed description of the new interface may be found in  [docs/USER_MANAGEMENT_CUSTOMIZATION.md](./docs/USER_MANAGEMENT_CUSTOMIZATION.md).
+
+
+### Bootstrap 4 No Longer Supported
+
+Bootstrap 4 has reached end of life status, so application templates styled with Bootstrap 4 are no longer supported. Applications that currently depend on `authentication_ui_bootstrap4` should upgrade to`authentication_ui_bootstrap5` and update their templates to use Bootstrap 5 conventions, or they should [override all of the AuthLib templates](docs/CONFIGURATION_PROPERTIES.md#template-configuration).
+
 ## Upgrading to 1.1.0
 
 Release 1.1.0 includes support for using email addresses as usernames. To upgrade to this version, add [the migration to increase the size of the username column](./setup/migrations/V20240709104000__alter_user_enlarge_columns.sql) to your application. Then, to allow using email addresses as usernames, set `octri.authentication.username-style` to `email` or `mixed`.

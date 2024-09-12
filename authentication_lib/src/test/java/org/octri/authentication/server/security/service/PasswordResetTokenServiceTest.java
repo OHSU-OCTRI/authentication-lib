@@ -1,6 +1,7 @@
 package org.octri.authentication.server.security.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.repository.PasswordResetTokenRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,8 +42,14 @@ public class PasswordResetTokenServiceTest {
 	private static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
 	@BeforeEach
-	public void beforeEach() throws InvalidLdapUserDetailsException {
-		user = new User("foo", "Foo", "Bar", "OHSU", "foo@example.com");
+	public void beforeEach() {
+		var newUser = new User();
+		newUser.setUsername("foo");
+		newUser.setFirstName("Foo");
+		newUser.setLastName("Bar");
+		newUser.setEmail("foo@example.com");
+
+		user = newUser;
 	}
 
 	@Test
@@ -69,14 +75,17 @@ public class PasswordResetTokenServiceTest {
 		// 'now' is the time this test started
 		Date now = new Date();
 
-		PasswordResetToken token = new PasswordResetToken(user);
-		assertTrue(token.getExpiryDate().after(now),
-				"Tokens are generated with an expiration date in the future - should be greater than 'now'");
+		PasswordResetToken token = new PasswordResetToken();
+		token.setUser(user);
+		token.setExpiryDate(Date.from(Instant.now().plus(5, ChronoUnit.DAYS)));
+
+		assertFalse(token.isExpired(), "Precondition - token should not be expired");
 
 		when(passwordResetTokenRepository.save(any(PasswordResetToken.class)))
 				.then(i -> (PasswordResetToken) i.getArgument(0));
 
 		passwordResetTokenService.expireToken(token);
-		assertTrue(token.getExpiryDate().before(now), "A token is expired when the expiryDate is before 'now'");
+		assertTrue(token.getExpiryDate().before(now), "expireToken sets an expiryDate in the past");
+		assertTrue(token.isExpired(), "Postcondition - token should be expired");
 	}
 }

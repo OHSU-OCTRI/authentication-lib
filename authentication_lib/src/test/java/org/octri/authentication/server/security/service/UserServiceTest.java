@@ -72,7 +72,10 @@ public class UserServiceTest {
 
 	@BeforeEach
 	public void beforeEach() throws UserManagementException {
-		user = new User(USERNAME, "Foo", "Bar", "OHSU", "foo@example.com");
+		user = new User();
+		user.setUsername(USERNAME);
+		user.setFirstName("Foo");
+		user.setLastName("Bar");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
 	}
@@ -148,7 +151,8 @@ public class UserServiceTest {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
 
-		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+		PasswordResetToken passwordResetToken = new PasswordResetToken();
+		passwordResetToken.setUser(user);
 
 		when(userService.save(user)).thenReturn(user);
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
@@ -167,7 +171,8 @@ public class UserServiceTest {
 		user.setCredentialsExpirationDate(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
 		user.setConsecutiveLoginFailures(7);
 
-		PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+		PasswordResetToken passwordResetToken = new PasswordResetToken();
+		passwordResetToken.setUser(user);
 		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(passwordResetToken);
 		when(userService.save(user)).thenReturn(user);
 
@@ -185,8 +190,10 @@ public class UserServiceTest {
 		final String password = "Abcdefg.1";
 		final String confirmPassword = "Abcdefg.2";
 		UserService spyUserService = spy(userService);
+		PasswordResetToken mockToken = new PasswordResetToken();
+		mockToken.setUser(user);
 
-		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(mockToken);
 
 		ImmutablePair<User, List<String>> result = spyUserService.resetPassword(password, confirmPassword, TOKEN);
 		assertFalse(result.right.isEmpty(), "Should return errors");
@@ -213,8 +220,10 @@ public class UserServiceTest {
 	public void testTokenIsExpiredOnFirstUse() throws InvalidPasswordException, UserManagementException {
 		final String password = "Abcdefg.1";
 		UserService spyUserService = spy(userService);
+		PasswordResetToken mockToken = new PasswordResetToken();
+		mockToken.setUser(user);
 
-		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(new PasswordResetToken(user));
+		when(passwordResetTokenService.findByToken(any(String.class))).thenReturn(mockToken);
 		when(userService.save(user)).thenReturn(user);
 
 		spyUserService.resetPassword(password, password, TOKEN);
