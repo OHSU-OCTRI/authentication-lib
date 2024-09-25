@@ -311,6 +311,17 @@ public class UserController {
 		model.addAttribute("formView", true);
 		model.addAttribute("authenticationMethods", authenticationMethods);
 		model.addAttribute("multipleAuthenticationMethods", authenticationMethods.size() > 1);
+		model.addAttribute(getRoleStyleAttribute(), Boolean.TRUE);
+	}
+
+	/**
+	 * Returns the name of the attribute that enables the template partial for the configured role style. Returns one of
+	 * "singleRoleStyle", "multipleRoleStyle", or "customRoleStyle".
+	 */
+	private String getRoleStyleAttribute() {
+		var roleStyle = authenticationProperties.getRoleStyle();
+		Assert.notNull(roleStyle, "No role style is configured. This should not be possible.");
+		return roleStyle.name().toLowerCase() + "RoleStyle";
 	}
 
 	/**
@@ -361,6 +372,11 @@ public class UserController {
 	public String getUsernameStyle() {
 		UsernameStyle usernameStyle = authenticationProperties.getUsernameStyle();
 		return usernameStyle != null ? usernameStyle.toString() : null;
+	}
+
+	@ModelAttribute("customRoleScript")
+	public String getCustomRoleScript() {
+		return authenticationProperties.getCustomRoleScript();
 	}
 
 	/**

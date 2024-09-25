@@ -13,3 +13,13 @@
 
 <script type="text/javascript" src="{{req.contextPath}}/assets/js/validate.js"></script>
 <script type="text/javascript" src="{{req.contextPath}}/assets/js/authlib.js"></script>
+
+{{#multipleRoleStyle}}
+<script type="text/javascript" src="{{req.contextPath}}/assets/js/checkbox-role-validation.js"></script>
+{{/multipleRoleStyle}}
+
+{{#customRoleScript}}
+{{#formView}}
+<script type="text/javascript" src="{{req.contextPath}}/{{.}}"></script>
+{{/formView}}
+{{/customRoleScript}}

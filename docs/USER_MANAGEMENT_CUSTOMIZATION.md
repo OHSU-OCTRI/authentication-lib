@@ -21,6 +21,8 @@ The following configuration properties can be used to tweak aspects of the defau
 * `octri.authentication.email-dry-run`
 * `octri.authentication.email-required`
 * `octri.authentication.password-token-valid-for`
+* `octri.authentication.role-style`
+* `octri.authentication.custom-role-script`
 
 See [`CONFIGURATION_PROPERTIES.md`](./CONFIGURATION_PROPERTIES.md) for details.
 

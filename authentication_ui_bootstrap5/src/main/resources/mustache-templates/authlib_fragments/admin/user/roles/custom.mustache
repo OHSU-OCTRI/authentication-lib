@@ -1,0 +1,14 @@
+{{!
+	Template rendered when `octri.authentication.role-style=custom`.
+
+	Relevant template variables:
+
+	| Name      | Type                               | Notes                                                                     |
+	|-----------|------------------------------------|---------------------------------------------------------------------------|
+	| newUser   | Boolean                            | True if a new user is being created, false when editing an existing user. |
+	| user      | User                               | The user being modified.                                                  |
+	| userRoles | List<EntitySelectOption<UserRole>> | List of objects with label, value, and selected properties.               |
+}}
+<h4>User Roles</h4>
+
+<div class="form-group select-user-roles bg-danger-subtle text-danger-emphasis">Custom role style was selected, but the template has not been overridden.</div>

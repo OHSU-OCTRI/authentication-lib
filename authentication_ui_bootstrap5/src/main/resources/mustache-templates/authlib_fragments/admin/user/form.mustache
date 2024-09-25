@@ -140,16 +140,19 @@
 							<div class="invalid-feedback">Email must be valid and &lt;= 320 characters</div>
 						</div>
 
-						<h4>User Roles</h4>
+						{{! Render the role selection UI for the configured role style. }}
+						{{#singleRoleStyle}}
+						{{>authlib_fragments/admin/user/roles/single}}
+						{{/singleRoleStyle}}
 
-						<div class="form-group select-user-roles">
-							{{#userRoles}}
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" id="user_roles_{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} />
-								<label for="user_roles_{{id}}" class="form-check-label">{{label}}</label>
-							</div>
-							{{/userRoles}}
-						</div>
+						{{#multipleRoleStyle}}
+						{{>authlib_fragments/admin/user/roles/multiple}}
+						{{/multipleRoleStyle}}
+
+						{{#customRoleStyle}}
+						{{>authlib_fragments/admin/user/roles/custom}}
+						{{/customRoleStyle}}
+
 						{{>authlib_fragments/admin/user/app_fields}}
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-12 col-lg-offset-1 col-md-offset-1">

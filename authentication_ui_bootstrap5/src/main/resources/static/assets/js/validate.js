@@ -2,7 +2,7 @@
  * Attaches a listener on any form with the 'needs-validation' class that
  * uses the javascript Constraint Validation API to validate the form.
  *
- * source: https://getbootstrap.com/docs/4.0/components/forms/
+ * source: https://getbootstrap.com/docs/5.3/forms/validation/
  */
 
 (function() {

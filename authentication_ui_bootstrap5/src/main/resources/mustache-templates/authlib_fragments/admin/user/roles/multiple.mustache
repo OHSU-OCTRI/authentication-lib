@@ -1,0 +1,17 @@
+{{!
+	Template rendered when `octri.authentication.role-style=multiple`. Users may have more than
+	one role, but at least one must be selected.
+}}
+<div id="user_role_group" role="group" aria-labelledby="user_role_heading" aria-describedby="user_role_description">
+	<h4 id="user_role_heading">User Roles</h4>
+	<p id="user_role_description" class="text-secondary">Select at least one role.</p>
+
+	<div class="form-group select-user-roles">
+		{{#userRoles}}
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" id="user_roles_{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} />
+			<label for="user_roles_{{id}}" class="form-check-label">{{label}}</label>
+		</div>
+		{{/userRoles}}
+	</div>
+</div>

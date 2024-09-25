@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Configuration properties for the authentication library.
  */
@@ -18,6 +20,14 @@ public class OctriAuthenticationProperties {
 	 */
 	public static enum UsernameStyle {
 		PLAIN, EMAIL, MIXED
+	}
+
+	/**
+	 * The style of roles allowed. Valid options are SINGLE (users may have only one role), MULTIPLE (a user may have
+	 * any number of roles), or CUSTOM (application-specific behavior).
+	 */
+	public static enum RoleStyle {
+		SINGLE, MULTIPLE, CUSTOM
 	}
 
 	/**
@@ -78,6 +88,20 @@ public class OctriAuthenticationProperties {
 	 * Whether email should be sent or logged to the server instead.
 	 */
 	private Boolean emailDryRun = false;
+
+	/**
+	 * The style of roles allowed. This determines how the role selector on the user form is rendered. Valid options are
+	 * SINGLE (users may have only one role), MULTIPLE (a user may have any number of roles), or CUSTOM
+	 * (application-specific behavior). Defaults to MULTIPLE.
+	 */
+	@NotNull
+	private RoleStyle roleStyle = RoleStyle.MULTIPLE;
+
+	/**
+	 * Path to a JavaScript file to use when "octri.authentication.role-style" is "custom". This path should be relative
+	 * to the application's context path. Only relevant when "octri.authentication.role-style" is "custom".
+	 */
+	private String customRoleScript;
 
 	public Boolean getEnableLdap() {
 		return enableLdap;
@@ -151,12 +175,29 @@ public class OctriAuthenticationProperties {
 		this.emailRequired = emailRequired;
 	}
 
+	public RoleStyle getRoleStyle() {
+		return roleStyle;
+	}
+
+	public void setRoleStyle(RoleStyle roleStyle) {
+		this.roleStyle = roleStyle;
+	}
+
+	public String getCustomRoleScript() {
+		return customRoleScript;
+	}
+
+	public void setCustomRoleScript(String customRoleScript) {
+		this.customRoleScript = customRoleScript;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
 				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
 				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor="
-				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun + "]";
+				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun
+				+ ", roleStyle=" + roleStyle + ", customRoleScript=" + customRoleScript + "]";
 	}
 
 }

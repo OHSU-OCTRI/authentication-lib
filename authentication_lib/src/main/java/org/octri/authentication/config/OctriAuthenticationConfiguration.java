@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.config.OctriAuthenticationProperties.RoleStyle;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +45,7 @@ public class OctriAuthenticationConfiguration {
 
 		validateAuthenticationMethods(env);
 		validateBaseUrl();
+		validateRoleStyle();
 	}
 
 	@Bean
@@ -100,6 +102,21 @@ public class OctriAuthenticationConfiguration {
 		if (DEFAULT_BASE_URL.equals(authenticationProperties.getBaseUrl())
 				&& authenticationProperties.getEnableTableBased()) {
 			log.error(BASE_URL_ERROR);
+		}
+	}
+
+	/**
+	 * Validates role style configuration. Logs an error if a custom role validation script is configured, but an
+	 * incompatible role style has been selected.
+	 */
+	private void validateRoleStyle() {
+		var scriptErrorMessage = "Property octri.authentication.custom-role-script is configured, but "
+				+ "octri.authentication.role-style is not set to \"custom\". Check the application's configuration.";
+		var roleStyle = authenticationProperties.getRoleStyle();
+		var customRoleScript = authenticationProperties.getCustomRoleScript();
+
+		if (roleStyle != RoleStyle.CUSTOM && customRoleScript != null) {
+			log.error(scriptErrorMessage);
 		}
 	}
 

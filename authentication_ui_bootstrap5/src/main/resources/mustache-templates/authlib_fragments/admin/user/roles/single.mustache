@@ -1,0 +1,14 @@
+{{!
+	Template rendered when `octri.authentication.role-style=single`. Users may only have one
+	role.
+}}
+<h4>User Roles</h4>
+
+<div class="form-group select-user-roles">
+	{{#userRoles}}
+	<div class="form-check">
+		<input class="form-check-input" type="radio" id="user_roles_{{id}}" name="userRoles" value="{{id}}" {{#selected}}checked="checked"{{/selected}} required />
+		<label for="user_roles_{{id}}" class="form-check-label">{{label}}</label>
+	</div>
+	{{/userRoles}}
+</div>
