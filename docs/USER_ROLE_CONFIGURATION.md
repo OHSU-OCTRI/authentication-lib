@@ -13,7 +13,7 @@ This architecture supports different role-based permission models, including:
 * Users have a single role. Roles are mutually exclusive.
 * Users have one or more roles, and roles are additive.
 
-However, these different permission models require different user interfaces. The former requires a control that only allows selecting a single role (radio buttons or a select list), while the latter should allow multiple selections (checkboxes or a mutli-select). For this reason, AuthLib allows configuring a role style.
+However, these different permission models require different user interfaces. The former requires a control that only allows selecting a single role (radio buttons or a select list), while the latter should allow multiple selections (checkboxes or a multi-select). For this reason, AuthLib allows configuring a role style.
 
 ## Role Style Configuration
 
