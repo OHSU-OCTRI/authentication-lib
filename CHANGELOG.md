@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the ability to configure the user form's role selection UI, enabling applications to choose an input type that fits their permission model (radio buttons, checkboxes, or something custom). For backward compatibility with existing applications, this defaults to rendering a checkbox for each role. See [docs/USER_ROLE_CONFIGURATION.md](docs/USER_ROLE_CONFIGURATION.md) for details. (AUTHLIB-138)
+
+### Fixed
+
+- There is now front end validation to ensure that users have at least one role. (AUTHLIB-60)
+
 ## [2.0.0] - 2024-09-11
 
 ### Added
