@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        octriMavenBuild(deployArtifacts: env.BRANCH_NAME == 'master')
+        octriMavenBuild(deployArtifacts: env.BRANCH_NAME == 'main')
       }
     }
     stage('Test') {

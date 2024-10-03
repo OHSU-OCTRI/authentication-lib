@@ -5,6 +5,7 @@ pipeline {
   }
   environment {
     GIT_URL = 'https://source.ohsu.edu/OCTRI-Apps/authentication-lib.git'
+    DEFAULT_BRANCH = 'main'
   }
   parameters {
     string(name: 'VERSION', description: 'The version of the authentication_lib to release.')
@@ -22,14 +23,14 @@ pipeline {
     }
     stage('Release') {
       steps {
-        checkoutMaster(env.GIT_URL)
-        octriMavenReleasePrep(env.VERSION)
+        checkoutMain(env.GIT_URL)
+        octriMavenReleasePrep(env.VERSION, env.DEFAULT_BRANCH)
         octriMavenBuild()
       }
     }
     stage('Next Version') {
       steps {
-        octriMavenVersionBump()
+        nextDevelopmentVersion('', env.DEFAULT_BRANCH)
         octriMavenBuild()
       }
     }
