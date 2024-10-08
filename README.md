@@ -98,14 +98,11 @@ If using the standard Docker/MySQL setup, start the MySQL container first to cre
 
 Session timeout and session cookie properties are managed by the properties shown below. See the [full list of properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html). Also see [OHSU's guidelines](http://ozone.ohsu.edu/cc/sec/isp/00005.pdf).
 
-To override any of these values set the corresponding environment variable (e.g. `server.servlet.session.cookie.max-age` becomes `SERVER_SERVLET_SESSION_COOKIE_MAXAGE`), or define them in your own `application.properties` file. The order in which external configuration is loaded may be found [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
+To override any of these values set the corresponding environment variable (e.g. `server.servlet.session.timeout` becomes `SERVER_SERVLET_SESSION_TIMEOUT`), or define them in your own `application.properties` file. The order in which external configuration is loaded may be found [here](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
 
 ```
 # Session timeout in minutes
 server.servlet.session.timeout=20m
-
-# Cookie max-age in minutes
-server.servlet.session.cookie.max-age=20m
 
 # Set to true to restrict the session cookie to HTTPS
 server.servlet.session.cookie.secure=true

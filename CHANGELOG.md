@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Fixed
+
+- Removed the default value for `server.servlet.session.cookie.max-age`, which was causing sessions to time out twenty minutes after login instead of after twenty minutes of inactivity. (AUTHLIB-151)
+
 ## [2.1.0] - 2024-10-03
 
 ### Added
