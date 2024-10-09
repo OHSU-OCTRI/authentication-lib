@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased
 
-## Fixed
+## [2.1.1] - 2024-10-08
+
+### Fixed
 
 - Removed the default value for `server.servlet.session.cookie.max-age`, which was causing sessions to time out twenty minutes after login instead of after twenty minutes of inactivity. (AUTHLIB-151)
 
@@ -355,7 +357,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v2.1.0...HEAD
+[unreleased]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v2.1.1...HEAD
+[2.1.1]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v2.1.0...v2.1.1
 [2.1.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.3.0...v2.0.0
 [1.3.0]: https://source.ohsu.edu/OCTRI-Apps/authentication-lib/compare/v1.2.0...v1.3.0
