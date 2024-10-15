@@ -27,4 +27,26 @@
 		<module>authentication_lib</module>
 		<module>authentication_ui_bootstrap5</module>
 	</modules>
+
+	<distributionManagement>
+    	<repository>
+        	<id>github</id>
+        	<name>GitHub Packages</name>
+        	<url>https://maven.pkg.github.com/OCTRI/authentication-lib</url>
+    	</repository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<altDeploymentRepository>github::default::https://maven.pkg.github.com/OCTRI/authentication-lib</altDeploymentRepository>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
