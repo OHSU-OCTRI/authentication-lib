@@ -1,0 +1,32 @@
+---
+name: build
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types:
+      - opened
+      - edited
+  workflow_dispatch:
+
+jobs:
+  build-java-source:
+    name: build jar file
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java build environmant
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn package
+

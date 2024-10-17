@@ -27,4 +27,12 @@
 		<module>authentication_lib</module>
 		<module>authentication_ui_bootstrap5</module>
 	</modules>
+
+	<distributionManagement>
+    	<repository>
+        	<id>github</id>
+        	<name>GitHub Packages</name>
+        	<url>https://maven.pkg.github.com/OCTRI/authentication-lib</url>
+    	</repository>
+	</distributionManagement>
 </project>
