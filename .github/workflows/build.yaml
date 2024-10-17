@@ -1,9 +1,13 @@
 ---
 name: build
 on:
-  pull_request:
+  push:
     branches:
       - '**'
+  pull_request:
+    types:
+      - opened
+      - edited
   workflow_dispatch:
 
 jobs:
@@ -26,8 +30,3 @@ jobs:
       - name: Build with Maven
         run: mvn package
 
-      - name: Upload jar file
-        uses: actions/upload-artifact@v3
-        with:
-          name: authentication_lib.jar
-          path: target/authentication_lib.jar
