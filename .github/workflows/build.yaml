@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,16 +31,14 @@ jobs:
       - name: Build with Maven
         run: mvn package
       
-      # Extract version from pom.xml
       - name: Get Version from POM
         id: get-version
         run: |
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$version" >> $GITHUB_ENV
 
-      #Publish jar if `SNAPSHOT` is present in the version
       - name: Publish SNAPSHOT JAR
-        if: contains(env.version, '-SNAPSHOT')
+        if: github.ref == 'refs/heads/main' && contains(env.version, '-SNAPSHOT')
         run: mvn deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
