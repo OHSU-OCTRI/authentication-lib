@@ -3,7 +3,7 @@ body.authlib {
 	padding-top:4rem;
 }
 
-.authlib-user-list .center-all td,th{
+.authlib-user-list .center-all td, .authlib-user-list .center-all th{
 	text-align :center;
 }
 
