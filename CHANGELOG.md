@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [2.1.2] - 2024-12-20
+
+- Limited table header styling to the user list. Fixes an issue where library styles were interfering with application table styles. (AUTHLIB-154)
+
 ## [2.1.1] - 2024-10-08
 
 ### Fixed
@@ -357,7 +361,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.1.1...HEAD
+[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.1.2...HEAD
+[2.1.2]: https://github.com/OCTRI/authentication-lib/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/OCTRI/authentication-lib/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/OCTRI/authentication-lib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/OCTRI/authentication-lib/compare/v1.3.0...v2.0.0
