@@ -4,7 +4,9 @@ Provide a brief description of what you did.
 
 ## Issues
 
-Link Jira tickets here.
+Link Jira tickets or GitHub issues here.
+
+[ ] Added to CHANGELOG.md
 
 ## Discussion
 
