@@ -7,13 +7,36 @@
 	<packaging>jar</packaging>
 
 	<name>authentication_ui_bootstrap5</name>
-	<description>Authentication UI Templates for Bootstrap 5</description>
+	<description>OCTRI Authentication UI templates for Bootstrap 5</description>
+	<url>https://github.com/OCTRI/authentication-lib</url>
 
 	<parent>
 		<groupId>org.octri.authentication</groupId>
 		<artifactId>authentication_lib_parent</artifactId>
 		<version>2.1.3-SNAPSHOT</version>
 	</parent>
+
+	<licenses>
+		<license>
+			<name>The 3-Clause BSD License</name>
+			<url>https://opensource.org/license/bsd-3-clause</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>OCTRI Innovation Core</name>
+			<email>octri-devops@ohsu.edu</email>
+			<organization>Oregon Clinical &amp; Translational Research Institute (OCTRI)</organization>
+			<organizationUrl>https://www.ohsu.edu/octri</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/OCTRI/authentication-lib.git</connection>
+		<developerConnection>scm:git:https://github.com/OCTRI/authentication-lib.git</developerConnection>
+		<url>https://github.com/OCTRI/authentication-lib/tree/main</url>
+	</scm>
 
 	<properties>
 		<java.version>17</java.version>
