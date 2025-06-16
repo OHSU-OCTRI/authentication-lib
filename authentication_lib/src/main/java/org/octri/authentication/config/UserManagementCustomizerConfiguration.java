@@ -33,6 +33,11 @@ public class UserManagementCustomizerConfiguration {
     @Autowired
     private EmailNotificationService emailNotificationService;
 
+    /**
+     * Creates the default user management workflow, if not overridden by the application.
+     * 
+     * @return the default user management workflow
+     */
     @Bean
     @ConditionalOnMissingBean(UserManagementCustomizer.class)
     public UserManagementCustomizer defaultUserManagementCustomizer() {

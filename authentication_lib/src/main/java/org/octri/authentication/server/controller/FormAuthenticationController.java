@@ -20,6 +20,21 @@ public class FormAuthenticationController {
 	@Autowired
 	Boolean tableBasedEnabled;
 
+	/**
+	 * Renders the login form.
+	 * 
+	 * @param model
+	 *            template model
+	 * @param passwordChanged
+	 *            present if the form is being rendered after a password change
+	 * @param passwordReset
+	 *            present if the form is being rendered after a password reset
+	 * @param error
+	 *            present if the form is being rendered after an unsuccessful login
+	 * @param request
+	 *            servlet request
+	 * @return the login form
+	 */
 	@GetMapping("login")
 	public String login(Model model, @ModelAttribute("passwordChanged") String passwordChanged,
 			@ModelAttribute("passwordReset") String passwordReset,

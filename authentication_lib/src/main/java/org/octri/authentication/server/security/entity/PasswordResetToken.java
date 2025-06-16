@@ -16,8 +16,7 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Holds a random token (UUID) generated at the time of the request, the {@link User} that requested the password reset,
- * and an expiration date for the request. A token is generated automatically when constructing a new
- * {@link PasswordResetToken} using {@link #PasswordResetToken(User)} as well as an expiry date.
+ * and an expiration date for the request.
  *
  * @author sams
  */
@@ -51,42 +50,97 @@ public class PasswordResetToken {
 	public PasswordResetToken() {
 	}
 
+	/**
+	 * Gets the record's unique ID.
+	 * 
+	 * @return the unique ID
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Sets the record's unique ID.
+	 * 
+	 * @param id
+	 *            the ID to set
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Gets the token string.
+	 * 
+	 * @return the token string
+	 */
 	public String getToken() {
 		return token;
 	}
 
+	/**
+	 * Sets the token string.
+	 * 
+	 * @param token
+	 *            the token string to set
+	 */
 	public void setToken(String token) {
 		this.token = token;
 	}
 
+	/**
+	 * Gets the user account that can be reset using the token.
+	 * 
+	 * @return the associated user account
+	 */
 	public User getUser() {
 		return user;
 	}
 
+	/**
+	 * Sets the user account that can be reset using the token.
+	 * 
+	 * @param user
+	 *            a user account
+	 */
 	public void setUser(User user) {
 		this.user = user;
 	}
 
+	/**
+	 * Gets the timestamp when the token expires and can no longer be used.
+	 * 
+	 * @return when the token expires
+	 */
 	public Date getExpiryDate() {
 		return expiryDate;
 	}
 
+	/**
+	 * Sets the timestamp when the token expires and can no longer be used.
+	 * 
+	 * @param expiryDate
+	 *            when the token should expire
+	 */
 	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
 	}
 
+	/**
+	 * Gets the URL that initiates a password reset using the token.
+	 * 
+	 * @return password reset URL
+	 */
 	public String getTokenUrl() {
 		return tokenUrl;
 	}
 
+	/**
+	 * Sets the URL that initiates a password reset using the token.
+	 * 
+	 * @param tokenUrl
+	 *            password reset URL
+	 */
 	public void setTokenUrl(String tokenUrl) {
 		this.tokenUrl = tokenUrl;
 	}

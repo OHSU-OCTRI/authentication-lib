@@ -24,6 +24,12 @@ public class LdapAuthenticationConfiguration {
 
 	private LdapContextProperties ldapContextProperties;
 
+	/**
+	 * Constructor
+	 *
+	 * @param ldapContextProperties
+	 *            LDAP configuration properties
+	 */
 	public LdapAuthenticationConfiguration(LdapContextProperties ldapContextProperties) {
 		this.ldapContextProperties = ldapContextProperties;
 	}
@@ -31,7 +37,7 @@ public class LdapAuthenticationConfiguration {
 	/**
 	 * Provides context configuration properties for LDAP authentication.
 	 *
-	 * @return
+	 * @return LDAP configuration properties
 	 */
 	@Bean
 	public LdapContextProperties ldapContextProperties() {
@@ -41,7 +47,7 @@ public class LdapAuthenticationConfiguration {
 	/**
 	 * Provides the configured LDAP organization name.
 	 *
-	 * @return
+	 * @return the configured LDAP organization name
 	 */
 	@Bean
 	public String ldapOrganization() {
@@ -54,7 +60,7 @@ public class LdapAuthenticationConfiguration {
 	 * NOTE: Bean must be of type {@link LdapContextSource} to prevent Spring Boot's autoconfiguration from providing a
 	 * conflicting bean.
 	 *
-	 * @return
+	 * @return default LDAP context source
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -70,7 +76,8 @@ public class LdapAuthenticationConfiguration {
 	 * Provides a default LDAP user search for LDAP authentication.
 	 *
 	 * @param ldapContextSource
-	 * @return
+	 *            LDAP context source
+	 * @return LDAP search filter for finding user accounts
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -83,7 +90,9 @@ public class LdapAuthenticationConfiguration {
 	 * Provides a default user details mapper for LDAP authentication. By default, user details are loaded from the
 	 * database instead of the LDAP directory, even for accounts authenticated using LDAP.
 	 *
-	 * @return
+	 * @param userDetailsService
+	 *            service used to look up database user details
+	 * @return default LDAP user details mapper
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -95,7 +104,7 @@ public class LdapAuthenticationConfiguration {
 	 * Provides a default authorities populator for LDAP authentication. By default, authorities granted to the user
 	 * are loaded from the database instead of the LDAP directory, even for accounts authenticated using LDAP.
 	 *
-	 * @return
+	 * @return default LDAP authorities populator
 	 */
 	@Bean
 	@ConditionalOnMissingBean

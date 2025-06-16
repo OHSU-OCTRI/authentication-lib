@@ -24,6 +24,7 @@ public class RandomDictionary {
 	 * Create a new dictionary from the given wordlist.
 	 *
 	 * @param wordList
+	 *            list of words to include in the dictionary
 	 */
 	public RandomDictionary(List<String> wordList) {
 		Assert.notNull(wordList, "Wordlist must not be null");
@@ -35,8 +36,10 @@ public class RandomDictionary {
 	 * Get a random word from the dictionary with a length between minSize and maxSize inclusive.
 	 *
 	 * @param minSize
+	 *            minimum length of the selected word
 	 * @param maxSize
-	 * @return
+	 *            maximum length of the selected word
+	 * @return a random word with length between minSize and maxSize
 	 */
 	public String getRandom(int minSize, int maxSize) {
 
@@ -59,8 +62,10 @@ public class RandomDictionary {
 	}
 
 	/**
-	 *
+	 * Gets the number of words in the dictionary with the given length.
+	 * 
 	 * @param size
+	 *            the size of word to search for
 	 * @return number of words of a given length; useful for calculating password entropy.
 	 */
 	public Integer wordsOfLength(int size) {
@@ -68,9 +73,12 @@ public class RandomDictionary {
 	}
 
 	/**
-	 *
+	 * Gets the number of words in the dictionary that have a length in the given range.
+	 * 
 	 * @param minSize
+	 *            minimum word length
 	 * @param maxSize
+	 *            maximum word length
 	 * @return number of words in a given length range (inclusive)
 	 */
 	public Integer wordsInRange(int minSize, int maxSize) {
@@ -84,9 +92,10 @@ public class RandomDictionary {
 	}
 
 	/**
-	 * Given the wordlist, initialize the underlying data structure.
+	 * Given the word list, initialize the underlying data structure.
 	 *
 	 * @param wordList
+	 *            list of words
 	 */
 	private void initialize(List<String> wordList) {
 		wordsBySize = new HashMap<>();
@@ -97,10 +106,21 @@ public class RandomDictionary {
 		}
 	}
 
+	/**
+	 * Gets the maximum number of times the dictionary will attempt to find a word of the requested size.
+	 * 
+	 * @return the maximum number of attempts
+	 */
 	public Integer getMaxAttempts() {
 		return maxAttempts;
 	}
 
+	/**
+	 * Sets the maximum number of times the dictionary will attempt to find a word of the requested size.
+	 * 
+	 * @param attempts
+	 *            the desired number of attempts
+	 */
 	public void setMaxAttempts(Integer attempts) {
 		this.maxAttempts = attempts;
 	}

@@ -44,6 +44,9 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+/**
+ * Provides default security configuration to consuming applications.
+ */
 @EnableMethodSecurity
 @EnableAspectJAutoProxy
 @PropertySource("classpath:authlib.properties")
@@ -120,8 +123,10 @@ public class DefaultSecurityConfigurer {
 	 * the default filter chain is configured by other public methods in this class.
 	 *
 	 * @param http
-	 * @return
+	 *            security configuration builder
+	 * @return security filter chain constructed using the library's default values
 	 * @throws Exception
+	 *             if an error occurred when constructing the filter chain
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -150,8 +155,8 @@ public class DefaultSecurityConfigurer {
 	 * Provides a default {@link HttpSessionEventPublisher} bean if the application does not provide a custom one. This
 	 * ensures that Spring Security publishes events used to record when sessions are destroyed.
 	 *
-	 * @see {@link SessionDestroyedListener}
-	 * @return
+	 * @see SessionDestroyedListener
+	 * @return the default session event publisher
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -162,7 +167,7 @@ public class DefaultSecurityConfigurer {
 	/**
 	 * Provides a set containing the enabled authentication methods to simplify lookup and for use in the UI.
 	 *
-	 * @return
+	 * @return the set of enabled authentication methods
 	 */
 	@Bean
 	public Set<AuthenticationMethod> enabledAuthenticationMethods() {
@@ -187,7 +192,9 @@ public class DefaultSecurityConfigurer {
 	 * Adds providers for all enabled authentication methods to the authentication manager builder.
 	 *
 	 * @param authBuilder
+	 *            the authentication manager builder to modify
 	 * @throws Exception
+	 *             if an error occurs when configuring the authentication manager
 	 * @see configureSamlWithDefaults
 	 */
 	public void configureAuthenticationManager(AuthenticationManagerBuilder authBuilder)
@@ -207,7 +214,9 @@ public class DefaultSecurityConfigurer {
 	 * Adds support for SAML authentication to the authentication manager.
 	 *
 	 * @param authBuilder
+	 *            the authentication manager builder to modify
 	 * @throws Exception
+	 *             if an error occurs when configuring SAML authentication
 	 */
 	public void configureAuthenticationManagerForSaml(AuthenticationManagerBuilder authBuilder) throws Exception {
 		if (samlEnabled()) {
@@ -222,7 +231,9 @@ public class DefaultSecurityConfigurer {
 	 * Adds support for table-based authentication to the authentication manager.
 	 *
 	 * @param authBuilder
+	 *            the authentication manger builder to modify
 	 * @throws Exception
+	 *             if an error occurs when configuring table-based authentication
 	 */
 	public void configureAuthenticationManagerForTableBased(AuthenticationManagerBuilder authBuilder)
 			throws Exception {
@@ -239,7 +250,9 @@ public class DefaultSecurityConfigurer {
 	 * Adds support for LDAP authentication to the authentication manager.
 	 *
 	 * @param authBuilder
+	 *            the authentication manager builder to modify
 	 * @throws Exception
+	 *             if an error occurs when configuring LDAP authentication
 	 */
 	public void configureAuthenticationManagerForLdap(AuthenticationManagerBuilder authBuilder) throws Exception {
 		if (ldapEnabled) {
@@ -271,8 +284,9 @@ public class DefaultSecurityConfigurer {
 	 * @param authManager
 	 *            the AuthenticationManager to user, e.g. from calling `AuthenticationManagerBuilder.build()`
 	 * @throws Exception
-	 * @see {@link SamlProperties}
-	 * @see {@link SamlAuthenticationConfiguration}
+	 *             if an error occurs when configuring SAML authentication
+	 * @see SamlProperties
+	 * @see SamlAuthenticationConfiguration
 	 */
 	public void configureSamlWithDefaults(HttpSecurity http, AuthenticationManager authManager) throws Exception {
 		if (!samlEnabled()) {
@@ -306,10 +320,12 @@ public class DefaultSecurityConfigurer {
 	 * metadata is updated, and the user is redirected to the login failure URL.
 	 *
 	 * @param http
+	 *            HttpSecurity builder
 	 * @throws Exception
-	 * @see {@link ApplicationRouteProperties}
-	 * @see {@link ApplicationAuthenticationSuccessHandler}
-	 * @see {@link ApplicationAuthenticationFailureHandler}
+	 *             if an error occurs when configuring form login support
+	 * @see AuthenticationRouteProperties
+	 * @see ApplicationAuthenticationSuccessHandler
+	 * @see ApplicationAuthenticationFailureHandler
 	 */
 	public void configureFormLoginWithDefaults(HttpSecurity http) throws Exception {
 		formAuthSuccessHandler.setDefaultTargetUrl(routes.getDefaultLoginSuccessUrl());
@@ -326,8 +342,10 @@ public class DefaultSecurityConfigurer {
 	 * the logout success URL.
 	 *
 	 * @param http
+	 *            HttpSecurity builder
 	 * @throws Exception
-	 * @see {@link ApplicationRouteProperties}
+	 *             if an error occurs when configuring logout behavior
+	 * @see AuthenticationRouteProperties
 	 */
 	public void configureLogoutWithDefaults(HttpSecurity http) throws Exception {
 		http.logout(logout -> logout
@@ -337,7 +355,7 @@ public class DefaultSecurityConfigurer {
 	}
 
 	/**
-	 * Configures default route security. By default, public routes configured in {@link ApplicationRouteProperties}
+	 * Configures default route security. By default, public routes configured in {@link AuthenticationRouteProperties}
 	 * will allow anonymous access, and all other routes will require authentication. The HTTP PUT, POST, and PATCH
 	 * methods will require authentication, and HTTP DELETE will be denied.
 	 * <br>
@@ -345,8 +363,10 @@ public class DefaultSecurityConfigurer {
 	 * not be appropriate if you are implementing a custom filter chain.
 	 *
 	 * @param http
+	 *            HttpSecurity builder
 	 * @throws Exception
-	 * @see {@link ApplicationRouteProperties}
+	 *             if an error occurs when configuring default route security
+	 * @see AuthenticationRouteProperties
 	 */
 	public void configureRouteSecurityWithDefaults(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(auth -> auth.requestMatchers(routes.getPublicRoutesWithDefaults())
@@ -363,8 +383,10 @@ public class DefaultSecurityConfigurer {
 	 * Configures the content security policy (CSP) header if CSP is enabled.
 	 *
 	 * @param http
+	 *            HttpSecurity builder
 	 * @throws Exception
-	 * @see {@link ContentSecurityPolicyProperties}
+	 *             if an error occurs when configuring content security policy
+	 * @see ContentSecurityPolicyProperties
 	 */
 	public void configureContentSecurityPolicy(HttpSecurity http) throws Exception {
 		if (cspProperties == null || !cspProperties.isEnabled()) {

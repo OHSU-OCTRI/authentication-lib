@@ -87,7 +87,9 @@ public class EmailNotificationService {
      * Send email confirmation to user.
      *
      * @param token
+     *            the password reset token
      * @param request
+     *            servlet request
      */
     public void sendPasswordResetEmailConfirmation(final String token, final HttpServletRequest request) {
         Assert.notNull(token, "Must provide a token");

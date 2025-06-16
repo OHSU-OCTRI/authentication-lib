@@ -26,14 +26,34 @@ import org.springframework.util.Assert;
  */
 public class SecurityHelper {
 
+	/**
+	 * Base user roles
+	 */
 	public static enum Role {
-		ROLE_USER, ROLE_ADMIN, ROLE_SUPER;
+		/**
+		 * Regular user account
+		 */
+		ROLE_USER,
+		/**
+		 * Admin user account
+		 */
+		ROLE_ADMIN,
+		/**
+		 * Superuser account
+		 */
+		ROLE_SUPER;
 	}
 
 	private Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
 
 	private Authentication authentication;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param context
+	 *            Spring Security {@link SecurityContext}
+	 */
 	public SecurityHelper(SecurityContext context) {
 		authentication = context.getAuthentication();
 		if (authentication != null) {
@@ -44,7 +64,7 @@ public class SecurityHelper {
 	/**
 	 * Checks if the user is authenticated and not anonymous.
 	 *
-	 * @return
+	 * @return true if the user is a non-anonymous, authenticated user
 	 */
 	public boolean isLoggedIn() {
 		return isAuthenticated() && !isAnonymous();
@@ -54,7 +74,7 @@ public class SecurityHelper {
 	 * Checks if the user is authenticated. The anonymous user is authenticated by default. Use {@link #isLoggedIn()} if
 	 * you want to ensure the user is authenticated but not anonymous.
 	 *
-	 * @return
+	 * @return true if the user is authenticated
 	 */
 	public boolean isAuthenticated() {
 		return authentication == null ? false : authentication.isAuthenticated();
@@ -63,7 +83,7 @@ public class SecurityHelper {
 	/**
 	 * Checks if the user is an anonymously authenticated user.
 	 *
-	 * @return
+	 * @return true if the user is not authenticated or represented by an {@link AnonymousAuthenticationToken}
 	 */
 	public boolean isAnonymous() {
 		return authentication == null ? true : authentication instanceof AnonymousAuthenticationToken;
@@ -75,7 +95,7 @@ public class SecurityHelper {
 	 *
 	 * @param testUserId
 	 *            The id of the user being edited.
-	 * @return True if the currently authenticated user can edit a user.
+	 * @return True if the currently authenticated user can edit the user.
 	 */
 	public boolean canEditUser(Long testUserId) {
 		return isAdminOrSuper() && authenticationUserDetails().getUserId() != testUserId;
@@ -84,7 +104,7 @@ public class SecurityHelper {
 	/**
 	 * Get the authenticated username.
 	 *
-	 * @return
+	 * @return the username of the currently-authenticated user, or empty string if not authenticated
 	 */
 	public String username() {
 		return authentication == null ? "" : authentication.getName();
@@ -93,7 +113,7 @@ public class SecurityHelper {
 	/**
 	 * Get the current {@link AuthenticationUserDetails}.
 	 *
-	 * @return
+	 * @return user details for the current user, null if not authenticated
 	 */
 	public AuthenticationUserDetails authenticationUserDetails() {
 		return authentication == null ? null : (AuthenticationUserDetails) authentication.getPrincipal();
@@ -102,18 +122,18 @@ public class SecurityHelper {
 	/**
 	 * Check if the user has at least one of the roles: ADMIN or SUPER.
 	 *
-	 * @return
+	 * @return true if the user has the ADMIN or SUPER role
 	 */
 	public boolean isAdminOrSuper() {
 		return hasAnyRole(Arrays.asList(Role.ROLE_ADMIN, Role.ROLE_SUPER));
 	}
 
 	/**
-	 * Checks if user contains the given role.
+	 * Checks if user has been granted the given role.
 	 *
 	 * @param role
 	 *            A user role.
-	 * @return True if the user contains the role.
+	 * @return True if the user has been granted the role.
 	 */
 	public boolean hasRole(Role role) {
 		return hasRoleName(role.name());
@@ -124,7 +144,8 @@ public class SecurityHelper {
 	 * just the default roles set up in this library.
 	 *
 	 * @param roleName
-	 * @return True if the user contains the roleName
+	 *            name of the role to check
+	 * @return True if the user has been granted the role matching the given roleName
 	 */
 	public boolean hasRoleName(String roleName) {
 		return authorities == null ? false
@@ -132,31 +153,33 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Checks if a user contains at least one of the roles.
+	 * Checks if a user has been granted at least one of the roles.
 	 *
 	 * @param roles
 	 *            A list of user roles.
-	 * @return True if the user contains one of the roles.
+	 * @return True if the user has been granted one of the roles.
 	 */
 	public boolean hasAnyRole(List<Role> roles) {
 		return hasAnyRoleName(roles.stream().map(role -> role.name()).collect(Collectors.toList()));
 	}
 
 	/**
-	 * Checks if a user contains at least one of the role names.
+	 * Checks if a user has been granted at least one of the role names.
 	 *
 	 * @param roleNames
-	 * @return True if the user contains at least one of the role names.
+	 *            a list of user role names
+	 * @return True if the user has been granted a role matching at least one of the role names.
 	 */
 	public boolean hasAnyRoleName(List<String> roleNames) {
 		return roleNames.stream().anyMatch(name -> hasRoleName(name));
 	}
 
 	/**
-	 * Whether the given user has an ohsu email account.
+	 * Whether the given user has an OHSU email account.
 	 *
 	 * @param user
-	 * @return
+	 *            user account
+	 * @return true if the user's email matches the ohsu.edu domain
 	 */
 	public static boolean hasOHSUEmail(User user) {
 		return hasEmailDomain(user, "ohsu.edu");
@@ -166,8 +189,10 @@ public class SecurityHelper {
 	 * Whether the user's email matches the given domain.
 	 *
 	 * @param user
+	 *            user account
 	 * @param matchDomain
-	 * @return
+	 *            email domain
+	 * @return true if the user's email matches the given domain
 	 */
 	public static boolean hasEmailDomain(User user, String matchDomain) {
 		Assert.notNull(user, "User cannot be null");

@@ -7,7 +7,20 @@ import org.octri.authentication.server.view.Labelled;
  */
 public enum AuthenticationMethod implements Labelled {
 
-	LDAP("LDAP"), SAML("SAML"), TABLE_BASED("Table Based");
+	/**
+	 * Lightweight Directory Access Protocol (LDAP) authentication
+	 */
+	LDAP("LDAP"),
+
+	/**
+	 * Security Assertion Markup Language (SAML) 2.0 authentication
+	 */
+	SAML("SAML"),
+
+	/**
+	 * Table-based authentication - password hash is stored in the database
+	 */
+	TABLE_BASED("Table Based");
 
 	private String label;
 

@@ -23,8 +23,10 @@ public class TableBasedAuthenticationConfiguration {
 	 * Provides a default authentication provider for table-based accounts.
 	 *
 	 * @param userDetailsService
+	 *            service used to look up user details
 	 * @param passwordEncoder
-	 * @return
+	 *            encodes passwords for storage in the database
+	 * @return default authentication provider for table-based authentication
 	 */
 	@Bean
 	@ConditionalOnMissingBean

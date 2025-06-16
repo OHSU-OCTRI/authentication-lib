@@ -63,67 +63,154 @@ public class LoginAttempt {
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
 
-	// ---- Accessors --------
+	/**
+	 * Gets the record's unique ID.
+	 *
+	 * @return the unique ID
+	 */
 	public long getId() {
 		return id;
 	}
 
+	/**
+	 * Sets the record's unique ID.
+	 *
+	 * @param id
+	 *            the unique ID
+	 */
 	public void setId(long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Gets the record's optimistic locking version.
+	 *
+	 * @return the version
+	 */
 	public Integer getVersion() {
 		return version;
 	}
 
+	/**
+	 * Sets the record's optimistic locking version.
+	 *
+	 * @param version
+	 *            the version
+	 */
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
 
+	/**
+	 * Gets the username provided in the login request.
+	 *
+	 * @return the username provided
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * Sets the username provided in the login request.
+	 *
+	 * @param username
+	 *            the username provided
+	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	/**
+	 * Gets the client IP address provided in the login request.
+	 *
+	 * @return the client IP address
+	 */
 	public String getIpAddress() {
 		return ipAddress;
 	}
 
+	/**
+	 * Sets the client IP address provided in the login request.
+	 *
+	 * @param ipAddress
+	 *            the client IP address
+	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
+	/**
+	 * Gets the timestamp of the login request.
+	 *
+	 * @return the request timestamp
+	 */
 	public Date getAttemptedAt() {
 		return attemptedAt;
 	}
 
+	/**
+	 * Sets the timestamp of the login request.
+	 *
+	 * @param attemptedAt
+	 *            the request timestamp
+	 */
 	public void setAttemptedAt(Date attemptedAt) {
 		this.attemptedAt = attemptedAt;
 	}
 
+	/**
+	 * Gets whether the user successfully logged in.
+	 *
+	 * @return true if the attempt was successful, false otherwise
+	 */
 	public Boolean getSuccessful() {
 		return successful;
 	}
 
+	/**
+	 * Sets whether the user successfully logged in.
+	 *
+	 * @param successful
+	 *            true if the attempt was successful, false otherwise
+	 */
 	public void setSuccessful(Boolean successful) {
 		this.successful = successful;
 	}
 
+	/**
+	 * Gets the reason that the login attempt failed.
+	 *
+	 * @return the reason that the login attempt failed
+	 */
 	public String getErrorType() {
 		return errorType;
 	}
 
+	/**
+	 * Sets the reason that the login attempt failed.
+	 *
+	 * @param errorType
+	 *            the reason that the login attempt failed
+	 */
 	public void setErrorType(String errorType) {
 		this.errorType = errorType;
 	}
 
+	/**
+	 * Gets the optional detailed error message describing why the login attempt failed.
+	 *
+	 * @return the detailed error message
+	 */
 	public String getErrorMessage() {
 		return errorMessage;
 	}
 
+	/**
+	 * Sets the optional detailed error message describing why the login attempt failed.
+	 *
+	 * @param errorMessage
+	 *            the detailed error message
+	 */
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}

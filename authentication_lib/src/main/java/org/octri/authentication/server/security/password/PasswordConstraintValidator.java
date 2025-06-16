@@ -21,9 +21,9 @@ import jakarta.validation.ConstraintValidatorContext;
 /**
  * A password constraint validator. Validates passwords against OHSU standards.
  *
- * @see https://ozone.ohsu.edu/cc/sec/isp/00004.pdf
- * @see http://www.passay.org/reference/
- * @see http://www.baeldung.com/registration-password-strength-and-rules
+ * @see <a href="http://www.passay.org/reference/">Passay reference documentation</a>
+ * @see <a href="http://www.baeldung.com/registration-password-strength-and-rules">baeldung.com - Password Strength and
+ *      Rules</a>
  * @author sams
  */
 @Component
@@ -35,8 +35,10 @@ public class PasswordConstraintValidator {
 	 * Get a list of validation error messages, or an empty list if the password passes validation.
 	 *
 	 * @param password
+	 *            password value
 	 * @param context
-	 * @return
+	 *            constraint validation context
+	 * @return a list of validation errors, ar an empty list if the password passes validation
 	 */
 	public List<String> validate(String password, ConstraintValidatorContext context) {
 		// Require at least one capital letter

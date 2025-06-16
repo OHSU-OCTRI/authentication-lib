@@ -18,10 +18,10 @@ import org.springframework.util.Assert;
 /**
  * An implementation of Spring Security's {@link UserDetailsContextMapper}, to generate {@link UserDetails} from an LDAP
  * context.
- * 
+ *
  * We basically just use this to ensure that a valid user and password were in LDAP then create a
  * {@link UserDetails} using information from the database
- * 
+ *
  * Implementation essentially lifted from Chimera.
  *
  * @author harrelst
@@ -33,13 +33,19 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
 
 	private UserDetailsService userDetailsService;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param userDetailsService
+	 *            service used to get database user details
+	 */
 	public LdapUserDetailsContextMapper(UserDetailsService userDetailsService) {
 		this.userDetailsService = userDetailsService;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.security.ldap.userdetails.UserDetailsContextMapper#mapUserFromContext(org.springframework.
 	 * ldap.core.DirContextOperations, java.lang.String, java.util.Collection)
@@ -54,7 +60,7 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.ldap.userdetails.UserDetailsContextMapper#mapUserToContext(org.springframework.
 	 * security.core.userdetails.UserDetails, org.springframework.ldap.core.DirContextAdapter)
 	 */
@@ -67,6 +73,9 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
 	 * Check to determine if user's account has been suspended locally. Conceptually this doesn't seem like the best
 	 * place for these checks, but the LdapAuthenticationProvider never does them and waiting until after we have the
 	 * UserDetails object is consistent with how the DaoAuthenticationProvider works.
+	 *
+	 * @param user
+	 *            the user account to check
 	 */
 	protected void doPreAuthenticationChecks(UserDetails user) {
 		Assert.notNull(user, "user may not be null");

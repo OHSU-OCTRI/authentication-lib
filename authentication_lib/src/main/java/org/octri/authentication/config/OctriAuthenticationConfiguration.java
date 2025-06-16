@@ -38,6 +38,16 @@ public class OctriAuthenticationConfiguration {
 	private String contextPath;
 	private OctriAuthenticationProperties authenticationProperties;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param env
+	 *            the Spring application environment
+	 * @param authenticationProperties
+	 *            authentication configuration
+	 * @param contextPath
+	 *            the application context path (first URL path segment)
+	 */
 	public OctriAuthenticationConfiguration(Environment env, OctriAuthenticationProperties authenticationProperties,
 			@Value("${server.servlet.context-path:}") String contextPath) {
 		this.authenticationProperties = authenticationProperties;
@@ -48,25 +58,40 @@ public class OctriAuthenticationConfiguration {
 		validateRoleStyle();
 	}
 
+	/**
+	 * Whether LDAP authentication is enabled.
+	 *
+	 * @return true if LDAP authentication is enabled
+	 */
 	@Bean
 	public Boolean ldapEnabled() {
 		return authenticationProperties.getEnableLdap();
 	}
 
+	/**
+	 * Whether table-based authentication is enabled.
+	 *
+	 * @return true if table-based authentication is enabled
+	 */
 	@Bean
 	public Boolean tableBasedEnabled() {
 		return authenticationProperties.getEnableTableBased();
 	}
 
+	/**
+	 * Helper object used to construct the path to authentication-related URLs.
+	 *
+	 * @return the URL helper
+	 */
 	@Bean
-	public AuthenticationUrlHelper authenticatonUrlHelper() {
+	public AuthenticationUrlHelper authenticationUrlHelper() {
 		return new AuthenticationUrlHelper(authenticationProperties.getBaseUrl(), contextPath);
 	}
 
 	/**
 	 * Provides a default BCrypt password encoder unless overridden by the application.
 	 *
-	 * @return
+	 * @return default password encoder
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -77,6 +102,9 @@ public class OctriAuthenticationConfiguration {
 
 	/**
 	 * Throws an exception unless at least one authentication method has been enabled.
+	 *
+	 * @param env
+	 *            Spring application environment, used to look up property values
 	 */
 	private void validateAuthenticationMethods(Environment env) {
 		String errorMessage = "The authentication_lib requires at least one authentication method to be enabled. "

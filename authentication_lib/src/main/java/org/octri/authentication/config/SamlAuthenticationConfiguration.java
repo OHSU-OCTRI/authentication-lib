@@ -49,7 +49,7 @@ public class SamlAuthenticationConfiguration {
 	 *
 	 * TODO: Document the behavior of the default configuration and how to override it here
 	 *
-	 * @return
+	 * @return default SAML 2 authentication provider
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -66,7 +66,7 @@ public class SamlAuthenticationConfiguration {
 	/**
 	 * Creates a default registration repository configured with credentials for the SP and IdP.
 	 *
-	 * @return
+	 * @return default registration repository
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -86,7 +86,8 @@ public class SamlAuthenticationConfiguration {
 	 * Creates a registration resolver from the given registration repository.
 	 *
 	 * @param repository
-	 * @return
+	 *            relying party registration repository
+	 * @return default registration resolver for the repository
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -100,7 +101,8 @@ public class SamlAuthenticationConfiguration {
 	 * Creates a custom logout request resolver that populates the logout request's required NameID format.
 	 *
 	 * @param resolver
-	 * @return
+	 *            relying party registration resolver
+	 * @return default logout request resolver
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -128,7 +130,9 @@ public class SamlAuthenticationConfiguration {
 	/**
 	 * Creates a request filter that generates SAML Service Provider (SP) metadata XML.
 	 *
-	 * @return
+	 * @param resolver
+	 *            relying party registration resolver
+	 * @return default SAML metadata filter
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -139,7 +143,7 @@ public class SamlAuthenticationConfiguration {
 	/**
 	 * Loads the application's SAML decryption credential from the configured private key and certificate locations.
 	 *
-	 * @return
+	 * @return credentials used to decrypt SAML requests
 	 */
 	private Saml2X509Credential loadDecryptionCredential() {
 		var key = readPrivateKey(samlProperties.getDecryptionKeyLocation());
@@ -150,7 +154,7 @@ public class SamlAuthenticationConfiguration {
 	/**
 	 * Loads the application's SAML signing credential from the configured private key and certificate locations.
 	 *
-	 * @return
+	 * @return credentials used to sign SAML requests
 	 */
 	private Saml2X509Credential loadSigningCredential() {
 		var key = readPrivateKey(samlProperties.getSigningKeyLocation());
@@ -163,7 +167,8 @@ public class SamlAuthenticationConfiguration {
 	 * private key data in PKCS #8 format.
 	 *
 	 * @param location
-	 * @return
+	 *            location of the RSA private key file
+	 * @return private key data
 	 */
 	private RSAPrivateKey readPrivateKey(Resource location) {
 		Assert.notNull(location, "Key location cannot be null");
@@ -180,7 +185,8 @@ public class SamlAuthenticationConfiguration {
 	 * X509 certificate data.
 	 *
 	 * @param location
-	 * @return
+	 *            location of the X509 certificate
+	 * @return X509 certificate data
 	 */
 	private X509Certificate readCertificate(Resource location) {
 		Assert.notNull(location, "Certificate location cannot be null");

@@ -185,6 +185,8 @@ public class UserController {
 	 *            The {@link HttpServletRequest}
 	 * @param model
 	 *            Object holding view data
+	 * @param id
+	 *            ID of the user to update
 	 * @return User form template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
@@ -374,6 +376,9 @@ public class UserController {
 		return usernameStyle != null ? usernameStyle.toString() : null;
 	}
 
+	/**
+	 * @return path of JavaScript used for custom role handling
+	 */
 	@ModelAttribute("customRoleScript")
 	public String getCustomRoleScript() {
 		return authenticationProperties.getCustomRoleScript();
@@ -383,6 +388,7 @@ public class UserController {
 	 * Ensure that empty strings are saved as NULL values.
 	 *
 	 * @param binder
+	 *            the data binder to customize
 	 */
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {

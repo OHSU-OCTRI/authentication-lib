@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This {@link RestController} handles authentication related requests.
- * 
+ *
  * @author yateam
  */
 @RestController
@@ -15,6 +15,7 @@ public class AuthenticationController {
 
 	/**
 	 * @param user
+	 *            the current principal
 	 * @return Return the authenticated {@link Principal}.
 	 */
 	@RequestMapping("/user")

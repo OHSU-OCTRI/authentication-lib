@@ -32,9 +32,10 @@ public class SessionEventService {
 
 	/**
 	 * Log {@link SessionEvent} for the currently authenticated user. Event saved to database. Session id acquired from
-	 * {@link RequestContextHolder}. Use {@link #logEvent(EventType, String)} to manually specify the session id.
+	 * {@link RequestContextHolder}. Use {@link #logEvent(EventType, String, User)} to manually specify the session id.
 	 *
 	 * @param event
+	 *            the type of event to log
 	 */
 	public void logEvent(final EventType event) {
 		final RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
@@ -53,7 +54,9 @@ public class SessionEventService {
 	 * Log {@link SessionEvent} for the currently authenticated user. Event saved to database.
 	 *
 	 * @param event
+	 *            the type of event to log
 	 * @param sessionId
+	 *            the ID of the user's session
 	 * @param asUser
 	 *            If this is an impersonation event, pass the user being impersonated
 	 */
@@ -94,6 +97,7 @@ public class SessionEventService {
 	 * Find {@link EventType#LOGIN} event for given sessionId if one exists
 	 *
 	 * @param sessionId
+	 *            user session ID
 	 * @return Login event for session id.
 	 */
 	public Optional<SessionEvent> findLoginEvent(final String sessionId) {
@@ -104,6 +108,7 @@ public class SessionEventService {
 	 * Find {@link EventType#LOGOUT} event for given sessionId if one exists.
 	 *
 	 * @param sessionId
+	 *            user session ID
 	 * @return Logout event for session id.
 	 */
 	public Optional<SessionEvent> findLogoutEvent(final String sessionId) {
@@ -113,7 +118,9 @@ public class SessionEventService {
 	/**
 	 * Find authenticated {@link User}, otherwise throw exception.
 	 *
-	 * @return
+	 * @return the authenticated user
+	 * @throws IllegalArgumentException
+	 *             if a user could not be found
 	 */
 	private User findUser() {
 		SecurityHelper helper = new SecurityHelper(SecurityContextHolder.getContext());
