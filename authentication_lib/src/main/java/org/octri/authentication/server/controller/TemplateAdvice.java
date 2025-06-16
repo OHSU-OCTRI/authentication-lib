@@ -39,6 +39,14 @@ public class TemplateAdvice {
 	@Autowired(required = false)
 	private SamlProperties samlProperties;
 
+	/**
+	 * Adds attributes used to render authentication templates to the model used to render the template.
+	 * 
+	 * @param request
+	 *            the current servlet request
+	 * @param model
+	 *            model used to render the template
+	 */
 	@ModelAttribute
 	public void addDefaultAttributes(HttpServletRequest request, Model model) {
 		this.securityHelper = new SecurityHelper(SecurityContextHolder.getContext());

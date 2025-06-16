@@ -23,15 +23,22 @@ import jakarta.validation.Path.Node;
 @Component
 public class ValidationUtils<T> {
 
-	// See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation
+	/**
+	 * Regex used to validate email addresses.
+	 *
+	 * @see <a href=
+	 *      "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation</a>
+	 */
 	public static final String VALID_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
 	/**
 	 * Get list of {@link FieldError} used in mustache templates.
 	 *
 	 * @param object
+	 *            the bean being validated
 	 * @param validationResult
-	 * @return
+	 *            constraint violations encountered during bean validation
+	 * @return a list of errors suitable for rendering
 	 */
 	public List<FieldError> getErrors(T object, Set<ConstraintViolation<T>> validationResult) {
 		List<FieldError> errors = new ArrayList<>();

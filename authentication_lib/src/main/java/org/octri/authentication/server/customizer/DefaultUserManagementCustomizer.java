@@ -24,6 +24,18 @@ public class DefaultUserManagementCustomizer implements UserManagementCustomizer
 
     private EmailNotificationService emailNotificationService;
 
+    /**
+     * Constructor
+     * 
+     * @param authenticationProperties
+     *            configuration properties
+     * @param userService
+     *            service used to manipulate user records
+     * @param passwordResetTokenService
+     *            service used to manage password reset token strings
+     * @param emailNotificationService
+     *            service used to send email notifications
+     */
     public DefaultUserManagementCustomizer(OctriAuthenticationProperties authenticationProperties,
             UserService userService, PasswordResetTokenService passwordResetTokenService,
             EmailNotificationService emailNotificationService) {

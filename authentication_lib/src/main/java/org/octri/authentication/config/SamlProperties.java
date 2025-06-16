@@ -20,9 +20,9 @@ public class SamlProperties {
 	 * The relying party ID is included in the login and metadata URLs and cannot be changed once registered with the
 	 * IdP. Example URLs:
 	 * <br>
-	 * - Metadata: `{{contextPath}}/saml2/service-provider-metadata/{{registrationId}}`<br>
-	 * - Login initiation: `{{contextPath}}/saml2/authenticate/{{registrationId}}`<br>
-	 * - Login completion: `{{contextPath}}/login/saml2/sso/{{registrationId}}`
+	 * - Metadata: <code>{{contextPath}}/saml2/service-provider-metadata/{{registrationId}}</code><br>
+	 * - Login initiation: <code>{{contextPath}}/saml2/authenticate/{{registrationId}}</code><br>
+	 * - Login completion: <code>{{contextPath}}/login/saml2/sso/{{registrationId}}</code>
 	 */
 	private String registrationId = "default";
 
@@ -93,114 +93,268 @@ public class SamlProperties {
 	 */
 	private String logoutPath = "{baseUrl}/logout/saml2/slo";
 
+	/**
+	 * Gets whether SAML authentication is enabled.
+	 * 
+	 * @return true if SAML auth is enabled
+	 */
 	public Boolean getEnabled() {
 		return enabled;
 	}
 
+	/**
+	 * Sets whether SAML authentication is enabled.
+	 * 
+	 * @param enabled
+	 *            true if enabled, else false
+	 */
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	/**
+	 * Gets the ID of the relying party registration.
+	 * 
+	 * @return ID of the relying party registration
+	 */
 	public String getRegistrationId() {
 		return registrationId;
 	}
 
+	/**
+	 * Sets the ID of the relying party registration.
+	 * 
+	 * @param registrationId
+	 *            the ID of the relying party registration
+	 */
 	public void setRegistrationId(String registrationId) {
 		this.registrationId = registrationId;
 	}
 
+	/**
+	 * Gets the location of the RSA signing key file.
+	 *
+	 * @return the location of the RSA signing key file
+	 */
 	public Resource getSigningKeyLocation() {
 		return signingKeyLocation;
 	}
 
+	/**
+	 * Sets the location of the RSA signing key file.
+	 * 
+	 * @param signingKeyLocation
+	 *            the location of the RSA signing key file
+	 */
 	public void setSigningKeyLocation(Resource signingKeyLocation) {
 		this.signingKeyLocation = signingKeyLocation;
 	}
 
+	/**
+	 * Gets the location of the signing X509 certificate file.
+	 *
+	 * @return the location of the signing X509 certificate file
+	 */
 	public Resource getSigningCertLocation() {
 		return signingCertLocation;
 	}
 
+	/**
+	 * Sets the location of the signing X509 certificate file.
+	 * 
+	 * @param signingCertLocation
+	 *            the location of the signing X509 certificate file
+	 */
 	public void setSigningCertLocation(Resource signingCertLocation) {
 		this.signingCertLocation = signingCertLocation;
 	}
 
+	/**
+	 * Gets the location of the RSA decryption key file.
+	 * 
+	 * @return the location of the RSA decryption key file
+	 */
 	public Resource getDecryptionKeyLocation() {
 		return decryptionKeyLocation;
 	}
 
+	/**
+	 * Sets the location of the RSA decryption key file.
+	 * 
+	 * @param decryptionKeyLocation
+	 *            the location of the RSA decryption key file
+	 */
 	public void setDecryptionKeyLocation(Resource decryptionKeyLocation) {
 		this.decryptionKeyLocation = decryptionKeyLocation;
 	}
 
+	/**
+	 * Gets the location of the decryption X509 certificate file.
+	 * 
+	 * @return the location of the decryption X509 certificate file
+	 */
 	public Resource getDecryptionCertLocation() {
 		return decryptionCertLocation;
 	}
 
+	/**
+	 * Sets the location of the decryption X509 certificate file.
+	 * 
+	 * @param decryptionCertLocation
+	 *            the location of the decryption X509 certificate file
+	 */
 	public void setDecryptionCertLocation(Resource decryptionCertLocation) {
 		this.decryptionCertLocation = decryptionCertLocation;
 	}
 
+	/**
+	 * Gets the IdP metadata URI.
+	 * 
+	 * @return the IdP metadata URI
+	 */
 	public String getIdpMetadataUri() {
 		return idpMetadataUri;
 	}
 
+	/**
+	 * Sets the URI of the IdP metadata.
+	 * 
+	 * @param idpMetadataUri
+	 *            the URI of the IdP metadata
+	 */
 	public void setIdpMetadataUri(String idpMetadataUri) {
 		this.idpMetadataUri = idpMetadataUri;
 	}
 
+	/**
+	 * Gets the name of the group required for login.
+	 * 
+	 * @return the name of the group required for login
+	 */
 	public String getRequiredGroup() {
 		return requiredGroup;
 	}
 
+	/**
+	 * Sets the name of the group required for login.
+	 * 
+	 * @param requiredGroup
+	 *            the name of the group required for login
+	 */
 	public void setRequiredGroup(String requiredGroup) {
 		this.requiredGroup = requiredGroup;
 	}
 
+	/**
+	 * Gets the ID of the SAML attribute used to provide the user ID.
+	 * 
+	 * @return the ID of the SAML attribute used to provide the user ID
+	 */
 	public String getUseridAttribute() {
 		return useridAttribute;
 	}
 
+	/**
+	 * Sets the ID of the SAML attribute used to provide the user ID.
+	 * 
+	 * @param useridAttribute
+	 *            the ID of the SAML attribute used to provide the user ID
+	 */
 	public void setUseridAttribute(String useridAttribute) {
 		this.useridAttribute = useridAttribute;
 	}
 
+	/**
+	 * Gets the ID of the SAML attribute used to provide the user's email.
+	 * 
+	 * @return the ID of the SAML attribute used to provide the user's email
+	 */
 	public String getEmailAttribute() {
 		return emailAttribute;
 	}
 
+	/**
+	 * Sets the ID of the SAML attribute used to provide the user's email.
+	 * 
+	 * @param emailAttribute
+	 *            the ID of the SAML attribute used to provide the user's email
+	 */
 	public void setEmailAttribute(String emailAttribute) {
 		this.emailAttribute = emailAttribute;
 	}
 
+	/**
+	 * Gets the ID of the SAML attribute used to provide the user's first name.
+	 * 
+	 * @return the ID of the SAML attribute used to provide the user's first name
+	 */
 	public String getFirstNameAttribute() {
 		return firstNameAttribute;
 	}
 
+	/**
+	 * Sets the ID of the SAML attribute used to provide the user's first name.
+	 * 
+	 * @param firstNameAttribute
+	 *            the ID of the SAML attribute used to provide the user's first name
+	 */
 	public void setFirstNameAttribute(String firstNameAttribute) {
 		this.firstNameAttribute = firstNameAttribute;
 	}
 
+	/**
+	 * Gets the ID of the SAML attribute used to provide the user's last name.
+	 * 
+	 * @return the ID of the SAML attribute used to provide the user's last name
+	 */
 	public String getLastNameAttribute() {
 		return lastNameAttribute;
 	}
 
+	/**
+	 * Sets the ID of the SAML attribute used to provide the user's last name.
+	 * 
+	 * @param lastNameAttribute
+	 *            the ID of the SAML attribute used to provide the user's last name
+	 */
 	public void setLastNameAttribute(String lastNameAttribute) {
 		this.lastNameAttribute = lastNameAttribute;
 	}
 
+	/**
+	 * Gets the ID of the SAML attribute used to provide the user's group assignments.
+	 * 
+	 * @return the ID of the SAML attribute used to provide the user's group assignments
+	 */
 	public String getGroupAttribute() {
 		return groupAttribute;
 	}
 
+	/**
+	 * Sets the ID of the SAML attribute used to provide the user's group assignments.
+	 * 
+	 * @param groupAttribute
+	 *            the ID of the SAML attribute used to provide the user's group assignments
+	 */
 	public void setGroupAttribute(String groupAttribute) {
 		this.groupAttribute = groupAttribute;
 	}
 
+	/**
+	 * Gets the configured SAML logout path.
+	 * 
+	 * @return the configured SAML logout path
+	 */
 	public String getLogoutPath() {
 		return logoutPath;
 	}
 
+	/**
+	 * Sets the SAML logout path.
+	 * 
+	 * @param logoutPath
+	 *            the SAML logout path
+	 */
 	public void setLogoutPath(String logoutPath) {
 		this.logoutPath = logoutPath;
 	}

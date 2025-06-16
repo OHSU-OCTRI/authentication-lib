@@ -14,7 +14,6 @@ import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.DuplicateEmailException;
-import org.octri.authentication.server.security.exception.InvalidPasswordException;
 import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
@@ -92,6 +91,7 @@ public class UserService {
 	 *            the user model to save
 	 * @return the saved user model
 	 * @throws UserManagementException
+	 *             if an error occurs when saving the user
 	 */
 	public User save(User user) throws UserManagementException {
 		Assert.notNull(user, "Must provide a user");
@@ -180,11 +180,16 @@ public class UserService {
 	 * the User is returned paired with a list of errors.
 	 *
 	 * @param user
+	 *            user account
 	 * @param currentPassword
+	 *            the user's current password
 	 * @param newPassword
+	 *            the user's new password
 	 * @param confirmPassword
+	 *            password confirmation; must match newPassword
 	 * @return Updated user
 	 * @throws UserManagementException
+	 *             if there is an error saving the user
 	 */
 	public ImmutablePair<User, List<String>> changePassword(final User user, final String currentPassword,
 			final String newPassword, final String confirmPassword)
@@ -211,7 +216,9 @@ public class UserService {
 	 * Set the password for the given user to an encoded value.
 	 *
 	 * @param user
+	 *            user account
 	 * @param newPassword
+	 *            the password to encode
 	 */
 	public void setEncodedPassword(User user, String newPassword) {
 		user.setPassword(passwordEncoder.encode(newPassword));
@@ -221,11 +228,12 @@ public class UserService {
 	 * Validates a password using the {@link PasswordConstraintValidator} as well as some other checks.
 	 *
 	 * @param user
+	 *            user account
 	 * @param currentPassword
 	 *            null or the current password. If the currentPassword is null, this indicates the user is resetting
 	 *            their password and this validation step should be skipped.
 	 * @param newPassword
-	 *            The new pasword.
+	 *            The new password.
 	 * @param confirmPassword
 	 *            Confirm the new password.
 	 * @return List of error messages, or an empty list if the password passes validation.
@@ -268,10 +276,13 @@ public class UserService {
 	 * Update a user's password per reset request.
 	 *
 	 * @param newPassword
+	 *            the user's new password
 	 * @param confirmPassword
+	 *            the password confirmation, must match newPassword
 	 * @param token
-	 * @throws InvalidPasswordException
+	 *            single-use password reset token value
 	 * @throws UserManagementException
+	 *             if there is an error saving the user
 	 * @return ImmutablePair with the first entry the saved User and the second a list of validation error messages.
 	 */
 	public ImmutablePair<User, List<String>> resetPassword(final String newPassword,
@@ -303,6 +314,7 @@ public class UserService {
 	 * Resets credential expiration and consecutive login failures.
 	 *
 	 * @param user
+	 *            account to reset
 	 */
 	private void resetCredentialMetadata(User user) {
 		Integer credentialsExpirationPeriod = authenticationProperties.getCredentialsExpirationPeriod();
@@ -311,12 +323,47 @@ public class UserService {
 		user.setConsecutiveLoginFailures(0);
 	}
 
+	/**
+	 * Saves user with newPassword and updates {@link User#credentialsExpirationDate}. If validation fails,
+	 * the User is returned paired with a list of errors.
+	 *
+	 * @param user
+	 *            user account
+	 * @param currentPassword
+	 *            the user's current password
+	 * @param newPassword
+	 *            the user's new password
+	 * @param confirmPassword
+	 *            password confirmation; must match newPassword
+	 * @param map
+	 *            ignored
+	 * @return the user account, with a list of errors if the password failed validation
+	 * @throws UserManagementException
+	 *             if there is an error saving the user
+	 */
 	public ImmutablePair<User, List<String>> changePassword(User user, String currentPassword, String newPassword,
 			String confirmPassword, Map<String, String[]> map)
 			throws UserManagementException {
 		return this.changePassword(user, currentPassword, newPassword, confirmPassword);
 	}
 
+	/**
+	 * Updates a user's password via reset request.
+	 *
+	 * @param user
+	 *            user account
+	 * @param newPassword
+	 *            the user's new password
+	 * @param confirmPassword
+	 *            password confirmation; must match newPassword
+	 * @param token
+	 *            single-use password reset token value
+	 * @param parameterMap
+	 *            ignored
+	 * @return the user account, with a list of errors if the password failed validation
+	 * @throws UserManagementException
+	 *             if there is an error saving the user
+	 */
 	public ImmutablePair<User, List<String>> resetPassword(User user, String newPassword, String confirmPassword,
 			String token, Map<String, String[]> parameterMap)
 			throws UserManagementException {
@@ -324,10 +371,11 @@ public class UserService {
 	}
 
 	/**
-	 * Determines whether the user can reset a password. They must be table based and not be disabled in any way.
+	 * Determines whether the user can reset their password. They must be table based and not be disabled in any way.
 	 *
 	 * @param user
-	 * @return
+	 *            the user to test
+	 * @return true if the user can reset their password
 	 */
 	public boolean canResetPassword(User user) {
 		return user.isTableBasedUser() && user.getEnabled() && !user.getAccountLocked() && !user.getAccountExpired();

@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public interface UserManagementCustomizer {
 
+        /**
+         * Default redirect after user creating or updating users.
+         */
         public static final String DEFAULT_REDIRECT = "redirect:/admin/user/list";
 
         /**

@@ -29,6 +29,14 @@ public class DatabaseUserSamlAssertionValidator implements Converter<AssertionTo
 	private UserService userService;
 	private SamlProperties samlProperties;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param userService
+	 *            service used to fetch database user details
+	 * @param samlProperties
+	 *            SAML authentication configuration
+	 */
 	public DatabaseUserSamlAssertionValidator(UserService userService, SamlProperties samlProperties) {
 		log.debug("Constructing with userService=" + userService + " samlProperties=" + samlProperties);
 		this.userService = userService;

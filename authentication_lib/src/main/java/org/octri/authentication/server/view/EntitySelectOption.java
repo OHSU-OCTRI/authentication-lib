@@ -4,16 +4,17 @@ import java.util.Collection;
 
 /**
  * Used for UI select inputs. Wraps the choice along with its selected status.
- * 
+ *
  * @author lawhead
  *
  * @param <T>
+ *            the type of object wrapped by the option
  */
 public class EntitySelectOption<T extends Identified & Labelled> extends SelectOption<T> {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param choice
 	 *            - lookup list item
 	 * @param selected
@@ -27,7 +28,7 @@ public class EntitySelectOption<T extends Identified & Labelled> extends SelectO
 
 	/**
 	 * Constructor used for an option in a multi-select.
-	 * 
+	 *
 	 * @param choice
 	 *            - lookup list item
 	 * @param selected
@@ -39,6 +40,11 @@ public class EntitySelectOption<T extends Identified & Labelled> extends SelectO
 		this.setValue(choice.getId().toString());
 	}
 
+	/**
+	 * Gets the entity's ID
+	 * 
+	 * @return the ID value
+	 */
 	public Long getId() {
 		return this.getChoice().getId();
 	}

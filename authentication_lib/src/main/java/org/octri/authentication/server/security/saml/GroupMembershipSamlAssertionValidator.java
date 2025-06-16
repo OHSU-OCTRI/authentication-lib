@@ -28,10 +28,19 @@ public class GroupMembershipSamlAssertionValidator implements Converter<Assertio
 
 	private SamlProperties samlProperties;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param samlProperties
+	 *            SAML authentication configuration
+	 */
 	public GroupMembershipSamlAssertionValidator(SamlProperties samlProperties) {
 		this.samlProperties = samlProperties;
 	}
 
+	/**
+	 * Validates that the user is a member of the expected group.
+	 */
 	@Override
 	public Saml2ResponseValidatorResult convert(AssertionToken assertionToken) {
 		Saml2ResponseValidatorResult result = OpenSaml4AuthenticationProvider

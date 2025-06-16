@@ -8,42 +8,52 @@ public class AuthenticationUrlHelper {
 	private String baseUrl;
 	private String contextPath;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param baseUrl
+	 *            the application's base URL, including the hostname, port, and scheme.
+	 * @param contextPath
+	 *            the application context path (initial path segment after the base URL)
+	 */
 	public AuthenticationUrlHelper(String baseUrl, String contextPath) {
 		this.baseUrl = baseUrl;
 		this.contextPath = contextPath;
 	}
 
 	/**
-	 * Get the application's base URL prefix, including the hostname, port, and scheme.
+	 * Gets the application's base URL, including the hostname, port, and scheme.
 	 *
-	 * @return
+	 * @return the configured base URL
 	 */
 	public String getBaseUrl() {
 		return baseUrl;
 	}
 
 	/**
-	 * Set the application's base URL prefix, including the hostname, port, and scheme.
+	 * Sets the application's base URL, including the hostname, port, and scheme.
 	 *
 	 * @param baseUrl
+	 *            the base URL to set
 	 */
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 
 	/**
-	 * Get the application's context path.
+	 * Gets the application's context path (initial path segment after the base URL).
 	 *
-	 * @return
+	 * @return the configured context path
 	 */
 	public String getContextPath() {
 		return contextPath;
 	}
 
 	/**
-	 * Set the application's context path.
+	 * Sets the application's context path.
 	 *
 	 * @param contextPath
+	 *            the context path to set
 	 */
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
@@ -71,6 +81,7 @@ public class AuthenticationUrlHelper {
 	 * The full URL for resetting a password.
 	 *
 	 * @param resetToken
+	 *            a single-use password reset token string
 	 * @return The URL for resetting user's password, including token.
 	 */
 	public String getPasswordResetUrl(final String resetToken) {

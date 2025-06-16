@@ -36,26 +36,58 @@ public class PasswordResetTokenService {
 	@Resource
 	private PasswordResetTokenRepository passwordResetTokenRepository;
 
+	/**
+	 * Finds the reset token record with the given ID.
+	 *
+	 * @param id
+	 *            the ID to search by
+	 * @return the reset token wih the given ID
+	 */
 	@Transactional(readOnly = true)
 	public PasswordResetToken find(Long id) {
 		return passwordResetTokenRepository.findById(id).get();
 	}
 
+	/**
+	 * Finds a reset token record with the given token string.
+	 *
+	 * @param token
+	 *            the token string to search by
+	 * @return the reset token with the given token string
+	 */
 	@Transactional(readOnly = true)
 	public PasswordResetToken findByToken(String token) {
 		return passwordResetTokenRepository.findByToken(token);
 	}
 
+	/**
+	 * Saves a reset token record to the database.
+	 *
+	 * @param passwordResetToken
+	 *            a reset token object
+	 * @return the persisted reset token
+	 */
 	@Transactional
 	public PasswordResetToken save(PasswordResetToken passwordResetToken) {
 		return passwordResetTokenRepository.save(passwordResetToken);
 	}
 
+	/**
+	 * Gets all of the reset tokens.
+	 *
+	 * @return a list of all reset tokens
+	 */
 	@Transactional(readOnly = true)
 	public List<PasswordResetToken> findAll() {
 		return (List<PasswordResetToken>) passwordResetTokenRepository.findAll();
 	}
 
+	/**
+	 * Deletes the reset token record with the given ID.
+	 *
+	 * @param id
+	 *            ID of the record to delete
+	 */
 	@Transactional
 	public void delete(Long id) {
 		PasswordResetToken passwordResetToken = passwordResetTokenRepository.findById(id).orElse(null);
@@ -64,6 +96,13 @@ public class PasswordResetTokenService {
 		}
 	}
 
+	/**
+	 * Finds the reset token with the latest expiration date associated with the given user ID.
+	 *
+	 * @param userId
+	 *            user ID to search by
+	 * @return latest reset token associated with the user ID, empty if none exist
+	 */
 	public Optional<PasswordResetToken> findLatest(Long userId) {
 		return passwordResetTokenRepository.findFirstByUserIdOrderByExpiryDateDesc(userId);
 	}
@@ -86,6 +125,7 @@ public class PasswordResetTokenService {
 	 * {@link OctriAuthenticationProperties}. Tokens are persisted in the database.
 	 *
 	 * @param user
+	 *            user account
 	 * @return Returns a new {@link PasswordResetToken} for the given user.
 	 */
 	public PasswordResetToken generatePasswordResetToken(final User user) {
@@ -102,7 +142,9 @@ public class PasswordResetTokenService {
 	 * in the database.
 	 *
 	 * @param user
+	 *            user account
 	 * @param tokenDuration
+	 *            how long the token should be valid
 	 * @return Returns a new {@link PasswordResetToken} for the given user.
 	 */
 	public PasswordResetToken generatePasswordResetToken(final User user, Duration tokenDuration) {
@@ -116,7 +158,7 @@ public class PasswordResetTokenService {
 	/**
 	 * Find all active tokens. The transient field 'tokenUrl' is set for use in mustache templates.
 	 *
-	 * @return
+	 * @return list of active tokens, with populated token URLs
 	 */
 	public List<PasswordResetToken> findAllActiveTokens() {
 		List<PasswordResetToken> tokens = passwordResetTokenRepository

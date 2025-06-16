@@ -11,7 +11,6 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.octri.authentication.MethodSecurityExpressions;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
-import org.octri.authentication.server.security.exception.InvalidLdapUserDetailsException;
 import org.octri.authentication.server.security.exception.UserManagementException;
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.service.EmailNotificationService;
@@ -42,15 +41,27 @@ import jakarta.servlet.http.HttpServletRequest;
 @Scope("session")
 public class UserPasswordController {
 
+	/**
+	 * Message displayed when a password reset request is submitted.
+	 */
 	public static final String EMAIL_SENT_CONFIRMATION_TEMPLATE = "An email was sent to your address containing instructions to change your password. This request will expire %s"
 			+ ". If you do not receive an email in a few minutes please try again or contact your system administrator.";
 
+	/**
+	 * Message displayed when an unexpected exception occurs while handling a password reset request.
+	 */
 	public static final String GENERIC_ERROR_MESSAGE = "There was an unexpected error processing your request. "
 			+ "Please try again or contact your system administrator if this persists.";
 
+	/**
+	 * Message displayed when password reset is attempted for an LDAP account.
+	 */
 	public static final String LDAP_USER_WARNING_MESSAGE = "The account you entered cannot have the password reset. "
 			+ "If you feel this is in error, please contact your system administrator.";
 
+	/**
+	 * Message displayed when there is no account with the specified email address.
+	 */
 	public static final String UNKNOWN_EMAIL_MESSAGE = "The email address you entered cannot be found. "
 			+ "Please try a different address or contact your system administrator if you feel this is in error.";
 
@@ -71,6 +82,10 @@ public class UserPasswordController {
 	/**
 	 * Present a form for changing a password when credentials are expired.
 	 *
+	 * @param model
+	 *            object holding view data
+	 * @param request
+	 *            the current {@link HttpServletRequest}
 	 * @return change template
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
@@ -105,7 +120,6 @@ public class UserPasswordController {
 	 * @param model
 	 *            Object holding view data
 	 * @return Redirects to /login
-	 * @throws InvalidLdapUserDetailsException
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
 	@PostMapping("user/password/change")
@@ -164,11 +178,13 @@ public class UserPasswordController {
 	 * Handles generating and sending a password reset token.
 	 *
 	 * @param email
-	 *            The users email address.
+	 *            The user's email address.
 	 * @param model
 	 *            Object holding view data
 	 * @param request
 	 *            The {@link HttpServletRequest}
+	 * @param redirectAttributes
+	 *            The {@link RedirectAttributes}
 	 * @return Returns to the same forgot template and presents a confirmation message.
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ANONYMOUS)
@@ -236,8 +252,10 @@ public class UserPasswordController {
 	/**
 	 * Persist reset password.
 	 *
-	 * @param password
+	 * @param newPassword
 	 *            The user's new password
+	 * @param confirmPassword
+	 *            Confirmation of the user's new password
 	 * @param token
 	 *            The user's password reset token.
 	 * @param redirectAttributes
@@ -299,6 +317,7 @@ public class UserPasswordController {
 	 * Given a token, find the associated user and check expiration.
 	 *
 	 * @param token
+	 *            single-use reset token value
 	 * @return the user if the token exists and is active, null otherwise
 	 */
 	private User getTokenUser(String token) {
@@ -309,6 +328,17 @@ public class UserPasswordController {
 		return null;
 	}
 
+	/**
+	 * Handles administrator requests to create a token for a user.
+	 *
+	 * @param model
+	 *            object holding view data
+	 * @param userId
+	 *            ID of the user to create a token for
+	 * @param redirectAttributes
+	 *            redirect attributes
+	 * @return redirects to the user form
+	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/password/token/refresh")
 	public String passwordTokenRefresh(final ModelMap model, @RequestParam(name = "userId") Long userId,
@@ -319,6 +349,19 @@ public class UserPasswordController {
 		return "redirect:/admin/user/" + userId;
 	}
 
+	/**
+	 * Handles administrator requests to create a temporary password for a user.
+	 *
+	 * @param model
+	 *            object holding view data
+	 * @param userId
+	 *            ID of the user to create a temporary password for
+	 * @param redirectAttributes
+	 *            redirect attributes
+	 * @return redirects to the user form
+	 * @throws UserManagementException
+	 *             if there is an error saving the user
+	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/password/generate")
 	public String generatePassword(final ModelMap model, @RequestParam(name = "userId") Long userId,

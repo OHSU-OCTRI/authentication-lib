@@ -31,7 +31,7 @@ public class AssertionUtils {
 	 *            - assertion attributes as returned by getAssertionAttributes
 	 * @param attributeKey
 	 *            - attribute key
-	 * @return
+	 * @return the attribute value
 	 */
 	public static String getAttributeValue(Map<String, List<Object>> attributes, String attributeKey) {
 		return (String) CollectionUtils.firstElement(attributes.get(attributeKey));
@@ -40,9 +40,12 @@ public class AssertionUtils {
 	/**
 	 * Extracted from Spring Security's {@link OpenSaml4AuthenticationProvider}.
 	 *
-	 * @see https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java
+	 * @see <a href=
+	 *      "https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java">OpenSaml4AuthenticationProvider
+	 *      code</a>
 	 * @param assertion
-	 * @return
+	 *            SAML assertion
+	 * @return a map containing the assertion's attributes
 	 */
 	public static Map<String, List<Object>> getAssertionAttributes(Assertion assertion) {
 		Map<String, List<Object>> attributeMap = new LinkedHashMap<>();
@@ -64,9 +67,12 @@ public class AssertionUtils {
 	/**
 	 * Extracted from Spring Security's {@link OpenSaml4AuthenticationProvider}.
 	 *
-	 * @see https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java
+	 * @see <a href=
+	 *      "https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java">OpenSaml4AuthenticatoinProvider
+	 *      code</a>
 	 * @param xmlObject
-	 * @return
+	 *            XML node
+	 * @return the node's value
 	 */
 	private static Object getXmlObjectValue(XMLObject xmlObject) {
 		if (xmlObject instanceof XSAny) {

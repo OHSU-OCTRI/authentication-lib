@@ -34,6 +34,16 @@ public class DatabaseUserAuthenticationConverter implements Converter<ResponseTo
 	private UserService userService;
 	private UserUserRoleService userUserRoleService;
 
+	/**
+	 * Constructor
+	 *
+	 * @param userService
+	 *            service used to fetch database user details
+	 * @param userUserRoleService
+	 *            service used to fetch database user roles
+	 * @param samlProperties
+	 *            SAML authentication configuration
+	 */
 	public DatabaseUserAuthenticationConverter(UserService userService, UserUserRoleService userUserRoleService,
 			SamlProperties samlProperties) {
 		this.samlProperties = samlProperties;

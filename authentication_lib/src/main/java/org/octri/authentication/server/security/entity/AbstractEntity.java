@@ -23,25 +23,46 @@ public abstract class AbstractEntity implements Serializable, Identified {
 
 	private static final long serialVersionUID = 3042616837618435959L;
 
+	/**
+	 * Unique identifier for the entity.
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	protected Long id;
 
+	/**
+	 * Default constructor.
+	 */
 	public AbstractEntity() {
 		super();
 	}
 
+	/**
+	 * Convenience constructor that sets the {@link #id} property.
+	 *
+	 * @param id
+	 *            unique identifier value
+	 */
 	public AbstractEntity(Long id) {
 		super();
 		this.id = id;
 	}
 
+	/**
+	 * Gets the entity's ID.
+	 */
 	@Override
 	public Long getId() {
 		return this.id;
 	}
 
+	/**
+	 * Sets the entity's ID.
+	 * 
+	 * @param id
+	 *            unique identifier value
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}

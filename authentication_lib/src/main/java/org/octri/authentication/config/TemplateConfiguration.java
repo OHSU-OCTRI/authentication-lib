@@ -50,6 +50,14 @@ public class TemplateConfiguration {
 	private MustacheProperties mustacheProperties;
 	private ApplicationContext applicationContext;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param mustacheProperties
+	 *            Mustache template configuration
+	 * @param applicationContext
+	 *            Spring application context
+	 */
 	public TemplateConfiguration(MustacheProperties mustacheProperties, ApplicationContext applicationContext) {
 		this.mustacheProperties = mustacheProperties;
 		this.applicationContext = applicationContext;

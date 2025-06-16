@@ -46,8 +46,10 @@ public class UserApiController {
 	 * Searches the database for the username to determine whether it is taken
 	 *
 	 * @param username
+	 *            username to test
 	 * @param model
-	 * @return
+	 *            template model
+	 * @return a JSON response indicating whether the username is already in use
 	 */
 	@RequestMapping(path = "admin/user/taken/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> taken(@PathVariable("username") String username, Model model) {
@@ -61,7 +63,8 @@ public class UserApiController {
 	 * Searches LDAP for the username and provides user information.
 	 *
 	 * @param username
-	 * @return
+	 *            username to search by
+	 * @return user details if a user with the given username is present in LDAP, or an error message
 	 */
 	@PreAuthorize(MethodSecurityExpressions.ADMIN_OR_SUPER)
 	@PostMapping("admin/user/ldapLookup")

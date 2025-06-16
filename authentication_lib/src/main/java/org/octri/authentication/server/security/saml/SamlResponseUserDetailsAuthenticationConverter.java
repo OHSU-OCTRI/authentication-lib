@@ -31,6 +31,12 @@ public class SamlResponseUserDetailsAuthenticationConverter implements Converter
 
 	private SamlProperties samlProperties;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param samlProperties
+	 *            SAML configuration properties
+	 */
 	public SamlResponseUserDetailsAuthenticationConverter(SamlProperties samlProperties) {
 		this.samlProperties = samlProperties;
 	}

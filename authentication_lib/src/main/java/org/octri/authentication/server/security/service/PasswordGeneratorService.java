@@ -37,6 +37,7 @@ public class PasswordGeneratorService {
 	 * @param authProperties
 	 *            The authentication configuration
 	 * @throws IOException
+	 *             if an error occurs when reading the dictionary file
 	 */
 	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig passwordGenConfig,
 			@Autowired OctriAuthenticationProperties authProperties)
@@ -64,7 +65,7 @@ public class PasswordGeneratorService {
 	/**
 	 * Whether this service is enabled allowing generation of temporary passwords
 	 *
-	 * @return
+	 * @return true if the service is enabled
 	 */
 	public boolean isEnabled() {
 		return enabled;

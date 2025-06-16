@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * See {@link UserService}
  *
  * Adapted from ChimeraAuthenticationFailureHandler.
- * 
+ *
  * @author yateam
  */
 @Component
@@ -41,8 +41,11 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 	 * Creates a new {@link LoginAttempt} record for an unsuccessful login
 	 *
 	 * @param username
+	 *            the username provided
 	 * @param error
+	 *            message describing why the login failed
 	 * @param request
+	 *            the login request
 	 */
 	protected void recordLoginFailure(String username, String error, HttpServletRequest request) {
 		LoginAttempt attempt = new LoginAttempt();
@@ -56,9 +59,11 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 
 	/**
 	 * Increments the failed attempts counter
-	 * 
+	 *
 	 * @param username
+	 *            username provided on login
 	 * @param exception
+	 *            exception describing why authentication failed
 	 */
 	protected void recordUserFailedAttempts(String username, AuthenticationException exception) {
 		if (exception.getClass() == BadCredentialsException.class && userService.findByUsername(username) != null) {

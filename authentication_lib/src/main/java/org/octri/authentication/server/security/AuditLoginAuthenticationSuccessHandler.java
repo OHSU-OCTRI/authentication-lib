@@ -29,6 +29,14 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 	@Autowired
 	private UserService userService;
 
+	/**
+	 * Records a successful login attempt.
+	 *
+	 * @param auth
+	 *            authenticated principal
+	 * @param request
+	 *            the successful login request
+	 */
 	protected void recordLoginSuccess(Authentication auth, HttpServletRequest request) {
 		LoginAttempt attempt = new LoginAttempt();
 		attempt.setUsername(auth.getName());
@@ -38,6 +46,14 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 		loginAttemptService.save(attempt);
 	}
 
+	/**
+	 * Resets the failed login attempts for the given authenticated principal back to zero.
+	 *
+	 * @param auth
+	 *            authenticated principal
+	 * @throws UserManagementException
+	 *             if the user cannot be saved
+	 */
 	protected void resetUserFailedAttempts(Authentication auth)
 			throws UserManagementException {
 		User user = userService.findByUsername(auth.getName());
