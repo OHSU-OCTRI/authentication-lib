@@ -21,16 +21,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Java build environmant
+      - name: Set up Java build environment
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Build with Maven
         run: mvn package
-      
+
       - name: Get Version from POM
         id: get-version
         run: |
@@ -39,7 +41,8 @@ jobs:
 
       - name: Publish SNAPSHOT JAR
         if: github.ref == 'refs/heads/main' && contains(env.version, '-SNAPSHOT')
-        run: mvn deploy -DskipTests
+        run: mvn deploy -DskipTests -Pci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 

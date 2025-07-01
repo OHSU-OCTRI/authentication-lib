@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade to jQuery 3.7.1.
 - Upgrade to jQuery UI 1.14.1.
 - Upgrade to Font Awesome 6.7.2.
+- Upgrade to Bootstrap 5.3.7.
+- Upgrade to prettytime 5.0.9.
+- Upgrade to passay 1.6.6.
+- Sign artifacts with GPG. (CIS-3191)
 
 ## [2.1.2] - 2024-12-20
 
