@@ -37,6 +37,7 @@ public class TemplateConfiguration {
 			"authlib_fragments/login_form.mustache",
 			"authlib_fragments/login.mustache",
 			"authlib_fragments/navbar.mustache",
+			"authlib_fragments/session_timeout_modal.mustache",
 			"authlib_fragments/user/password/forgot.mustache",
 			"authlib_fragments/user/password/form.mustache",
 			"authlib_fragments/user/password/password_info.mustache",
@@ -52,7 +53,7 @@ public class TemplateConfiguration {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param mustacheProperties
 	 *            Mustache template configuration
 	 * @param applicationContext
