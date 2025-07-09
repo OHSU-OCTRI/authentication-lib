@@ -1,0 +1,5 @@
+{{! Installs the session timeout modal for users who are logged in, with a two minute warning period. }}
+{{#isLoggedIn}}
+{{>authlib_fragments/session_timeout_modal}}
+<script type="text/javascript" src="{{req.contextPath}}/assets/js/install-session-timeout.js"></script>
+{{/isLoggedIn}}

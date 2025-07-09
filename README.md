@@ -88,10 +88,16 @@ If using the standard Docker/MySQL setup, start the MySQL container first to cre
 
 ### JavaScript
 
-`authlib.js` the application context path to generate valid URLs for links. To provide the application context add the following meta tag to your pages. The trailing slash is required.
+`authlib.js` requires the application context path to generate valid URLs for links. To provide the application context add the following meta tag to your pages. The trailing slash is required.
 
 ```html
 <meta name="ctx" content="{{req.contextPath}}/" />
+```
+
+Alternatively, you can include the following template fragment in your page header.
+
+```mustache
+{{>authlib_fragments/meta_tags}}
 ```
 
 ### Session Timeout and Cookie Settings

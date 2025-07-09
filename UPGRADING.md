@@ -1,5 +1,11 @@
 # Upgrading
 
+## Upgrading to 2.2.0
+
+Release 2.2.0 includes support for notifying users when their session is about to expire. When enabled, a modal dialog is displayed when the user's session is about to expire, with the option to stay logged in. If the user does not interact with the dialog before the session times out, they are automatically logged out.
+
+See [SESSION_TIMEOUT_NOTIFICATION.md](docs/SESSION_TIMEOUT_NOTIFICATION.md) for instructions on using this feature.
+
 ## Upgrading to 2.0.0
 
 Release 2.0.0 significantly improves the flexibility of the user management interface. Many old and infrequently-used methods have also been eliminated.
