@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add "sessionTimeoutSeconds" attribute to the default template advice. (CIS-1329)
 - Add JavaScript to notify users when their session is about to expire. See [UPGRADING.md](UPGRADING.md) for detailed instructions on how to use this feature in your application. (CIS-1329)
 - Add a template fragment with the required `<meta>` tags.
+- Add dummy code to the Bootstrap 5 UI package to ensure that a Javadoc jar is built for Maven Central. (CIS-3194)
 
 ### Changed
 
