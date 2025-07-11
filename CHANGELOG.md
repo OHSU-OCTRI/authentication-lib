@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade to prettytime 5.0.9.
 - Upgrade to passay 1.6.6.
 - Sign artifacts with GPG. (CIS-3191)
+- Publish releases to Maven Central. (CIS-3194)
 
 ## [2.1.2] - 2024-12-20
 
