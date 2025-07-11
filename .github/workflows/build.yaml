@@ -40,10 +40,22 @@ jobs:
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Publish to GitHub Packages
+        if: github.ref == 'refs/heads/main' || startsWith('refs/tags', github.ref)
         run: mvn deploy -DskipTests -Pci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+  publish:
+    name: Publish to Maven Central
+    needs: build-java-source
+    if: startsWith('refs/tags', github.ref)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Java environment for Maven Central
         uses: actions/setup-java@v4
@@ -56,6 +68,12 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Get version from POM
+        id: get-version
+        run: |
+          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$version" >> $GITHUB_ENV
 
       - name: Publish release to Maven Central
         if: startsWith('refs/tags', github.ref) && !contains(env.version, '-SNAPSHOT')
