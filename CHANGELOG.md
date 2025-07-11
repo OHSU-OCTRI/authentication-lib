@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [Unreleased]
+
+## [2.2.0] - 2025-07-11
 
 ### Added
 
@@ -98,7 +100,6 @@ The following methods have been deprecated and will be removed in version 2.0.0.
 - The `UserService` method `sendNotificationEmail` is deprecated. Applications should send their own notifications for use cases that aren't fully supported by this library.
 - The `UserService` method `isLdapUser` is deprecated. As of version 2.0.0, whether a user authenticates using LDAP can be determined reliably using methods of the `User` entity directly.
 
-
 ## [1.2.0] - 2024-07-25
 
 ### Added
@@ -153,7 +154,6 @@ The following methods have been deprecated and will be removed in version 2.0.0.
 ### Added
 
 - **Breaking**: Integrate session event logging from SHIFT. Consuming apps must add a migration for a new table. (AUTHLIB-128)
-
 
 ## [0.10.0] - 2023-08-07
 
@@ -385,7 +385,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.1.2...HEAD
+[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/OCTRI/authentication-lib/compare/v2.1.2...v2.2.0
 [2.1.2]: https://github.com/OCTRI/authentication-lib/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/OCTRI/authentication-lib/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/OCTRI/authentication-lib/compare/v2.0.0...v2.1.0
