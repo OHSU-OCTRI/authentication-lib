@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2025-07-11
+
 ### Fixed
 
 - Fix a bug in the expression used to detect when a tag is being built. (CIS-3194)
@@ -389,7 +391,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/OCTRI/authentication-lib/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/OCTRI/authentication-lib/compare/v2.1.2...v2.2.0
 [2.1.2]: https://github.com/OCTRI/authentication-lib/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/OCTRI/authentication-lib/compare/v2.1.0...v2.1.1
