@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix a bug in the expression used to detect when a tag is being built. (CIS-3194)
+
 ## [2.2.0] - 2025-07-11
 
 ### Added

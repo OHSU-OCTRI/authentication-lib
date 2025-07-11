@@ -40,7 +40,7 @@ jobs:
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Publish to GitHub Packages
-        if: github.ref == 'refs/heads/main' || startsWith('refs/tags', github.ref)
+        if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
         run: mvn deploy -DskipTests -Pci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
   publish:
     name: Publish to Maven Central
     needs: build-java-source
-    if: startsWith('refs/tags', github.ref)
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -76,7 +76,7 @@ jobs:
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Publish release to Maven Central
-        if: startsWith('refs/tags', github.ref) && !contains(env.version, '-SNAPSHOT')
+        if: github.ref_type == 'tag' && !contains(env.version, '-SNAPSHOT')
         run: mvn deploy -DskipTests -Pci,publish
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
