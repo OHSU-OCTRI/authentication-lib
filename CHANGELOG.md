@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use a more descriptive deployment name when publishing to Maven Central.
+- Document release process. (AUTHLIB-156)
 
 ## [2.2.1] - 2025-07-11
 
