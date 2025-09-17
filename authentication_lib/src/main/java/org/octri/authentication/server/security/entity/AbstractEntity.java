@@ -14,11 +14,14 @@ import jakarta.persistence.MappedSuperclass;
  * An abstract entity for all other entities to extend. It includes the base {@link #id} field which is
  * auto-incrementing.
  *
- * TODO: Add back in auditing?
+ * @deprecated
+ *             Use {@link org.octri.common.domain.AbstractEntity} from
+ *             <a href="https://github.com/OHSU-OCTRI/common-lib">OCTRI common-lib</a> instead.
  *
  * @author yateam
  */
 @MappedSuperclass
+@Deprecated(since = "2.3.0", forRemoval = true)
 public abstract class AbstractEntity implements Serializable, Identified {
 
 	private static final long serialVersionUID = 3042616837618435959L;
@@ -59,7 +62,7 @@ public abstract class AbstractEntity implements Serializable, Identified {
 
 	/**
 	 * Sets the entity's ID.
-	 * 
+	 *
 	 * @param id
 	 *            unique identifier value
 	 */

@@ -5,11 +5,16 @@ import java.util.Collection;
 /**
  * Used for UI select inputs. Wraps the choice along with its selected status.
  *
+ * @deprecated
+ *             Use {@link org.octri.common.view.EntitySelectOption} from
+ *             <a href="https://github.com/OHSU-OCTRI/common-lib">OCTRI common-lib</a> instead.
+ *
  * @author lawhead
  *
  * @param <T>
  *            the type of object wrapped by the option
  */
+@Deprecated(since = "2.3.0", forRemoval = true)
 public class EntitySelectOption<T extends Identified & Labelled> extends SelectOption<T> {
 
 	/**
@@ -42,7 +47,7 @@ public class EntitySelectOption<T extends Identified & Labelled> extends SelectO
 
 	/**
 	 * Gets the entity's ID
-	 * 
+	 *
 	 * @return the ID value
 	 */
 	public Long getId() {
