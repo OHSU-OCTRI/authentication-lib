@@ -9,16 +9,26 @@ import java.util.stream.StreamSupport;
 /**
  * Used for rendering mustache templates. Helper functions for creating a list of select input options.
  *
+ * @deprecated
+ *             Use {@link org.octri.common.view.OptionList} from
+ *             <a href="https://github.com/OHSU-OCTRI/common-lib">OCTRI common-lib</a> class instead.
+ *
  * @author lawhead
  * @param <T>
  *            the type of objects in the select list
  *
  */
+@Deprecated(since = "2.3.0", forRemoval = true)
 public class OptionList<T> {
 
 	/**
 	 * Given a Repository search result of lookups and the selected lookup item, provides a list of objects that can be
 	 * used directly by mustachejs for rendering.
+	 *
+	 * @deprecated
+	 *             Use
+	 *             {@link org.octri.common.view.OptionList#fromSearch(Iterable, org.octri.common.domain.AbstractEntity)}
+	 *             instead.
 	 *
 	 * @param <T>
 	 *            a type with an ID and label
@@ -39,6 +49,9 @@ public class OptionList<T> {
 	 * Used for multi-selects. Given a Repository search result of lookups and a list of selected lookup, provides a
 	 * list of objects that can be used directly by mustachejs for rendering.
 	 *
+	 * @deprecated
+	 *             Use {@link org.octri.common.view.OptionList#multiFromSearch(Iterable, Collection)} instead.
+	 *
 	 * @param <T>
 	 *            a type with an ID and a label
 	 * @param iter
@@ -56,6 +69,9 @@ public class OptionList<T> {
 
 	/**
 	 * Generates a list of integers in the given range from which to choose.
+	 *
+	 * @deprecated
+	 *             Use {@link org.octri.common.view.OptionList#forRange(Integer, Integer, Integer)} instead.
 	 *
 	 * @param start
 	 *            start of the range
