@@ -1,15 +1,20 @@
 package org.octri.authentication.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Email configuration properties.
  *
+ * @deprecated
+ *             Use `spring.mail` and `octri.messaging.email-delivery-method` properties instead.
+ *
  * @author sams
  */
 @Configuration
 @ConfigurationProperties(prefix = "spring.mail")
+@Deprecated(since = "2.3.0", forRemoval = true)
 public class EmailConfiguration {
 
 	private Boolean enabled;
@@ -24,9 +29,13 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets whether email support is enabled.
-	 * 
+	 *
+	 * @deprecated
+	 *             Use `octri.messaging.enabled` instead.
+	 *
 	 * @return true if email is enabled
 	 */
+	@DeprecatedConfigurationProperty(since = "2.3.0", reason = "Replaced by messaging library functionality", replacement = "octri.messaging.enabled")
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -43,7 +52,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the configured from email address.
-	 * 
+	 *
 	 * @return the configured from email address
 	 */
 	public String getFrom() {
@@ -52,7 +61,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the from email address that messages will come from.
-	 * 
+	 *
 	 * @param from
 	 *            the from email address
 	 */
@@ -62,7 +71,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the configured default MimeMessage character encoding.
-	 * 
+	 *
 	 * @return the configured MimeMessage character encoding
 	 */
 	public String getDefaultEncoding() {
@@ -71,7 +80,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the default MimeMessage encoding.
-	 * 
+	 *
 	 * @param defaultEncoding
 	 *            the default MimeMessage character encoding
 	 */
@@ -81,7 +90,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the configured mail server host.
-	 * 
+	 *
 	 * @return the configured mail server host
 	 */
 	public String getHost() {
@@ -90,7 +99,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the mail server host.
-	 * 
+	 *
 	 * @param host
 	 *            mail server host
 	 */
@@ -100,7 +109,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the configured mail server port.
-	 * 
+	 *
 	 * @return the configure mail port
 	 */
 	public Integer getPort() {
@@ -109,7 +118,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the mail server port.
-	 * 
+	 *
 	 * @param port
 	 *            the mail server port
 	 */
@@ -119,7 +128,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the configured protocol used by the mail server.
-	 * 
+	 *
 	 * @return the configured mail server protocol
 	 */
 	public String getProtocol() {
@@ -128,7 +137,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the protocol used by the mail server.
-	 * 
+	 *
 	 * @param protocol
 	 *            the mail server protocol.
 	 */
@@ -138,7 +147,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets whether connection to the mail server is checked at startup.
-	 * 
+	 *
 	 * @return true if the connection is tested
 	 */
 	public String getTestConnection() {
@@ -157,7 +166,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the username used when connecting to the mail server.
-	 * 
+	 *
 	 * @return mail server username
 	 */
 	public String getUsername() {
@@ -166,7 +175,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the username used when connecting to the mail server.
-	 * 
+	 *
 	 * @param username
 	 *            mail server username
 	 */
@@ -176,7 +185,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Gets the password used when connecting to the mail server.
-	 * 
+	 *
 	 * @return the mail server password
 	 */
 	public String getPassword() {
@@ -185,7 +194,7 @@ public class EmailConfiguration {
 
 	/**
 	 * Sets the password to use when connecting to the mail server.
-	 * 
+	 *
 	 * @param password
 	 *            the mail server password
 	 */

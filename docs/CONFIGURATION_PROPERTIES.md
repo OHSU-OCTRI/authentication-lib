@@ -13,7 +13,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | octri.authentication.base-url | OCTRI_AUTHENTICATION_BASEURL | string | http://localhost:8080 | Base URL of the application, without the context path. Used to construct URLs, particularly in email messages. An error is logged if this is set to the default value to encourage proper configuration. |
 | octri.authentication.credentials-expiration-period | OCTRI_AUTHENTICATION_CREDENTIALSEXPIRATIONPERIOD | integer | 180 | Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be required to change their password. |
 | octri.authentication.custom-role-script | OCTRI_AUTHENTICATION_CUSTOM_ROLE_SCRIPT | string | None | Path to custom JavaScript to use when validating user roles. Path should be relative to the application context path. Only relevant when `octri.authentication.role-style=custom`. |
-| octri.authentication.email-dry-run | OCTRI_AUTHENTICATION_EMAILDRYRUN | boolean | FALSE | Whether user account emails should be logged to the console instead of being sent. |
+| octri.authentication.email-dry-run | OCTRI_AUTHENTICATION_EMAILDRYRUN | boolean | FALSE | Whether user account emails should be logged to the console instead of being sent. Deprecated. Use `octri.messaging.email-delivery-strategy` instead.|
 | octri.authentication.email-required | OCTRI_AUTHENTICATION_EMAILREQUIRED | boolean | TRUE | Whether the email field on the user form should be treated as required. Applications wishing to make email optional should run the additional migration scripts in `setup/optional_migrations/noemail/`. |
 | octri.authentication.enable-ldap | OCTRI_AUTHENTICATION_ENABLELDAP | boolean | None | Whether LDAP authentication is enabled. See LDAP Authentication below for more properties. |
 | octri.authentication.enable-table-based | OCTRI_AUTHENTICATION_ENABLETABLEBASED | boolean | None | Whether table-based authentication is enabled. |
@@ -51,7 +51,7 @@ The properties below are used to configure how the library sends account setup a
 
 | Property | Environment variable | Type | Default value | Description |
 | - | - | - | - | - |
-| spring.mail.enabled | SPRING_MAIL_ENABLED | boolean | None | Whether email delivery is enabled |
+| spring.mail.enabled | SPRING_MAIL_ENABLED | boolean | None | Whether email delivery is enabled. Deprecated. Use `octri.messaging.enabled` instead. |
 | spring.mail.from | SPRING_MAIL_FROM | string | None | Email address to use in the From: line |
 | spring.mail.defaultEncoding | SPRING_MAIL_DEFAULT_ENCODING | string | None | Default character encoding to use for messages |
 | spring.mail.host | SPRING_MAIL_HOST | string | None | Email server host |
