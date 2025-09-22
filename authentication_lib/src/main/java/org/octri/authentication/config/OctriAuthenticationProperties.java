@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 import jakarta.validation.constraints.NotNull;
@@ -112,7 +113,11 @@ public class OctriAuthenticationProperties {
 
 	/**
 	 * Whether email should be sent or logged to the server instead.
+	 *
+	 * @deprecated
+	 *             Use `octri.messaging.email-delivery-method=log` to to log messages instead.
 	 */
+	@Deprecated(since = "2.3.0", forRemoval = true)
 	private Boolean emailDryRun = false;
 
 	/**
@@ -281,6 +286,7 @@ public class OctriAuthenticationProperties {
 	 * @param emailDryRun
 	 *            true if email should be logged to the console instead of sending, false to deliver email
 	 */
+	@DeprecatedConfigurationProperty(since = "2.3.0", reason = "Replaced by email delivery strategy", replacement = "octri.messaging.email-delivery-method")
 	public void setEmailDryRun(Boolean emailDryRun) {
 		this.emailDryRun = emailDryRun;
 	}

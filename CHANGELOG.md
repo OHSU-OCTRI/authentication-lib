@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use a more descriptive deployment name when publishing to Maven Central.
 - Document release process. (AUTHLIB-156)
-- Deprecate classes replaced by common-lib alternatives (AUTHLIB-161)
+- Deprecate classes replaced by common-lib alternatives. (AUTHLIB-161)
+- Use messaging-lib to deliver password reset emails. (AUTHLIB-162)
+- Deprecate email delivery properties. (AUTHLIB-162)
 
 ## [2.2.1] - 2025-07-11
 

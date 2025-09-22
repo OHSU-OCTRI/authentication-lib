@@ -42,6 +42,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<commonlib.version>1.7.1</commonlib.version>
+		<messaginglib.version>0.1.0</messaginglib.version>
 	</properties>
 
 	<repositories>
@@ -56,6 +57,11 @@
 			<groupId>org.octri.common</groupId>
 			<artifactId>common_lib</artifactId>
 			<version>${commonlib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.octri.messaging</groupId>
+			<artifactId>messaging_lib</artifactId>
+			<version>${messaginglib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
