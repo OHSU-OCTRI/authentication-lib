@@ -17,7 +17,7 @@ public class OctriAuthenticationProperties {
 
 	/**
 	 * Allowed username styles. Valid options are PLAIN (simple username), EMAIL (must be an email address), or MIXED
-	 * (may be either a plain username or an email adress).
+	 * (may be either a plain username or an email address).
 	 */
 	public static enum UsernameStyle {
 		/**
@@ -133,6 +133,11 @@ public class OctriAuthenticationProperties {
 	 * to the application's context path. Only relevant when "octri.authentication.role-style" is "custom".
 	 */
 	private String customRoleScript;
+
+	/**
+	 * Email address that account notification emails should come from.
+	 */
+	private String accountMessageEmail;
 
 	/**
 	 * Gets whether LDAP authentication is enabled.
@@ -351,13 +356,33 @@ public class OctriAuthenticationProperties {
 		this.customRoleScript = customRoleScript;
 	}
 
+	/**
+	 * Gets the email address used to send account notification messages.
+	 *
+	 * @return the configured email address
+	 */
+	public String getAccountMessageEmail() {
+		return accountMessageEmail;
+	}
+
+	/**
+	 * Sets the email address to use when sending account notification messages.
+	 *
+	 * @param accountMessageEmail
+	 *            the email address to use
+	 */
+	public void setAccountMessageEmail(String accountMessageEmail) {
+		this.accountMessageEmail = accountMessageEmail;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
 				+ ", baseUrl=" + baseUrl + ", maxLoginAttempts=" + maxLoginAttempts + ", credentialsExpirationPeriod="
 				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor="
 				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun
-				+ ", roleStyle=" + roleStyle + ", customRoleScript=" + customRoleScript + "]";
+				+ ", roleStyle=" + roleStyle + ", customRoleScript=" + customRoleScript + ", accountMessageEmail="
+				+ accountMessageEmail + "]";
 	}
 
 }

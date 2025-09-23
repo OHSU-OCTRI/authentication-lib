@@ -31,7 +31,7 @@ public class EmailConfiguration {
 	 * Gets whether email support is enabled.
 	 *
 	 * @deprecated
-	 *             Use `octri.messaging.enabled` instead.
+	 *             Use <code>octri.messaging.enabled</code> instead.
 	 *
 	 * @return true if email is enabled
 	 */
@@ -53,8 +53,12 @@ public class EmailConfiguration {
 	/**
 	 * Gets the configured from email address.
 	 *
+	 * @deprecated
+	 *             Use <code>octri.authentication.account-message-email</code> instead.
+	 *
 	 * @return the configured from email address
 	 */
+	@DeprecatedConfigurationProperty(since = "2.3.0", reason = "Replaced by octri.authentication.account-message-email", replacement = "octri.authentication.account-message-email")
 	public String getFrom() {
 		return from;
 	}

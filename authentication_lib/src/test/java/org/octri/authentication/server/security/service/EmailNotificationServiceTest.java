@@ -64,8 +64,9 @@ public class EmailNotificationServiceTest {
 		passwordResetToken.setUser(user);
 		passwordResetToken.setToken(RESET_TOKEN);
 		authenticationProperties = new OctriAuthenticationProperties();
-		emailNotificationService = new EmailNotificationService(DISPLAY_NAME, SENDER_EMAIL,
-				authenticationProperties, urlHelper, messageDeliveryService, passwordResetTokenService);
+		authenticationProperties.setAccountMessageEmail(SENDER_EMAIL);
+		emailNotificationService = new EmailNotificationService(DISPLAY_NAME, authenticationProperties, urlHelper,
+				messageDeliveryService, passwordResetTokenService);
 	}
 
 	private User user() {

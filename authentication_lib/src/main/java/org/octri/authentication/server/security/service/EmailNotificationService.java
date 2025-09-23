@@ -3,6 +3,7 @@ package org.octri.authentication.server.security.service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.octri.authentication.config.DeprecationMessages;
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.AuthenticationUrlHelper;
 import org.octri.authentication.server.security.entity.PasswordResetToken;
@@ -23,7 +24,6 @@ public class EmailNotificationService {
     private static final Log log = LogFactory.getLog(EmailNotificationService.class);
 
     private final String displayName;
-    private final String fromAddress;
     private final OctriAuthenticationProperties authenticationProperties;
     private final AuthenticationUrlHelper urlHelper;
     private final MessageDeliveryService messageDeliveryService;
@@ -44,11 +44,9 @@ public class EmailNotificationService {
      *            password reset token service
      */
     public EmailNotificationService(@Value("${app.displayName}") String displayName,
-            @Value("${spring.mail.from}") String fromAddress, OctriAuthenticationProperties authenticationProperties,
-            AuthenticationUrlHelper urlHelper, MessageDeliveryService messageDeliveryService,
-            PasswordResetTokenService passwordResetTokenService) {
+            OctriAuthenticationProperties authenticationProperties, AuthenticationUrlHelper urlHelper,
+            MessageDeliveryService messageDeliveryService, PasswordResetTokenService passwordResetTokenService) {
         this.displayName = displayName;
-        this.fromAddress = fromAddress;
         this.authenticationProperties = authenticationProperties;
         this.urlHelper = urlHelper;
         this.messageDeliveryService = messageDeliveryService;
@@ -71,6 +69,7 @@ public class EmailNotificationService {
 
         final User user = token.getUser();
         final String resetPath = urlHelper.getPasswordResetUrl(token.getToken());
+        final String fromAddress = authenticationProperties.getAccountMessageEmail();
         String subject;
         String body;
 
@@ -102,6 +101,7 @@ public class EmailNotificationService {
         PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
         Assert.notNull(passwordResetToken, "Could not find a user for the provided token");
 
+        final String fromAddress = authenticationProperties.getAccountMessageEmail();
         final String userEmail = passwordResetToken.getUser().getEmail();
 
         final String subject = "Your " + displayName + " password was reset";
@@ -127,9 +127,8 @@ public class EmailNotificationService {
     }
 
     private static void logDryRunEmail(String fromAddress, String toAddress, String subject, String body) {
-        final String deprecationMessage = "Setting octri.authentication.email-dry-run=true is deprecated. Use octri.messaging.email-delivery-strategy=LOG instead.";
         final String format = "DRY RUN, would have sent email to %s from %s with subject \"%s\" and contents \"%s\"";
-        log.warn(deprecationMessage);
+        log.warn(DeprecationMessages.EMAIL_DRY_RUN);
         log.info(String.format(format, String.join(", ", toAddress), fromAddress, subject,
                 body));
     }
