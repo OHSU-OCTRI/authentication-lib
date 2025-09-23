@@ -78,19 +78,13 @@ public class EmailNotificationService {
             subject = "Welcome to " + displayName;
             body = "Hello " + user.getFirstName() + ",\n\nAn account has been created for you with username "
                     + user.getUsername() + ". To set your password, please follow this link: " + resetPath;
-
         } else {
             subject = "Password reset request for " + displayName;
             body = "Hello " + user.getFirstName() + ",\n\nTo reset your password please follow this link: "
                     + resetPath + "\n\nIf you did not initiate this request, please contact your system administrator.";
         }
 
-        if (isEmailDryRunOrBlank(authenticationProperties.getEmailDryRun(), user.getEmail())) {
-            logDryRunEmail(fromAddress, user.getEmail(), subject, body);
-        } else {
-            messageDeliveryService.sendEmail(fromAddress, user.getEmail(), subject, body);
-            log.info("Password reset confirmation email sent to " + user.getEmail());
-        }
+        checkAndSendEmail(fromAddress, user.getEmail(), subject, body, "password reset token");
     }
 
     /**
@@ -115,31 +109,29 @@ public class EmailNotificationService {
                 + passwordResetToken.getUser().getUsername()
                 + "\nLink: " + urlHelper.getLoginUrl();
 
-        if (isEmailDryRunOrBlank(authenticationProperties.getEmailDryRun(), userEmail)) {
-            logDryRunEmail(fromAddress, userEmail, subject, body);
-        } else {
-            messageDeliveryService.sendEmail(fromAddress, userEmail, subject, body);
-            log.info("Password reset confirmation email sent to " + userEmail);
-        }
+        checkAndSendEmail(fromAddress, userEmail, subject, body, "password reset confirmation");
     }
 
-    private static boolean isEmailDryRunOrBlank(final boolean dryRun, final String toEmail) {
-        if (dryRun) {
-            logDeprecationWarning();
+    private void checkAndSendEmail(final String fromAddress, final String toAddress, final String subject,
+            final String body, final String messageType) {
+        if (Boolean.TRUE.equals(authenticationProperties.getEmailDryRun())) {
+            logDryRunEmail(fromAddress, toAddress, subject, body);
+        } else if (StringUtils.isBlank(toAddress)) {
+            if (Boolean.TRUE.equals(authenticationProperties.getEmailRequired())) {
+                throw new IllegalArgumentException("Users must have an email address, but the user's email is blank.");
+            }
+        } else {
+            messageDeliveryService.sendEmail(fromAddress, toAddress, subject, body);
+            log.debug("Sent " + messageType + " email to " + toAddress);
         }
-        return dryRun || StringUtils.isBlank(toEmail);
     }
 
     private static void logDryRunEmail(String fromAddress, String toAddress, String subject, String body) {
+        final String deprecationMessage = "Setting octri.authentication.email-dry-run=true is deprecated. Use octri.messaging.email-delivery-strategy=LOG instead.";
         final String format = "DRY RUN, would have sent email to %s from %s with subject \"%s\" and contents \"%s\"";
-        logDeprecationWarning();
+        log.warn(deprecationMessage);
         log.info(String.format(format, String.join(", ", toAddress), fromAddress, subject,
                 body));
-    }
-
-    private static void logDeprecationWarning() {
-        var message = "Setting octri.authentication.email-dry-run=true is deprecated. Use octri.messaging.email-delivery-strategy=LOG instead.";
-        log.warn(message);
     }
 
 }
