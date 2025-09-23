@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use messaging-lib to deliver password reset emails. (AUTHLIB-162)
 - Deprecate email delivery properties. (AUTHLIB-162)
 
+### Fixed
+
+- Throw an exception when sending email when email is required but the user's address is blank (AUTHLIB-162)
+
 ## [2.2.1] - 2025-07-11
 
 ### Fixed

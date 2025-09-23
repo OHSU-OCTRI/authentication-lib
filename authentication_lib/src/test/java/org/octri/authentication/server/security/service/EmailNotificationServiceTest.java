@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security.service;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,118 +29,153 @@ import jakarta.servlet.http.HttpServletRequest;
 @ExtendWith(MockitoExtension.class)
 public class EmailNotificationServiceTest {
 
-    private EmailNotificationService emailNotificationService;
+	private EmailNotificationService emailNotificationService;
 
-    @Mock
-    private PasswordResetTokenService passwordResetTokenService;
+	private OctriAuthenticationProperties authenticationProperties;
 
-    @Mock
-    private OctriAuthenticationProperties authenticationProperties;
+	@Mock
+	private PasswordResetTokenService passwordResetTokenService;
 
-    @Spy
-    private AuthenticationUrlHelper urlHelper = new AuthenticationUrlHelper(BASE_URL, CONTEXT_PATH);
+	@Spy
+	private AuthenticationUrlHelper urlHelper = new AuthenticationUrlHelper(BASE_URL, CONTEXT_PATH);
 
-    @Mock
-    private MessageDeliveryService messageDeliveryService;
+	@Mock
+	private MessageDeliveryService messageDeliveryService;
 
-    @Mock
-    private HttpServletRequest request;
+	@Mock
+	private HttpServletRequest request;
 
-    private static final String DISPLAY_NAME = "ExampleApp";
-    private static final String SENDER_EMAIL = "exampleapp@example.com";
-    private static final String USER_EMAIL = "foo@example.com";
-    private static final String BASE_URL = "http://localhost:8080";
-    private static final String CONTEXT_PATH = "/app";
-    private static final String RESET_TOKEN = "6fd30a7e-00f0-44a6-a29c-29f4a0c3aef6";
-    private static final String RESET_URL = BASE_URL + CONTEXT_PATH + "/user/password/reset?token=" + RESET_TOKEN;
+	private static final String DISPLAY_NAME = "ExampleApp";
+	private static final String SENDER_EMAIL = "exampleapp@example.com";
+	private static final String USER_EMAIL = "foo@example.com";
+	private static final String BASE_URL = "http://localhost:8080";
+	private static final String CONTEXT_PATH = "/app";
+	private static final String RESET_TOKEN = "6fd30a7e-00f0-44a6-a29c-29f4a0c3aef6";
+	private static final String RESET_URL = BASE_URL + CONTEXT_PATH + "/user/password/reset?token=" + RESET_TOKEN;
+	private static final String MISSING_EMAIL_MESSAGE = "Users must have an email address, but the user's email is blank.";
 
-    private User user;
-    private PasswordResetToken passwordResetToken;
+	private User user;
+	private PasswordResetToken passwordResetToken;
 
-    @BeforeEach
-    public void beforeEach() throws InvalidLdapUserDetailsException, DuplicateEmailException {
-        user = user();
-        passwordResetToken = new PasswordResetToken();
-        passwordResetToken.setUser(user);
-        passwordResetToken.setToken(RESET_TOKEN);
-        when(authenticationProperties.getEmailDryRun()).thenReturn(false);
-        emailNotificationService = new EmailNotificationService(DISPLAY_NAME, SENDER_EMAIL,
-                authenticationProperties, urlHelper, messageDeliveryService, passwordResetTokenService);
-    }
+	@BeforeEach
+	public void beforeEach() throws InvalidLdapUserDetailsException, DuplicateEmailException {
+		user = user();
+		passwordResetToken = new PasswordResetToken();
+		passwordResetToken.setUser(user);
+		passwordResetToken.setToken(RESET_TOKEN);
+		authenticationProperties = new OctriAuthenticationProperties();
+		emailNotificationService = new EmailNotificationService(DISPLAY_NAME, SENDER_EMAIL,
+				authenticationProperties, urlHelper, messageDeliveryService, passwordResetTokenService);
+	}
 
-    private User user() {
-        user = new User();
-        user.setUsername("foo");
-        user.setEmail(USER_EMAIL);
-        return user;
-    }
+	private User user() {
+		user = new User();
+		user.setUsername("foo");
+		user.setEmail(USER_EMAIL);
+		return user;
+	}
 
-    @Test
-    public void testSendPasswordResetTokenEmail() {
-        var fromEmail = ArgumentCaptor.forClass(String.class);
-        var toEmail = ArgumentCaptor.forClass(String.class);
-        var messageSubject = ArgumentCaptor.forClass(String.class);
-        var messageBody = ArgumentCaptor.forClass(String.class);
+	@Test
+	public void testSendPasswordResetTokenEmail() {
+		var fromEmail = ArgumentCaptor.forClass(String.class);
+		var toEmail = ArgumentCaptor.forClass(String.class);
+		var messageSubject = ArgumentCaptor.forClass(String.class);
+		var messageBody = ArgumentCaptor.forClass(String.class);
 
-        when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(Optional.empty());
+		when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
+				.thenReturn(Optional.empty());
 
-        emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, false);
+		emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, false);
 
-        verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(), messageSubject.capture(),
-                messageBody.capture());
-        assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
-        assertEquals(USER_EMAIL, toEmail.getValue(), "The message should be sent to the user's email address.");
-        assertTrue(messageSubject.getValue().startsWith("Password reset request"),
-                "The message has the expected subject.");
-        assertTrue(messageBody.getValue().contains("To reset your password"),
-                "The message body includes messaging for existing account.");
-        assertTrue(messageBody.getValue().contains(RESET_URL), "The message includes the password reset URL.");
-    }
+		verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(),
+				messageSubject.capture(),
+				messageBody.capture());
+		assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
+		assertEquals(USER_EMAIL, toEmail.getValue(), "The message should be sent to the user's email address.");
+		assertTrue(messageSubject.getValue().startsWith("Password reset request"),
+				"The message has the expected subject.");
+		assertTrue(messageBody.getValue().contains("To reset your password"),
+				"The message body includes messaging for existing account.");
+		assertTrue(messageBody.getValue().contains(RESET_URL), "The message includes the password reset URL.");
+	}
 
-    @Test
-    public void testSendPasswordResetTokenEmailNewUser() {
-        var fromEmail = ArgumentCaptor.forClass(String.class);
-        var toEmail = ArgumentCaptor.forClass(String.class);
-        var messageSubject = ArgumentCaptor.forClass(String.class);
-        var messageBody = ArgumentCaptor.forClass(String.class);
+	@Test
+	public void testSendPasswordResetTokenEmailNewUser() {
+		var fromEmail = ArgumentCaptor.forClass(String.class);
+		var toEmail = ArgumentCaptor.forClass(String.class);
+		var messageSubject = ArgumentCaptor.forClass(String.class);
+		var messageBody = ArgumentCaptor.forClass(String.class);
 
-        when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(Optional.empty());
+		when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
+				.thenReturn(Optional.empty());
 
-        emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, true);
+		emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, true);
 
-        verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(), messageSubject.capture(),
-                messageBody.capture());
-        assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
-        assertEquals(USER_EMAIL, toEmail.getValue(), "The message should be sent to the user's email address.");
-        assertTrue(messageSubject.getValue().startsWith("Welcome to " + DISPLAY_NAME),
-                "The message has the welcome message subject.");
-        assertTrue(messageBody.getValue().contains("An account has been created for you"),
-                "The message body includes new account messaging.");
-        assertTrue(messageBody.getValue().contains(RESET_URL), "The message includes the password reset URL.");
-    }
+		verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(),
+				messageSubject.capture(),
+				messageBody.capture());
+		assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
+		assertEquals(USER_EMAIL, toEmail.getValue(), "The message should be sent to the user's email address.");
+		assertTrue(messageSubject.getValue().startsWith("Welcome to " + DISPLAY_NAME),
+				"The message has the welcome message subject.");
+		assertTrue(messageBody.getValue().contains("An account has been created for you"),
+				"The message body includes new account messaging.");
+		assertTrue(messageBody.getValue().contains(RESET_URL), "The message includes the password reset URL.");
+	}
 
-    @Test
-    public void testSendPasswordResetEmailConfirmation() {
-        var fromEmail = ArgumentCaptor.forClass(String.class);
-        var toEmail = ArgumentCaptor.forClass(String.class);
-        var messageSubject = ArgumentCaptor.forClass(String.class);
-        var messageBody = ArgumentCaptor.forClass(String.class);
+	@Test
+	public void testSendPasswordResetEmailConfirmation() {
+		var fromEmail = ArgumentCaptor.forClass(String.class);
+		var toEmail = ArgumentCaptor.forClass(String.class);
+		var messageSubject = ArgumentCaptor.forClass(String.class);
+		var messageBody = ArgumentCaptor.forClass(String.class);
 
-        when(passwordResetTokenService.findByToken(RESET_TOKEN)).thenReturn(passwordResetToken);
-        when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(Optional.empty());
+		when(passwordResetTokenService.findByToken(RESET_TOKEN)).thenReturn(passwordResetToken);
+		when(messageDeliveryService.sendEmail(anyString(), anyString(), anyString(), anyString()))
+				.thenReturn(Optional.empty());
 
-        emailNotificationService.sendPasswordResetEmailConfirmation(RESET_TOKEN, request);
+		emailNotificationService.sendPasswordResetEmailConfirmation(RESET_TOKEN, request);
 
-        verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(), messageSubject.capture(),
-                messageBody.capture());
-        assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
-        assertEquals(USER_EMAIL, toEmail.getValue(),
-                "The message should be sent to the expected user's email address.");
-        assertTrue(messageSubject.getValue().endsWith("password was reset"),
-                "The message has the expected subject.");
-    }
+		verify(messageDeliveryService).sendEmail(fromEmail.capture(), toEmail.capture(),
+				messageSubject.capture(),
+				messageBody.capture());
+		assertEquals(SENDER_EMAIL, fromEmail.getValue(), "The expected sender address should be used.");
+		assertEquals(USER_EMAIL, toEmail.getValue(),
+				"The message should be sent to the expected user's email address.");
+		assertTrue(messageSubject.getValue().endsWith("password was reset"),
+				"The message has the expected subject.");
+	}
+
+	@Test
+	public void passwordResetTokenEmailThrowsExceptionIfEmailIsMissingOrBlank() {
+		user.setEmail(null);
+		Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {
+			emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, false);
+		});
+		assertEquals(MISSING_EMAIL_MESSAGE, thrown.getMessage());
+
+		user.setEmail(" ");
+		thrown = assertThrows(IllegalArgumentException.class, () -> {
+			emailNotificationService.sendPasswordResetTokenEmail(passwordResetToken, request, false);
+		});
+		assertEquals(MISSING_EMAIL_MESSAGE, thrown.getMessage());
+	}
+
+	@Test
+	public void passwordResetConfirmationEmailThrowsExceptionIfEmailIsMissingOrBlank() {
+		user.setEmail(null);
+		when(passwordResetTokenService.findByToken(RESET_TOKEN)).thenReturn(passwordResetToken);
+
+		Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {
+			emailNotificationService.sendPasswordResetEmailConfirmation(RESET_TOKEN, request);
+		});
+		assertEquals(MISSING_EMAIL_MESSAGE, thrown.getMessage());
+
+		user.setEmail(" ");
+		thrown = assertThrows(IllegalArgumentException.class, () -> {
+			emailNotificationService.sendPasswordResetEmailConfirmation(RESET_TOKEN, request);
+		});
+		assertEquals(MISSING_EMAIL_MESSAGE, thrown.getMessage());
+	}
 
 }
