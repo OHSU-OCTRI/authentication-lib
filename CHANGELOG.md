@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `octri.authentication.account-message-email` to replace deprecated `spring.mail.from` property. (AUTHLIB-162)
+
 ### Changed
 
 - Use a more descriptive deployment name when publishing to Maven Central.
