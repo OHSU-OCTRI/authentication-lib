@@ -4,6 +4,7 @@ import static org.octri.authentication.config.OctriAuthenticationProperties.DEFA
 
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.octri.authentication.config.OctriAuthenticationProperties.RoleStyle;
@@ -35,8 +36,8 @@ public class OctriAuthenticationConfiguration {
 			"octri.authentication.saml.enabled"
 	};
 
-	private String contextPath;
-	private OctriAuthenticationProperties authenticationProperties;
+	private final String contextPath;
+	private final OctriAuthenticationProperties authenticationProperties;
 
 	/**
 	 * Constructor.
@@ -49,13 +50,14 @@ public class OctriAuthenticationConfiguration {
 	 *            the application context path (first URL path segment)
 	 */
 	public OctriAuthenticationConfiguration(Environment env, OctriAuthenticationProperties authenticationProperties,
-			@Value("${server.servlet.context-path:}") String contextPath) {
+			@Value("${server.servlet.context-path:}") String contextPath, EmailConfiguration emailConfiguration) {
 		this.authenticationProperties = authenticationProperties;
 		this.contextPath = contextPath;
 
 		validateAuthenticationMethods(env);
 		validateBaseUrl();
 		validateRoleStyle();
+		handleDeprecatedProperties(emailConfiguration);
 	}
 
 	/**
@@ -145,6 +147,30 @@ public class OctriAuthenticationConfiguration {
 
 		if (roleStyle != RoleStyle.CUSTOM && customRoleScript != null) {
 			log.error(scriptErrorMessage);
+		}
+	}
+
+	/**
+	 * Warns about deprecated configuration properties and sets their replacements if possible.
+	 *
+	 * @param emailConfiguration
+	 *            deprecated email configuration properties
+	 */
+	private void handleDeprecatedProperties(EmailConfiguration emailConfiguration) {
+		if (Boolean.TRUE.equals(authenticationProperties.getEmailDryRun())) {
+			log.warn(DeprecationMessages.EMAIL_DRY_RUN);
+		}
+
+		if (StringUtils.isNotBlank(emailConfiguration.getFrom())) {
+			log.warn(DeprecationMessages.SPRING_MAIL_FROM);
+
+			if (StringUtils.isBlank(authenticationProperties.getAccountMessageEmail())) {
+				log.info("Using spring.mail.from to set octri.authentication.account-message-email.");
+				authenticationProperties.setAccountMessageEmail(emailConfiguration.getFrom());
+			} else if (!emailConfiguration.getFrom().equals(authenticationProperties.getAccountMessageEmail())) {
+				log.warn("Both octri.authentication.account-message-email and spring.mail.from are set. "
+						+ "The value of octri.authentication.account-message-email will be used.");
+			}
 		}
 	}
 
