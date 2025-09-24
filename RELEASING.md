@@ -21,7 +21,7 @@ You should do the following before releasing the library.
 
 To release the library:
 
-1. Select [the "Create release" workflow](https://github.com/OCTRI/authentication-lib/actions/workflows/release.yaml) on the Actions tab.
+1. Select [the "Create release" workflow](https://github.com/OHSU-OCTRI/authentication-lib/actions/workflows/release.yaml) on the Actions tab.
 2. Open the "Run workflow" dropdown.
 3. Fill in the form with the following values:
    - Select to use the workflow from the `main` branch.
@@ -29,4 +29,4 @@ To release the library:
    - Enter the next patch version in the "Next version to set..." field. For example, if releasing version X.Y.0, the next version should be X.Y.1.
 4. Click "Run workflow" to make the release.
 
-The release workflow automatically runs the [build workflow](https://github.com/OCTRI/authentication-lib/actions/workflows/build.yaml) to build and publish artifacts for the release.
+The release workflow automatically runs the [build workflow](https://github.com/OHSU-OCTRI/authentication-lib/actions/workflows/build.yaml) to build and publish artifacts for the release.
