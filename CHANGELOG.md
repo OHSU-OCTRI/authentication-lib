@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2025-09-24
+
 ### Added
 
 - Add `octri.authentication.account-message-email` to replace deprecated `spring.mail.from` property. (AUTHLIB-162)
@@ -407,7 +409,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.2.1...HEAD
+[unreleased]: https://github.com/OCTRI/authentication-lib/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/OCTRI/authentication-lib/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/OCTRI/authentication-lib/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/OCTRI/authentication-lib/compare/v2.1.2...v2.2.0
 [2.1.2]: https://github.com/OCTRI/authentication-lib/compare/v2.1.1...v2.1.2
