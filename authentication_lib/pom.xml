@@ -8,7 +8,7 @@
 
 	<name>authentication_lib</name>
 	<description>OCTRI library for Spring Security LDAP and table-based authentication</description>
-	<url>https://github.com/OCTRI/authentication-lib</url>
+	<url>https://github.com/OHSU-OCTRI/authentication-lib</url>
 
 	<parent>
 		<groupId>org.octri.authentication</groupId>
@@ -33,9 +33,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/OCTRI/authentication-lib.git</connection>
-		<developerConnection>scm:git:https://github.com/OCTRI/authentication-lib.git</developerConnection>
-		<url>https://github.com/OCTRI/authentication-lib/tree/main</url>
+		<connection>scm:git:https://github.com/OHSU-OCTRI/authentication-lib.git</connection>
+		<developerConnection>scm:git:https://github.com/OHSU-OCTRI/authentication-lib.git</developerConnection>
+		<url>https://github.com/OHSU-OCTRI/authentication-lib/tree/main</url>
 		<tag>HEAD</tag>
 	</scm>
 
