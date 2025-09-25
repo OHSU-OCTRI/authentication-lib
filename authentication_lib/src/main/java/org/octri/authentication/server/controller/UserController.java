@@ -25,10 +25,9 @@ import org.octri.authentication.server.security.service.PasswordGeneratorService
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
-import org.octri.authentication.server.view.EnumOptionList;
-import org.octri.authentication.server.view.OptionList;
 import org.octri.authentication.utils.ValidationUtils;
 import org.octri.authentication.validation.Emailable;
+import org.octri.common.view.OptionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.annotation.Scope;
@@ -303,7 +302,8 @@ public class UserController {
 	private void setUserFormAttributes(ModelMap model, User user) {
 		var newUser = user.getId() == null;
 		var pageTitle = newUser ? "New User" : "Edit User";
-		var authenticationMethods = EnumOptionList.fromEnum(EnumSet.copyOf(enabledAuthenticationMethods),
+		var authenticationMethods = org.octri.common.view.OptionList.fromEnum(
+				EnumSet.copyOf(enabledAuthenticationMethods),
 				user.getAuthenticationMethod());
 
 		model.addAttribute("user", user);

@@ -1,27 +1,17 @@
 package org.octri.authentication.server.security.entity;
 
-import java.util.Date;
+import org.octri.common.domain.AbstractEntity;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
 /**
  * Entity for logging session events.
  */
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class SessionEvent extends AbstractEntity {
 
 	/**
@@ -43,27 +33,6 @@ public class SessionEvent extends AbstractEntity {
 		 */
 		IMPERSONATION
 	}
-
-	/**
-	 * Optimistic locking version.
-	 */
-	@Version
-	protected Integer version;
-
-	/**
-	 * Timestamp when the record was created.
-	 */
-	@CreatedDate
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(updatable = false)
-	protected Date createdAt;
-
-	/**
-	 * Timestamp when the record was last updated.
-	 */
-	@LastModifiedDate
-	@Temporal(TemporalType.TIMESTAMP)
-	protected Date updatedAt;
 
 	/**
 	 * ID of the user session that triggered the event.
@@ -114,63 +83,6 @@ public class SessionEvent extends AbstractEntity {
 		this.event = eventType;
 		this.user = user;
 		this.asUser = asUser;
-	}
-
-	/**
-	 * Gets the optimistic locking version.
-	 *
-	 * @return optimistic locking version
-	 */
-	public Integer getVersion() {
-		return version;
-	}
-
-	/**
-	 * Sets the optimistic locking version
-	 *
-	 * @param version
-	 *            optimistic locking version
-	 */
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
-
-	/**
-	 * Gets the timestamp when the event record was created.
-	 *
-	 * @return when the event record was created
-	 */
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	/**
-	 * Sets the timestamp when the event record was created.
-	 *
-	 * @param createdAt
-	 *            when the event record was created
-	 */
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	/**
-	 * Gets the timestamp when the event record was last updated.
-	 *
-	 * @return when the event record was last updated
-	 */
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	/**
-	 * Sets the timestamp when the event record was last updated.
-	 *
-	 * @param updatedAt
-	 *            when the event record was last updated
-	 */
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
 	}
 
 	/**

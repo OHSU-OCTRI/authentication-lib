@@ -29,6 +29,7 @@ public class OctriAuthenticationConfiguration {
 	private static final Log log = LogFactory.getLog(OctriAuthenticationConfiguration.class);
 	private static final String BASE_URL_ERROR = "Table-based authentication is enabled but octri.authentication.base-url is "
 			+ DEFAULT_BASE_URL + ". Check the application's configuration.";
+	private static final String ACCOUNT_EMAIL_ERROR = "Table-based authentication is enabled but octri.authentication.account-message-email is not set.";
 
 	private static final String[] AUTH_METHOD_PROPERTIES = new String[] {
 			"octri.authentication.enable-ldap",
@@ -50,14 +51,14 @@ public class OctriAuthenticationConfiguration {
 	 *            the application context path (first URL path segment)
 	 */
 	public OctriAuthenticationConfiguration(Environment env, OctriAuthenticationProperties authenticationProperties,
-			@Value("${server.servlet.context-path:}") String contextPath, EmailConfiguration emailConfiguration) {
+			@Value("${server.servlet.context-path:}") String contextPath) {
 		this.authenticationProperties = authenticationProperties;
 		this.contextPath = contextPath;
 
 		validateAuthenticationMethods(env);
 		validateBaseUrl();
 		validateRoleStyle();
-		handleDeprecatedProperties(emailConfiguration);
+		validateEmailConfig();
 	}
 
 	/**
@@ -151,26 +152,12 @@ public class OctriAuthenticationConfiguration {
 	}
 
 	/**
-	 * Warns about deprecated configuration properties and sets their replacements if possible.
-	 *
-	 * @param emailConfiguration
-	 *            deprecated email configuration properties
+	 * Validates account email configuration. Logs an error if the account message email is missing.
 	 */
-	private void handleDeprecatedProperties(EmailConfiguration emailConfiguration) {
-		if (Boolean.TRUE.equals(authenticationProperties.getEmailDryRun())) {
-			log.warn(DeprecationMessages.EMAIL_DRY_RUN);
-		}
-
-		if (StringUtils.isNotBlank(emailConfiguration.getFrom())) {
-			log.warn(DeprecationMessages.SPRING_MAIL_FROM);
-
-			if (StringUtils.isBlank(authenticationProperties.getAccountMessageEmail())) {
-				log.info("Using spring.mail.from to set octri.authentication.account-message-email.");
-				authenticationProperties.setAccountMessageEmail(emailConfiguration.getFrom());
-			} else if (!emailConfiguration.getFrom().equals(authenticationProperties.getAccountMessageEmail())) {
-				log.warn("Both octri.authentication.account-message-email and spring.mail.from are set. "
-						+ "The value of octri.authentication.account-message-email will be used.");
-			}
+	private void validateEmailConfig() {
+		if (StringUtils.isBlank(authenticationProperties.getAccountMessageEmail())
+				&& authenticationProperties.getEnableTableBased()) {
+			throw new IllegalStateException(ACCOUNT_EMAIL_ERROR);
 		}
 	}
 

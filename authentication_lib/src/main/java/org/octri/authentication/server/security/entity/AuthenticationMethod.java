@@ -1,6 +1,6 @@
 package org.octri.authentication.server.security.entity;
 
-import org.octri.authentication.server.view.Labelled;
+import org.octri.common.view.Labelled;
 
 /**
  * Enumeration of methods that may be used to authenticate a user.
