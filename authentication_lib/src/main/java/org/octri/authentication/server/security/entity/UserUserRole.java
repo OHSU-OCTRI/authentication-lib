@@ -1,9 +1,14 @@
 package org.octri.authentication.server.security.entity;
 
+import java.io.Serializable;
+
 import org.springframework.util.Assert;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -17,7 +22,16 @@ import jakarta.validation.constraints.NotNull;
  */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "user_role", "user" }) })
-public class UserUserRole extends AbstractEntity {
+public class UserUserRole implements Serializable {
+
+	private static final Long serialVersionUID = 1L;
+
+	/**
+	 * Unique identifier.
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	/**
 	 * The user role assigned.
@@ -41,7 +55,7 @@ public class UserUserRole extends AbstractEntity {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param user
 	 *            the user granted the role
 	 * @param userRole
@@ -56,8 +70,27 @@ public class UserUserRole extends AbstractEntity {
 	}
 
 	/**
-	 * Gets the role granted to the user.
+	 * Gets the entity's unique ID.
+	 *
+	 * @return the ID
+	 */
+	public Long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Sets the entity's unique ID.
 	 * 
+	 * @param id
+	 *            the ID to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Gets the role granted to the user.
+	 *
 	 * @return the role granted
 	 */
 	public UserRole getUserRole() {
@@ -66,7 +99,7 @@ public class UserUserRole extends AbstractEntity {
 
 	/**
 	 * Sets the role granted to the user.
-	 * 
+	 *
 	 * @param userRole
 	 *            the role granted
 	 */
@@ -76,7 +109,7 @@ public class UserUserRole extends AbstractEntity {
 
 	/**
 	 * Gets the user granted the role.
-	 * 
+	 *
 	 * @return the user
 	 */
 	public User getUser() {
@@ -85,7 +118,7 @@ public class UserUserRole extends AbstractEntity {
 
 	/**
 	 * Sets the user being granted the role.
-	 * 
+	 *
 	 * @param user
 	 *            the user
 	 */

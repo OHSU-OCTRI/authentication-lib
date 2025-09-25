@@ -10,10 +10,10 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 
 | Property | Environment Variable | Type | Default value | Description |
 | - | - | - | - | - |
+| octri.authentication.account-message-email | OCTRI_AUTHENTICATION_ACCOUNT_MESSAGE_EMAIL | string | None | Email address to use in the From: line of account emails. |
 | octri.authentication.base-url | OCTRI_AUTHENTICATION_BASEURL | string | http://localhost:8080 | Base URL of the application, without the context path. Used to construct URLs, particularly in email messages. An error is logged if this is set to the default value to encourage proper configuration. |
 | octri.authentication.credentials-expiration-period | OCTRI_AUTHENTICATION_CREDENTIALSEXPIRATIONPERIOD | integer | 180 | Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be required to change their password. |
 | octri.authentication.custom-role-script | OCTRI_AUTHENTICATION_CUSTOM_ROLE_SCRIPT | string | None | Path to custom JavaScript to use when validating user roles. Path should be relative to the application context path. Only relevant when `octri.authentication.role-style=custom`. |
-| octri.authentication.email-dry-run | OCTRI_AUTHENTICATION_EMAILDRYRUN | boolean | FALSE | Whether user account emails should be logged to the console instead of being sent. Deprecated. Use `octri.messaging.email-delivery-strategy` instead.|
 | octri.authentication.email-required | OCTRI_AUTHENTICATION_EMAILREQUIRED | boolean | TRUE | Whether the email field on the user form should be treated as required. Applications wishing to make email optional should run the additional migration scripts in `setup/optional_migrations/noemail/`. |
 | octri.authentication.enable-ldap | OCTRI_AUTHENTICATION_ENABLELDAP | boolean | None | Whether LDAP authentication is enabled. See LDAP Authentication below for more properties. |
 | octri.authentication.enable-table-based | OCTRI_AUTHENTICATION_ENABLETABLEBASED | boolean | None | Whether table-based authentication is enabled. |
@@ -44,25 +44,6 @@ _Experimental_: The properties below are used to configure the `Content-Security
 | octri.authentication.csp.enabled | OCTRI_AUTHENTICATION_CSP_ENABLED | boolean | `false` | Whether to enable the `Content-Security-Policy` header |
 | octri.authentication.csp.enforced | OCTRI_AUTHENTICATION_CSP_ENFORCED | boolean | `false` | Whether to enforce the configured policy. When true, resources that violate the policy will not be loaded. When false, policy violations will only be logged to the browser console. |
 | octri.authentication.csp.policy | OCTRI_AUTHENTICATION_CSP_POLICY | string | `default-src 'self'; img-src 'self' data:` | Allows resources from the current page origin, and images from the current origin or `data:` URLs. |
-
-## Email Configuration
-
-The properties below are used to configure how the library sends account setup and password reset emails.
-
-| Property | Environment variable | Type | Default value | Description |
-| - | - | - | - | - |
-| spring.mail.enabled | SPRING_MAIL_ENABLED | boolean | None | Whether email delivery is enabled. Deprecated. Use `octri.messaging.enabled` instead. |
-| spring.mail.from | SPRING_MAIL_FROM | string | None | Email address to use in the From: line |
-| spring.mail.defaultEncoding | SPRING_MAIL_DEFAULT_ENCODING | string | None | Default character encoding to use for messages |
-| spring.mail.host | SPRING_MAIL_HOST | string | None | Email server host |
-| spring.mail.port | SPRING_MAIL_PORT | integer | None | Email server port |
-| spring.mail.protocol | SPRING_MAIL_PROTOCOL | string | None | Email server protocol |
-| spring.mail.testConnection | SPRING_MAIL_TEST_CONNECTION | boolean | None | Whether to periodically test the connection to the email server |
-| spring.mail.username | SPRING_MAIL_USERNAME | string | None | Email server username |
-| spring.mail.password | SPRING_MAIL_PASSWORD | string | None | Email server password |
-| spring.mail.properties.mail.smtp.auth | SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH | boolean | None | Whether the email server requires authentication |
-| spring.mail.properties.mail.smtp.starttls.enable | SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE | boolean | None | Whether to use STARTTLS when connecting to the email server |
-| spring.mail.properties.mail.smtp.starttls.required | SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED | boolean | None | Whether to require STARTTLS when connecting to the email server |
 
 ## LDAP Authentication
 

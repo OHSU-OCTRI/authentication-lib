@@ -8,8 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import org.octri.authentication.server.view.Labelled;
 import org.octri.authentication.validation.Emailable;
+import org.octri.common.domain.AbstractEntity;
+import org.octri.common.view.Labelled;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;

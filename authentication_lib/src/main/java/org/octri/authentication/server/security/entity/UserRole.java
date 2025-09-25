@@ -2,7 +2,8 @@ package org.octri.authentication.server.security.entity;
 
 import java.util.List;
 
-import org.octri.authentication.server.view.Labelled;
+import org.octri.common.domain.AbstractEntity;
+import org.octri.common.view.Labelled;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,7 +42,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Gets the name of the role.
-	 * 
+	 *
 	 * @return the role name
 	 */
 	public String getRoleName() {
@@ -50,7 +51,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Sets the name of the role.
-	 * 
+	 *
 	 * @param roleName
 	 *            the role name
 	 */
@@ -60,7 +61,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Gets the description of the role.
-	 * 
+	 *
 	 * @return description of the role
 	 */
 	public String getDescription() {
@@ -69,7 +70,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Sets the description of the role.
-	 * 
+	 *
 	 * @param description
 	 *            description of the role
 	 */
@@ -79,7 +80,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Gets the list of users who have been granted the role.
-	 * 
+	 *
 	 * @return list of users
 	 */
 	public List<User> getUsers() {
@@ -88,7 +89,7 @@ public class UserRole extends AbstractEntity implements Labelled, Comparable<Use
 
 	/**
 	 * Sets the list of users who have been granted the role.
-	 * 
+	 *
 	 * @param users
 	 *            list of users
 	 */

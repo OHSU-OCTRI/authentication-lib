@@ -1,5 +1,71 @@
 # Upgrading
 
+## Upgrading to 3.0.0
+
+Release 3.0.0 removes deprecated code that duplicates features of other [OCTRI libraries](https://github.com/OHSU-OCTRI/). Before upgrading to this release, upgrade to version 2.3.0 and fix any code that causes deprecation warnings. Deprecated classes and properties, along with their suggested replacements, are detailed below.
+
+### AbstractEntity
+
+The `AbstractEntity` class that is the parent of the library's data entity classes has been replaced by the more robust implementation from the [OCTRI common library](https://github.com/OHSU-OCTRI/common-lib/). Because the common library's `AbstractEntity` has additional fields for JPA auditing, you will need to migrate your application's tables to add the new columns.
+
+The following example migration for MySQL is provided to facilitate upgrading existing applications.
+
+* [setup/migrations/V20250924124000__add_auditing_to_entities.sql](./setup/migrations/V20250924124000__add_auditing_to_entities.sql)
+
+If you haven't done so already, add the [`@EnableJpaAuditing`](https://docs.spring.io/spring-data/jpa/reference/auditing.html#jpa.auditing.configuration) annotation to your application.
+
+```java
+package org.octri.example;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication
+@ComponentScan({ "org.octri.example", "org.octri.authentication" })
+@EntityScan(basePackages = { "org.octri.example", "org.octri.authentication" })
+@EnableJpaRepositories(basePackages = { "org.octri.example", "org.octri.authentication" })
+@EnableJpaAuditing
+public class WebApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(WebApplication.class, args);
+	}
+}
+```
+
+### Email
+
+Code for sending account-related emails has been replaced by equivalent functionality from the [OCTRI messaging library](https://github.com/OHSU-OCTRI/messaging-lib/). If your application has table-based authentication enabled, you will need to configure the library's email delivery strategy properties.
+
+* Set `octri.messaging.enabled=true` (this is the default).
+* Set `octri.messaging.email-delivery-strategy`:
+** `octri.messaging.email-delivery-strategy=LOG` for development and test environments that should not deliver email
+** `octri.messaging.email-delivery-strategy=SMTP` for production environments that should deliver email
+* Set `octri.authentication.account-message-email` to the email address that should be used in the from: line of account-related messages.
+
+Previous releases of the library added properties to the `spring.mail` namespace. These properties have been removed.
+
+* `spring.mail.enabled`: This property never actually influenced the library's behavior. It can be removed.
+* `spring.mail.from`: This property has been replaced by the `octri.authentication.account-message-email` property (see above).
+
+### View Classes
+
+Classes in the [`org.octri.authentication.server.view` package](https://github.com/OHSU-OCTRI/authentication-lib/tree/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view) that were not specific to authentication have been moved to the [OCTRI common library](https://github.com/OHSU-OCTRI/common-lib/). Classes and methods in this package have `@Deprecated` annotations and documentation comments detailing their common-lib replacements.
+
+Affected classes:
+
+* [`EntitySelectOption`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/EntitySelectOption.java)
+* [`EnumOptionList`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/EnumOptionList.java)
+* [`EnumSelectOption`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/EnumSelectOption.java)
+* [`Identified`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/Identified.java)
+* [`Labelled`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/Labelled.java)
+* [`OptionList`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/OptionList.java)
+* [`SelectOption`](https://github.com/OHSU-OCTRI/authentication-lib/blob/v2.3.0/authentication_lib/src/main/java/org/octri/authentication/server/view/SelectOption.java)
+
 ## Upgrading to 2.2.0
 
 Release 2.2.0 includes support for notifying users when their session is about to expire. When enabled, a modal dialog is displayed when the user's session is about to expire, with the option to stay logged in. If the user does not interact with the dialog before the session times out, they are automatically logged out.
@@ -37,7 +103,7 @@ The `UserController` class now provides separate endpoints for user creation and
 * To get the new user form: `{{req.contextPath}}/admin/user/new`
 * To submit the new user form: `{{req.contextPath}}/admin/user/create`
 * To get the user update form: `{{req.contextPath}}/admin/user/{id}`
-* To submit the user udpate form: `{{req.contextPath}}/admin/user/update`
+* To submit the user update form: `{{req.contextPath}}/admin/user/update`
 
 The methods of `UserController` now consistently return a `ModelAndView` object instead of a template path string. Applications that have extended the `UserController` class will need to update their method signatures accordingly. Alternatively, you may be able to eliminate your custom `UserController` by using the extension mechanism described below.
 

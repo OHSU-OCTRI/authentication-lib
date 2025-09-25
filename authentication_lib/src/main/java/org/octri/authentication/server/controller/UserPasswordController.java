@@ -297,7 +297,7 @@ public class UserPasswordController {
 				model.clear();
 				return "redirect:/login";
 			} else {
-				log.info("Error saving; redirectoring to form");
+				log.info("Error saving; redirecting to form");
 				model.addAttribute("errorMessages", result.right);
 				model.addAttribute("passwordValidationError", true);
 				return "user/password/form";
