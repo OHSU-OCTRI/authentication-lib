@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a note about messaging-lib configuration to CONFIGURATION_PROPERTIES.md (AUTHLIB-162)
+
 ### Changed
 
 - Update URLs after transferring repository (AUTHLIB-162)
