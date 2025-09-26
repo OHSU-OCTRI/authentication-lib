@@ -45,6 +45,17 @@ _Experimental_: The properties below are used to configure the `Content-Security
 | octri.authentication.csp.enforced | OCTRI_AUTHENTICATION_CSP_ENFORCED | boolean | `false` | Whether to enforce the configured policy. When true, resources that violate the policy will not be loaded. When false, policy violations will only be logged to the browser console. |
 | octri.authentication.csp.policy | OCTRI_AUTHENTICATION_CSP_POLICY | string | `default-src 'self'; img-src 'self' data:` | Allows resources from the current page origin, and images from the current origin or `data:` URLs. |
 
+## Email Configuration
+
+If you have enabled table-based authentication, the library will send email messages to allow users to set their initial password or reset a forgotten password.
+
+| Property | Environment Variable | Type | Default value | Description |
+| - | - | - | - | - |
+| octri.authentication.account-message-email | OCTRI_AUTHENTICATION_ACCOUNT_MESSAGE_EMAIL | string | None | Email address to use in the From: line of account emails. |
+
+Email delivery is provided by the [OCTRI messaging library](https://github.com/OHSU-OCTRI/messaging-lib) using Spring Mail's `JavaMailSender` API. See [the OCTRI messaging library's README.md](https://github.com/OHSU-OCTRI/messaging-lib/blob/main/README.md) for detailed information on how to enable the SMTP delivery strategy and configure the appropriate `spring.mail` properties.
+
+
 ## LDAP Authentication
 
 The properties below are used to configure how the library binds to the LDAP directory and searches for user accounts. These properties have no effect if `octri.authentication.enable-ldap` is false.
