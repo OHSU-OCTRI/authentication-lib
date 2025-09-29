@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update URLs after transferring repository (AUTHLIB-162)
 - **Breaking**: Refactor to derive entity classes from the common-lib `AbstractEntity`. Consuming applications must add [a migration to add new auditing properties](./setup/migrations/V20250924124000__add_auditing_to_entities.sql). See [UPGRADING.md](./UPGRADING.md) for details. (AUTHLIB-161)
 - Refactor to use view utilities from common-lib. (AUTHLIB-161)
+- Upgrade to central-publishing-maven-plugin 0.9.0
+- Upgrade to Spring Boot 3.5
 
 ### Removed
 

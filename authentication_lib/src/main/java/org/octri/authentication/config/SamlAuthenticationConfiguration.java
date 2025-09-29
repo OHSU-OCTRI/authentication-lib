@@ -20,13 +20,11 @@ import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.core.Saml2X509Credential.Saml2X509CredentialType;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
-import org.springframework.security.saml2.provider.service.metadata.OpenSamlMetadataResolver;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.web.DefaultRelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
-import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.util.Assert;
@@ -125,19 +123,6 @@ public class SamlAuthenticationConfiguration {
 		});
 
 		return logoutRequestResolver;
-	}
-
-	/**
-	 * Creates a request filter that generates SAML Service Provider (SP) metadata XML.
-	 *
-	 * @param resolver
-	 *            relying party registration resolver
-	 * @return default SAML metadata filter
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public Saml2MetadataFilter saml2MetadataFilter(RelyingPartyRegistrationResolver resolver) {
-		return new Saml2MetadataFilter(resolver, new OpenSamlMetadataResolver());
 	}
 
 	/**

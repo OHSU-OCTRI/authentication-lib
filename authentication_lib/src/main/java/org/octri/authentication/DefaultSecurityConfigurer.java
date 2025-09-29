@@ -36,13 +36,11 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
-import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
-import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Provides default security configuration to consuming applications.
@@ -114,9 +112,6 @@ public class DefaultSecurityConfigurer {
 
 	@Autowired(required = false)
 	private Saml2LogoutRequestResolver saml2LogoutRequestResolver;
-
-	@Autowired(required = false)
-	private Saml2MetadataFilter saml2MetadataFilter;
 
 	/**
 	 * Provides a default security filter chain bean if the application does not provide a custom one. The behavior of
@@ -310,7 +305,7 @@ public class DefaultSecurityConfigurer {
 				.saml2Logout(saml2 -> {
 					saml2.logoutRequest(request -> request.logoutRequestResolver(saml2LogoutRequestResolver));
 				})
-				.addFilterBefore(saml2MetadataFilter, Saml2WebSsoAuthenticationFilter.class);
+				.saml2Metadata(withDefaults());
 	}
 
 	/**
@@ -350,7 +345,7 @@ public class DefaultSecurityConfigurer {
 	public void configureLogoutWithDefaults(HttpSecurity http) throws Exception {
 		http.logout(logout -> logout
 				.permitAll()
-				.logoutRequestMatcher(new AntPathRequestMatcher(routes.getLogoutUrl()))
+				.logoutRequestMatcher(PathPatternRequestMatcher.withDefaults().matcher(routes.getLogoutUrl()))
 				.logoutSuccessUrl(routes.getLogoutSuccessUrl()));
 	}
 

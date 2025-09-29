@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author harrelst
@@ -19,12 +18,9 @@ public class TableBasedAuthenticationProvider extends DaoAuthenticationProvider 
 	 *
 	 * @param userDetailsService
 	 *            service used to look up user details
-	 * @param passwordEncoder
-	 *            encodes passwords for storage in the database
 	 */
-	public TableBasedAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-		this.setUserDetailsService(userDetailsService);
-		this.setPasswordEncoder(passwordEncoder);
+	public TableBasedAuthenticationProvider(UserDetailsService userDetailsService) {
+		super(userDetailsService);
 	}
 
 	@Override
