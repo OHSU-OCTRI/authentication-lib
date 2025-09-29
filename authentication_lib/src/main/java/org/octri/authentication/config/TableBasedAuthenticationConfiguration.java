@@ -33,7 +33,9 @@ public class TableBasedAuthenticationConfiguration {
 	public TableBasedAuthenticationProvider tableBasedAuthenticationProvider(UserDetailsService userDetailsService,
 			PasswordEncoder passwordEncoder) {
 		log.debug("Creating default table-based authentication provider.");
-		return new TableBasedAuthenticationProvider(userDetailsService, passwordEncoder);
+		var provider = new TableBasedAuthenticationProvider(userDetailsService);
+		provider.setPasswordEncoder(passwordEncoder);
+		return provider;
 	}
 
 }
