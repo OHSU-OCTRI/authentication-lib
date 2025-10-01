@@ -10,7 +10,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 
 | Property | Environment Variable | Type | Default value | Description |
 | - | - | - | - | - |
-| octri.authentication.account-message-email | OCTRI_AUTHENTICATION_ACCOUNT_MESSAGE_EMAIL | string | None | Email address to use in the From: line of account emails. |
+| octri.authentication.account-message-email | OCTRI_AUTHENTICATION_ACCOUNT_MESSAGE_EMAIL | string | None | Email address to use in the From: line of account emails. Falls back on octri.messaging.default-sender-address if not configured.|
 | octri.authentication.base-url | OCTRI_AUTHENTICATION_BASEURL | string | http://localhost:8080 | Base URL of the application, without the context path. Used to construct URLs, particularly in email messages. An error is logged if this is set to the default value to encourage proper configuration. |
 | octri.authentication.credentials-expiration-period | OCTRI_AUTHENTICATION_CREDENTIALSEXPIRATIONPERIOD | integer | 180 | Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be required to change their password. |
 | octri.authentication.custom-role-script | OCTRI_AUTHENTICATION_CUSTOM_ROLE_SCRIPT | string | None | Path to custom JavaScript to use when validating user roles. Path should be relative to the application context path. Only relevant when `octri.authentication.role-style=custom`. |

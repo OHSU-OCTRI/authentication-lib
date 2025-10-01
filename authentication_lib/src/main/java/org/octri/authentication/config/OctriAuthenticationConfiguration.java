@@ -37,6 +37,8 @@ public class OctriAuthenticationConfiguration {
 			"octri.authentication.saml.enabled"
 	};
 
+	private static final String FALLBACK_EMAIL_PROPERTY = "octri.messaging.default-sender-address";
+
 	private final String contextPath;
 	private final OctriAuthenticationProperties authenticationProperties;
 
@@ -58,7 +60,7 @@ public class OctriAuthenticationConfiguration {
 		validateAuthenticationMethods(env);
 		validateBaseUrl();
 		validateRoleStyle();
-		validateEmailConfig();
+		validateEmailConfig(env);
 	}
 
 	/**
@@ -152,12 +154,24 @@ public class OctriAuthenticationConfiguration {
 	}
 
 	/**
-	 * Validates account email configuration. Logs an error if the account message email is missing.
+	 * Validates account email configuration. Throws an exception if table-based authentication is enabled and no email
+	 * address has been configured.
+	 *
+	 * @param env
+	 *            the Spring application environment
 	 */
-	private void validateEmailConfig() {
+	private void validateEmailConfig(Environment env) {
+		var fallbackEmailAddress = env.getProperty(FALLBACK_EMAIL_PROPERTY);
+
 		if (StringUtils.isBlank(authenticationProperties.getAccountMessageEmail())
 				&& authenticationProperties.getEnableTableBased()) {
-			throw new IllegalStateException(ACCOUNT_EMAIL_ERROR);
+			if (StringUtils.isNotBlank(fallbackEmailAddress)) {
+				log.info("octri.authentication.account-message-email is not set. Falling back to "
+						+ FALLBACK_EMAIL_PROPERTY);
+				authenticationProperties.setAccountMessageEmail(fallbackEmailAddress);
+			} else {
+				throw new IllegalStateException(ACCOUNT_EMAIL_ERROR);
+			}
 		}
 	}
 
