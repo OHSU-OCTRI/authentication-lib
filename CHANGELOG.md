@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgrade to messaging-lib 0.2.0 for email subject prefix support. (CIS-3351)
 - Use the value of `octri.messaging.default-sender-address` property if `octri.authentication.account-message-email` is not set.
+- Publish -SNAPSHOT releases to Maven Central. (CIS-3368)
 
 ## [3.0.0] - 2025-09-29
 

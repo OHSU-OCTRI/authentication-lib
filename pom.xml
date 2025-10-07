@@ -130,6 +130,7 @@
 							<publishingServerId>central</publishingServerId>
 							<deploymentName>AuthLib ${project.version}</deploymentName>
 							<autoPublish>true</autoPublish>
+							<centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
 						</configuration>
 					</plugin>
 				</plugins>
