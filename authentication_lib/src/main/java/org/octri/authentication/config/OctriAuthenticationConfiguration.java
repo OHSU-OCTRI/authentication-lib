@@ -37,7 +37,7 @@ public class OctriAuthenticationConfiguration {
 			"octri.authentication.saml.enabled"
 	};
 
-	private static final String FALLBACK_EMAIL_PROPERTY = "octri.messaging.default-sender-address";
+	private static final String FALLBACK_EMAIL_PROPERTY = "octri.messaging.email.default-sender-address";
 
 	private final String contextPath;
 	private final OctriAuthenticationProperties authenticationProperties;
