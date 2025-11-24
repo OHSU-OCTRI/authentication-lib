@@ -28,7 +28,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -157,6 +159,18 @@ public class DefaultSecurityConfigurer {
 	@ConditionalOnMissingBean
 	public HttpSessionEventPublisher defaultHttpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
+	}
+
+	/**
+	 * Provides a default {@link AuthenticationEventPublisher} bean if the application does not provide a custom one.
+	 * This ensures that Spring Security publishes events that applications can use to respond to authentication events.
+	 *
+	 * @return the default authentication event publisher
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public AuthenticationEventPublisher defaultAuthenticationEventPublisher() {
+		return new DefaultAuthenticationEventPublisher();
 	}
 
 	/**
