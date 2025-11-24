@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Provide an `ApplicationEventPublisher` if one is not already present (AUTHLIB-168).
+
 ### Changed
 
 - Upgrade to messaging-lib 0.2.0 for email subject prefix support. (CIS-3351)
 - Use the value of `octri.messaging.email.default-sender-address` property if `octri.authentication.account-message-email` is not set.
 - Publish -SNAPSHOT releases to Maven Central. (CIS-3368)
+- Merge Dependabot PR to upgrade to Spring Boot 3.5.7.
+- Merge Dependabot PR to upgrade to common-lib 1.8.0
+- Merge Dependabot PR to upgrade from actions/checkout@5 to actions/checkout@6
 
 ### Fixed
 
