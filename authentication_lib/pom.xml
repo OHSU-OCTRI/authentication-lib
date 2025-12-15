@@ -42,7 +42,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<commonlib.version>1.8.0</commonlib.version>
-		<messaginglib.version>0.2.0</messaginglib.version>
+		<messaginglib.version>0.2.1</messaginglib.version>
 	</properties>
 
 	<repositories>
