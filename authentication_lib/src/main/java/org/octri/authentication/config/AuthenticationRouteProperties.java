@@ -21,7 +21,6 @@ public class AuthenticationRouteProperties {
 			"/actuator/health",
 			"/actuator/health/liveness",
 			"/actuator/health/readiness",
-			"/actuator/prometheus",
 			"/assets/**",
 			"/css/*",
 			"/error",
@@ -78,7 +77,7 @@ public class AuthenticationRouteProperties {
 
 	/**
 	 * Sets the URL of the login page.
-	 * 
+	 *
 	 * @param loginUrl
 	 *            login form path
 	 */

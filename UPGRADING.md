@@ -1,5 +1,13 @@
 # Upgrading
 
+## Upgrading to 3.2.0
+
+Release 3.2.0 removes the `/actuator/prometheus` endpoint from the list of routes that are public by default to avoid potentially leaking information to attackers. To restore the previous behavior (not recommended), you can add `/actuator/prometheus` to your application's custom public routes.
+
+```properties
+octri.authentication.routes.custom-public-routes=/some/other/route, /actuator/prometheus
+```
+
 ## Upgrading to 3.0.0
 
 Release 3.0.0 removes deprecated code that duplicates features of other [OCTRI libraries](https://github.com/OHSU-OCTRI/). Before upgrading to this release, upgrade to version 2.3.0 and fix any code that causes deprecation warnings. Deprecated classes and properties, along with their suggested replacements, are detailed below.
