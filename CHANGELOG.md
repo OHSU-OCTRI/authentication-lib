@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added a hook for specifying logout path to the sesstion-timeout-modal (AUTHLIB-167)
+- Added a hook for specifying logout path to the session-timeout-modal (AUTHLIB-167)
 
 ### Changed
 
