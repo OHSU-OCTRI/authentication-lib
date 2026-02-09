@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a hook for specifying logout path to the session-timeout-modal (AUTHLIB-167)
+
 ### Changed
 
 - Remove `/actuator/prometheus` from default public routes. See [UPGRADING.md](./UPGRADING.md) for details. (AUTHLIB-169)

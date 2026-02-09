@@ -15,11 +15,13 @@
 
       const contextMeta = document.querySelector('meta[name=ctx]');
       const timeoutMeta = document.querySelector('meta[name=session-timeout-seconds]');
+      const logoutPathMeta = document.querySelector('meta[name=logout-path]');
       if (contextMeta && timeoutMeta) {
         const contextPath = contextMeta.getAttribute('content');
         const sessionTimeoutSeconds = Number.parseInt(
           timeoutMeta.getAttribute('content')
         );
+        const logoutPath = logoutPathMeta ? logoutPathMeta.getAttribute('content') : '/logout';
 
         if (!sessionTimeoutSeconds || sessionTimeoutSeconds < 120) {
           console.error(
@@ -37,7 +39,8 @@
         new OctriSessionTimeoutModal({
           contextPath,
           warnTimeoutSeconds,
-          logoutTimeoutSeconds
+          logoutTimeoutSeconds,
+          logoutPath
         }).init();
       } else {
         console.error(
