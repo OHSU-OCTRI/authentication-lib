@@ -18,6 +18,24 @@ This can also be done by adding the following fragment to the page header.
 {{>authlib_fragments/meta_tags}}
 ```
 
+If you would like to override the logout path, you can also add a meta tag for this:
+
+```mustache
+	<meta name="logout-path" content="/session_expired">
+```
+
+Your custom controller method should invalidate the session and ensure that the timeout modal in not installed on that page:
+
+```java
+	@GetMapping("/session_expired")
+	public String sessionExpired(Map<String, Object> model, HttpSession session) {
+		session.invalidate();
+		model.put("enableSessionTimeout", false);
+		return "session_expired";
+	}
+
+```
+
 Next, include the following fragment somewhere in the footer of your application.
 
 ```mustache
