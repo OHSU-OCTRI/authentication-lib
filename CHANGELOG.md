@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Remove `/actuator/prometheus` from default public routes. See [UPGRADING.md](./UPGRADING.md) for details. (AUTHLIB-169)
+- Merge Dependabot PR to upgrade to messaging-lib 0.2.1
+- Merge Dependabot PR to upgrade to central-publishing-maven-plugin 0.10.0
+- Upgrade to Spring Boot 3.5.10
 
 ## [3.1.0] - 2025-11-24
 
