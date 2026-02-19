@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-02-19
+
 ### Added
 
 - Added a hook for specifying logout path to the session-timeout-modal (AUTHLIB-167)
@@ -457,7 +459,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v2.3.0...v3.0.0
 [2.3.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v2.2.1...v2.3.0
