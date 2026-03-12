@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.octri.authentication</groupId>
 		<artifactId>authentication_lib_parent</artifactId>
-		<version>3.2.1-SNAPSHOT</version>
+		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 
 	<licenses>
@@ -41,7 +41,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<commonlib.version>1.8.1-SNAPSHOT</commonlib.version>
+		<commonlib.version>2.0.0-SNAPSHOT</commonlib.version>
 		<messaginglib.version>0.2.1</messaginglib.version>
 	</properties>
 

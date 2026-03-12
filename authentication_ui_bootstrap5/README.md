@@ -23,7 +23,7 @@ To render AuthLib views with Bootstrap 5 markup, install this package alongside 
 
 ### Dependencies
 
-This package depends on `spring-boot-starter-mustache` and WebJars for Bootstrap 5, jQuery 3, jQuery UI, DataTables, and Font Awesome. These packages should be provided by your application or transitively via `authentication_lib`. See [`pom.xml`](./pom.xml) for details.
+This package depends on WebJars for Bootstrap 5, jQuery 3, jQuery UI, DataTables, and Font Awesome - which are provided as transitive dependencies of [common-lib](https://github.com/OHSU-OCTRI/common-lib). It also dependes on `spring-boot-starter-mustache` which, alongside common-lib, should be included as transitive dependencies of [`authentication_lib`](../authentication_lib/pom.xml). 
 
 ### Templates and Assets
 
