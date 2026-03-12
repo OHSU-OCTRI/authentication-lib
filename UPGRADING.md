@@ -5,11 +5,10 @@
 Release 4.0.0 updates [`assets.mustaches`](./authentication_ui_bootstrap5/src/main/resources/mustache-templates/authlib_fragments/assets.mustache) to reflect the [new WebJar filenames](https://datatables.net/blog/2024/datatables-2#Upgrading) used in DataTables 2. This upgrade will require that applications:
 
 * Update all occurrences of the DataTables WebJar filename, from `jquery.dataTables.min.js` to `dataTables.min.js`
-* Ensure that the dependencies are updated in `pom.xml` to provide DataTables 2 (see below)
+* Remove the DataTables dependency from `pom.xml`
 
-This upgrade also removes the Bootstrap, DataTables, Font Awesome, jQuery 3, jQuery-UI, and webjar-locator dependencies from [`pom.xml`](./authentication_ui_bootstrap5/pom.xml), instead relying on transitive dependencies from [common-lib](https://github.com/OHSU-OCTRI/common-lib) to provide those WebJars. 
+This release also removes the Bootstrap, DataTables, Font Awesome, jQuery 3, jQuery-UI, and webjar-locator dependencies from [`pom.xml`](./authentication_ui_bootstrap5/pom.xml), instead relying on transitive dependencies from [common-lib](https://github.com/OHSU-OCTRI/common-lib) to provide those WebJars. You may wish to review the [common-lib UPGRADING documentation](https://github.com/OHSU-OCTRI/common-lib/blob/main/UPGRADING.md) and remove any other front-end dependencies which are now managed by common-lib, to avoid unexpected behavior.
 
-Because the DataTables dependency is now provided through common-lib, be sure that any existing DataTables dependency in the application's `pom.xml` file has been removed. You may also wish to review the [common-lib UPGRADING documentation](https://github.com/OHSU-OCTRI/common-lib/blob/main/UPGRADING.md) and remove any other front-end dependencies which are now managed by common-lib, to avoid unexpected behavior.
 
 ### Overriding the assets template
 
