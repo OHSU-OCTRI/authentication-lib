@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Moved several front-end dependencies into the common-lib and updated WebJar name for DataTables (CIS-3626)
+
 ## [3.2.0] - 2026-02-19
 
 ### Added

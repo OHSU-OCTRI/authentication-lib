@@ -190,7 +190,7 @@ For UI, the library provides a login page and navigation bar with links to "Home
 
 #### Webjars (CSS and JavaScript dependencies)
 
-The authentication library uses Bootstrap, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as resources through webjars in the `pom.xml` file. The library also uses the webjars-locator dependency to manage versions of the webjars so that your application doesn't have to. To keep in sync with the authentication library, it is recommended that you do not include your own dependencies of these jars but rely on the library to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
+The authentication library uses Bootstrap, Font Awesome, jQuery, jQuery-UI, and DataTables libraries for styling and functionality. These are included as transitive dependencies of [common-lib](https://github.com/OHSU-OCTRI/common-lib), which is included in [`pom.xml`](./authentication_lib/pom.xml) and manages versions for these front-end dependencies using the webjars-locator, so your application doesn't have to. To avoid dependency conflicts, it is recommended that you do not include your own dependencies of these jars but rely on the libraries to keep them up to date. You can refer to any of the assets provided by the authentication library in your application code. Here is what is included:
 
 CSS is located in the `authlib_fragments/css.mustache` template. By default it includes the following files:
 
@@ -230,7 +230,7 @@ Similar to `css.mustache`, if you pass the `formView` model property it will inc
 And if you pass the `listView` model property it will include:
 
 ```html
-<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.min.js"></script>
 <script type="text/javascript" src="{{req.contextPath}}/webjars/datatables/js/dataTables.bootstrap5.min.js"></script>
 ```
 
