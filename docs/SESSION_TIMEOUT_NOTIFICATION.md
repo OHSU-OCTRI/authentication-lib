@@ -46,14 +46,9 @@ This will add the needed markup and JavaScript to the page to alert authenticate
 
 ## Advanced Usage
 
-As noted above, by default the session timeout notification is only shown to authenticated users. If you need to customize the logic that decides when the modal is added to the page (e.g. only for users with a specific role), you can include the `session_timeout_modal` fragment. You can guard this using any attribute of the template model.
+You can customize the session timeout notification to meet the needs of your application.
 
-```mustache
-{{#isMySpecialUserType}}
-{{>authlib_fragments/session_timeout_modal}}
-<script type="text/javascript" src="{{req.contextPath}}/assets/js/install-session-timeout.js"></script>
-{{/isMySpecialUserType}}
-```
+### Customizing Modal Behavior
 
 You can customize the behavior of the modal dialog using custom JavaScript. The modal's constructor accepts an `options` object that allows configuring many aspects of the modal's behavior, including:
 
@@ -64,3 +59,28 @@ You can customize the behavior of the modal dialog using custom JavaScript. The 
 * Callback to execute before logging the user out
 
 See [octri-session-timeout-modal.js](../authentication_ui_bootstrap5/src/main/resources/static/assets/js/octri-session-timeout-modal.js) and [install-session-timeout.js](../authentication_ui_bootstrap5/src/main/resources/static/assets/js/install-session-timeout.js) for details.
+
+### Customizing Modal Installation
+
+As noted above, by default the session timeout notification is only shown to authenticated users. If you need to customize the logic that decides when the modal is added to the page (e.g. only for users with a specific role), you can include the `session_timeout_modal` fragment. You can guard this using any attribute of the template model.
+
+```mustache
+{{#isMySpecialUserType}}
+{{>authlib_fragments/session_timeout_modal}}
+<script type="text/javascript" src="{{req.contextPath}}/assets/js/install-session-timeout.js"></script>
+{{/isMySpecialUserType}}
+```
+
+### Keepalive Events
+
+You can use custom JavaScript to keep the user's session alive by dispatching an `octri.keepalive` event. This may be helpful when users are completing a lengthy form and may lose work if their session times out. To keep the session alive, add JavaScript to your form that emits the `octri.keepalive` event with `bubbles: true` as the user interacts with form elements.
+
+```javascript
+document.querySelectorAll('input').forEach(input => {
+	input.addEventListener('input', function() {
+		this.dispatchEvent(new Event('octri.keepalive', { bubbles: true }));
+	});
+});
+```
+
+Events are debounced to limit the frequency of keepalive requests.

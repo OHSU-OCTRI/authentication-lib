@@ -76,6 +76,27 @@ class OctriSessionTimeoutModal {
     return document.getElementById(this.options.keepaliveButtonId);
   }
 
+  resetTimers() {
+    clearTimeout(this.warnTimer);
+    clearTimeout(this.logoutTimer);
+    this.warnTimer = setTimeout(() => this.showModal(), this.getWarnTimeoutMs());
+  }
+
+  debounce(func, delay) {
+    let timeoutId = null;
+
+    return function(...args) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+        timeoutId = null;
+      }, delay);
+    };
+  }
+
   showModal() {
     const modal = this.getModal();
     this.setMessage(this.options.warningMessage);
@@ -89,17 +110,20 @@ class OctriSessionTimeoutModal {
     messageElement.textContent = msg;
   }
 
-  onRefreshSession() {
-    const modal = this.getModal();
+  makeKeepaliveRequest() {
     const contextPath = this.options.contextPath;
     const keepalivePath = this.options.keepalivePath;
+    return fetch(`${contextPath}${keepalivePath}?ts=${Date.now()}`);
+  }
 
-    fetch(`${contextPath}${keepalivePath}?ts=${Date.now()}`).then(response => {
+  onRefreshSession() {
+    const modal = this.getModal();
+
+    this.makeKeepaliveRequest().then(response => {
       console.info(response);
       if (response.ok) {
         modal.hide();
-        this.warnTimer = setTimeout(() => this.showModal(), this.getWarnTimeoutMs());
-        clearTimeout(this.logoutTimer);
+        this.resetTimers();
       } else {
         this.onLogout();
       }
@@ -118,6 +142,17 @@ class OctriSessionTimeoutModal {
 
     this.options.logoutCallback().finally(() => {
       window.location = this.getLogoutPath();
+    });
+  }
+
+  onKeepaliveEvent() {
+    console.info('Keepalive event received.');
+    this.makeKeepaliveRequest().then(response => {
+      console.info(response);
+      if (!response.ok) {
+        console.error(`Keepalive request failed with status ${response.status}.`);
+      }
+      this.resetTimers();
     });
   }
 
@@ -144,6 +179,9 @@ class OctriSessionTimeoutModal {
 
     const modal = new bootstrap.Modal(modalElement);
     modalElement.addEventListener('hidden.bs.modal', () => this.onRefreshSession());
-    this.warnTimer = setTimeout(() => this.showModal(), this.getWarnTimeoutMs());
+    this.resetTimers();
+
+    // Listen for the custom keepalive event. The event handler is debounced to limit the number of keepalive requests.
+    document.addEventListener(this.KEEPALIVE_EVENT, this.debounce(() => this.onKeepaliveEvent(), 10000));
   }
 }
