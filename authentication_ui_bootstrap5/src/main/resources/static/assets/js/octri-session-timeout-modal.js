@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-unused-vars */
 
 /**
  * Notifies the user when their session is about to expire and automatically redirects to
@@ -18,6 +18,7 @@
  *
  * - keepaliveButtonId (string): ID of the button element that refreshes the user's session.
  * - keepalivePath (string): Server path of the keepalive endpoint. Relative to contextPath.
+ * - keepaliveDebounceDelaySeconds (string|number): Seconds to debounce keepalive requests when multiple keepalive events are fired.
  * - logoutCallback (() => Promise<any>): Callback to invoke before logging the user out, e.g. to save state.
  * - logoutMessage (string): Message to display when logging the user out.
  * - logoutPath (string): Server path log the user out. Relative to contextPath.
@@ -35,6 +36,7 @@ class OctriSessionTimeoutModal {
       contextPath: null,
       keepaliveButtonId: 'session_timeout_modal_keepalive_button',
       keepalivePath: '/keepalive',
+      keepaliveDebounceDelaySeconds: 30,
       logoutCallback: () => Promise.resolve(),
       logoutMessage: 'Logging out.',
       logoutPath: '/logout',
@@ -63,6 +65,10 @@ class OctriSessionTimeoutModal {
     return this.options.logoutTimeoutSeconds * 1000;
   }
 
+  getKeepaliveDebounceDelayMs() {
+    return this.options.keepaliveDebounceDelaySeconds * 1000;
+  }
+
   getLogoutPath() {
     return `${this.options.contextPath}${this.options.logoutPath}`;
   }
@@ -85,7 +91,7 @@ class OctriSessionTimeoutModal {
   debounce(func, delay) {
     let timeoutId = null;
 
-    return function(...args) {
+    return function (...args) {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -146,11 +152,10 @@ class OctriSessionTimeoutModal {
   }
 
   onKeepaliveEvent() {
-    console.info('Keepalive event received.');
     this.makeKeepaliveRequest().then(response => {
-      console.info(response);
       if (!response.ok) {
         console.error(`Keepalive request failed with status ${response.status}.`);
+        console.info(response);
       }
       this.resetTimers();
     });
@@ -182,6 +187,9 @@ class OctriSessionTimeoutModal {
     this.resetTimers();
 
     // Listen for the custom keepalive event. The event handler is debounced to limit the number of keepalive requests.
-    document.addEventListener(this.KEEPALIVE_EVENT, this.debounce(() => this.onKeepaliveEvent(), 10000));
+    document.addEventListener(
+      this.KEEPALIVE_EVENT,
+      this.debounce(() => this.onKeepaliveEvent(), this.getKeepaliveDebounceDelayMs())
+    );
   }
 }

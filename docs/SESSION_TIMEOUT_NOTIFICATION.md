@@ -57,6 +57,7 @@ You can customize the behavior of the modal dialog using custom JavaScript. The 
 * The endpoint to use to keep the session alive
 * The logout endpoint
 * Callback to execute before logging the user out
+* The length of the quiet period before keepalive requests are required
 
 See [octri-session-timeout-modal.js](../authentication_ui_bootstrap5/src/main/resources/static/assets/js/octri-session-timeout-modal.js) and [install-session-timeout.js](../authentication_ui_bootstrap5/src/main/resources/static/assets/js/install-session-timeout.js) for details.
 
