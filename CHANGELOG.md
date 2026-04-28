@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Extract client IP address correctly when `X-Forwarded-For` header contains a list of IP addresses. (AUTHLIB-172)
+
 ## [4.1.0] - 2026-04-17
 
 ### Added

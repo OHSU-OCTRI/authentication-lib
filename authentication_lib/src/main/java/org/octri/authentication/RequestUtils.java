@@ -1,5 +1,7 @@
 package org.octri.authentication;
 
+import java.util.List;
+
 import org.springframework.util.Assert;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,23 +30,28 @@ public final class RequestUtils {
 	 */
 	public static String getClientIpAddr(HttpServletRequest request) {
 		Assert.notNull(request, "request may not be null");
+		List<String> headerNames = List.of("X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP",
+				"HTTP_X_FORWARDED_FOR");
+		String ip = null;
 
-		String ip = request.getHeader("X-Forwarded-For");
-		if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("Proxy-Client-IP");
+		// check common proxy headers
+		for (String headerName : headerNames) {
+			ip = request.getHeader(headerName);
+			if (ip != null && ip.length() > 0 && !UNKNOWN.equalsIgnoreCase(ip)) {
+				break;
+			}
 		}
-		if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
-		}
-		if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_CLIENT_IP");
-		}
-		if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-		}
+
+		// IP not found in headers; default to getRemoteAddr()
 		if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
+
+		// extract the client IP when the header contains a chain of IPs
+		if (ip.indexOf(",") != -1) {
+			ip = ip.substring(0, ip.indexOf(",")).trim();
+		}
+
 		return ip;
 	}
 }
