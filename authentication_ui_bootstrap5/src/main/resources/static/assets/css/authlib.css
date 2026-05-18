@@ -30,3 +30,20 @@ body.authlib {
 	border: 0;
 	background-color: transparent;
 }
+
+.form-control.is-valid:has(~ .show-password-toggle),
+.form-control.is-invalid:has(~ .show-password-toggle),
+.was-validated .form-control:has(~ .show-password-toggle):valid,
+.was-validated .form-control:has(~ .show-password-toggle):invalid {
+	background-image: none;
+}
+
+.form-control.is-valid ~ .show-password-toggle,
+.was-validated .form-control:valid ~ .show-password-toggle {
+	color: var(--bs-form-valid-border-color);
+}
+
+.form-control.is-invalid ~ .show-password-toggle,
+.was-validated .form-control:invalid ~ .show-password-toggle {
+	color: var(--bs-form-invalid-border-color);
+}
