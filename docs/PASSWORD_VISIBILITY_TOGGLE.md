@@ -12,20 +12,22 @@ When `octri.authentication.enable-password-visibility-toggle` is `true`, passwor
 
 The toggle button is styled by the `.show-password-toggle` CSS class defined in [`authlib.css`](../authentication_ui_bootstrap5/src/main/resources/static/assets/css/authlib.css).
 
+The `enablePasswordVisibilityToggle` variable is added to every template model by [`TemplateAdvice`](../authentication_lib/src/main/java/org/octri/authentication/server/controller/TemplateAdvice.java) and reflects the value of the `octri.authentication.enable-password-visibility-toggle` property.
+
 The `password-visibility.js` script and `authlib.css` stylesheet are automatically included in the page if your application is inserting the following mustache fragments:
 
 * [authlib_fragments/assets.mustache](../authentication_ui_bootstrap5/src/main/resources/mustache-templates/authlib_fragments/assets.mustache)
 * [authlib_fragments/css.mustache](../authentication_ui_bootstrap5/src/main/resources/mustache-templates/authlib_fragments/css.mustache)
 
+Note that `password-visibility.js` is only included in the page when `octri.authentication.enable-password-visibility-toggle` is `true`.
+
 ## Custom Templates
 
-If your application overrides any of the built-in password form templates and wants to preserve toggle functionality, add the `data-password-toggle` attribute to any `<input type="password">` element, conditional on the `enablePasswordVisibilityToggle` Mustache variable. For example:
+If your application overrides any of the built-in password form templates you want to preserve toggle functionality, add the `data-password-toggle` attribute to any `<input type="password">` element. For example:
 
 ```html
-<input type="password" class="form-control" {{#enablePasswordVisibilityToggle}}data-password-toggle{{/enablePasswordVisibilityToggle}}>
+<input type="password" class="form-control" data-password-toggle>
 ```
-
-The `enablePasswordVisibilityToggle` variable is added to every template model by [`TemplateAdvice`](../authentication_lib/src/main/java/org/octri/authentication/server/controller/TemplateAdvice.java) and reflects the value of the `octri.authentication.enable-password-visibility-toggle` property.
 
 This can also be used to add the behavior to any other password inputs in your application.
 

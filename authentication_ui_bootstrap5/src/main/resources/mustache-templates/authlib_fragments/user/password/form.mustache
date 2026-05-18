@@ -16,8 +16,7 @@
 					<label for="current_password" class="form-label">Current Password</label>
 					<input id="current_password" name="currentPassword"
 						class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}"
-						type="password" autofocus="true" data-focus required
-						{{#enablePasswordVisibilityToggle}}data-password-toggle{{/enablePasswordVisibilityToggle}}>
+						type="password" autofocus="true" data-focus required data-password-toggle>
 				</div>
 				{{/token}}
 
@@ -25,16 +24,14 @@
 					<label for="new_password" class="form-label">New Password</label>
 					<input id="new_password" name="newPassword"
 						class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}"
-						type="password" data-focus required
-						{{#enablePasswordVisibilityToggle}}data-password-toggle{{/enablePasswordVisibilityToggle}}>
+						type="password" data-focus required data-password-toggle>
 				</div>
 
 				<div class="form-group">
 					<label for="confirm_password" class="form-label">Confirm New Password</label>
 					<input id="confirm_password" name="confirmPassword"
 						class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}"
-						type="password" required
-						{{#enablePasswordVisibilityToggle}}data-password-toggle{{/enablePasswordVisibilityToggle}}>
+						type="password" required data-password-toggle>
 					<span class="form-text small text-muted">Type your new password again</span>
 				</div>
 

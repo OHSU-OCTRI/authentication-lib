@@ -34,6 +34,7 @@
   function wrapInput(inputElement) {
     if (inputElement.getAttribute('type') !== 'password') {
       console.error('Not adding password visibility toggle to non-password input.', inputElement);
+      return;
     }
 
     // add padding to prevent obscuring the password
@@ -58,6 +59,7 @@
   if (inputs.length) {
     inputs.forEach(wrapInput);
     inputs[0].form.addEventListener('submit', function(event) {
+      // hide visible passwords on submit to prevent browser autocomplete
       const elements = event.target.querySelectorAll(inputSelector);
       elements.forEach(function(element) {
         element.setAttribute('type', 'password');
