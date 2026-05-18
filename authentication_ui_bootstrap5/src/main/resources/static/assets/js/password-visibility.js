@@ -9,24 +9,51 @@
   function togglePassword(event) {
     const toggleButton = event.currentTarget;
     const passwordInput = toggleButton.parentElement.querySelector(inputSelector);
-    const toggleIcon = toggleButton.querySelector(iconSelector);
-    const toggleStatus = toggleButton.querySelector(toggleStatusSelector);
 
-    if (!passwordInput || !toggleIcon || !toggleStatus) {
-      console.error('Required elements not found');
-      console.log(passwordInput, toggleIcon, toggleStatus);
+    if (!passwordInput) {
+      console.error('Password input not found');
       return;
     }
 
-    toggleIcon.classList.toggle('fa-eye');
-    toggleIcon.classList.toggle('fa-eye-slash');
-
     const inputType = passwordInput.getAttribute('type');
     if (inputType === 'password') {
-      passwordInput.setAttribute('type', 'text');
-      toggleStatus.textContent = 'Your password is visible';
+      showPassword(passwordInput);
     } else {
-      passwordInput.setAttribute('type', 'password');
+      hidePassword(passwordInput);
+    }
+  }
+
+  function toggleIconState(toggleIcon) {
+    toggleIcon.classList.toggle('fa-eye');
+    toggleIcon.classList.toggle('fa-eye-slash');
+  }
+
+  function showPassword(passwordInput) {
+    const toggleIcon = passwordInput.parentElement.querySelector(iconSelector);
+    const toggleStatus = passwordInput.parentElement.querySelector(toggleStatusSelector);
+
+    passwordInput.setAttribute('type', 'text');
+
+    if (toggleIcon) {
+      toggleIconState(toggleIcon);
+    }
+
+    if (toggleStatus) {
+      toggleStatus.textContent = 'Your password is visible';
+    }
+  }
+
+  function hidePassword(passwordInput) {
+    const toggleIcon = passwordInput.parentElement.querySelector(iconSelector);
+    const toggleStatus = passwordInput.parentElement.querySelector(toggleStatusSelector);
+
+    passwordInput.setAttribute('type', 'password');
+
+    if (toggleIcon) {
+      toggleIconState(toggleIcon);
+    }
+
+    if (toggleStatus) {
       toggleStatus.textContent = 'Your password is hidden';
     }
   }
@@ -62,7 +89,9 @@
       // hide visible passwords on submit to prevent browser autocomplete
       const elements = event.target.querySelectorAll(inputSelector);
       elements.forEach(function(element) {
-        element.setAttribute('type', 'password');
+        if (element.getAttribute('type') === 'text') {
+          hidePassword(element);
+        }
       });
     });
   }
