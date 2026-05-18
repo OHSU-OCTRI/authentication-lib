@@ -15,3 +15,35 @@ body.authlib {
 .form-group {
 	margin-bottom: 1rem;
 }
+
+::-ms-reveal {
+	/* Hides the default password visibility toggle in Edge */
+	display: none;
+}
+
+.show-password-toggle {
+	/* Positions the password visibility toggle inside the password input */
+	position: absolute;
+	top: 50%;
+	right: 0.5rem;
+	transform: translateY(-50%);
+	border: 0;
+	background-color: transparent;
+}
+
+.form-control.is-valid:has(~ .show-password-toggle),
+.form-control.is-invalid:has(~ .show-password-toggle),
+.was-validated .form-control:has(~ .show-password-toggle):valid,
+.was-validated .form-control:has(~ .show-password-toggle):invalid {
+	background-image: none;
+}
+
+.form-control.is-valid ~ .show-password-toggle,
+.was-validated .form-control:valid ~ .show-password-toggle {
+	color: var(--bs-form-valid-border-color);
+}
+
+.form-control.is-invalid ~ .show-password-toggle,
+.was-validated .form-control:invalid ~ .show-password-toggle {
+	color: var(--bs-form-invalid-border-color);
+}

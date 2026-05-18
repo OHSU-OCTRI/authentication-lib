@@ -75,6 +75,8 @@ public class TemplateAdvice {
 		model.addAttribute("isAdminOrSuper", securityHelper.isAdminOrSuper());
 		model.addAttribute("emailRequired", authenticationProperties.getEmailRequired());
 		model.addAttribute("sessionTimeoutSeconds", sessionTimeoutSeconds());
+		model.addAttribute("enablePasswordVisibilityToggle",
+				authenticationProperties.getEnablePasswordVisibilityToggle());
 	}
 
 	/**

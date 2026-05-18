@@ -7,24 +7,31 @@
 			{{>authlib_fragments/user/password/password_info}}
 
 			{{>components/messages}}
-			<form id="password_form" class="form mt-3" role="form" autocomplete="off" action="{{req.contextPath}}{{formRoute}}" method="POST">
+			<form id="password_form" class="form mt-3" role="form" autocomplete="off"
+				action="{{req.contextPath}}{{formRoute}}" method="POST">
 				{{! The presence of a token indicates a password reset - a change otherwise.
 					i.e. The user doesn't know their current password. }}
 				{{^token}}
 				<div class="form-group">
 					<label for="current_password" class="form-label">Current Password</label>
-					<input id="current_password" name="currentPassword" class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}" type="password" autofocus="true" data-focus required>
+					<input id="current_password" name="currentPassword"
+						class="form-control {{#currentPasswordIncorrect}}is-invalid{{/currentPasswordIncorrect}}"
+						type="password" autofocus="true" data-focus required data-password-toggle>
 				</div>
 				{{/token}}
 
 				<div class="form-group">
 					<label for="new_password" class="form-label">New Password</label>
-					<input id="new_password" name="newPassword" class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}" type="password" data-focus required>
+					<input id="new_password" name="newPassword"
+						class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}"
+						type="password" data-focus required data-password-toggle>
 				</div>
 
 				<div class="form-group">
 					<label for="confirm_password" class="form-label">Confirm New Password</label>
-					<input id="confirm_password" name="confirmPassword" class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}" type="password" required>
+					<input id="confirm_password" name="confirmPassword"
+						class="form-control {{#passwordValidationError}}is-invalid{{/passwordValidationError}}"
+						type="password" required data-password-toggle>
 					<span class="form-text small text-muted">Type your new password again</span>
 				</div>
 

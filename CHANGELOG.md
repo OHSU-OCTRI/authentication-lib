@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add the ability to toggle password visibility. See [UPGRADING.md](./UPGRADING.md) for details. (AUTHLIB-173)
+
+### Changed
+
+- Upgrade softprops/action-gh-release to v3
+- Upgrade from Spring Boot 3.5.11 to 3.5.14
+
+
 ## [4.1.1] - 2026-05-06
 
 ### Fixed
