@@ -15,3 +15,18 @@ body.authlib {
 .form-group {
 	margin-bottom: 1rem;
 }
+
+::-ms-reveal {
+	/* Hides the default password visibility toggle in Edge */
+	display: none;
+}
+
+.show-password-toggle {
+	/* Positions the password visibility toggle inside the password input */
+	position: absolute;
+	top: 50%;
+	right: 0.5rem;
+	transform: translateY(-50%);
+	border: 0;
+	background-color: transparent;
+}

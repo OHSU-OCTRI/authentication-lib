@@ -1,5 +1,11 @@
 # Upgrading
 
+## Upgrading to 4.2.0
+
+Release 4.2.0 includes the ability to toggle password visibility. This feature is enabled by default, but it may be disabled using the `octri.authentication.enable-password-visibility-toggle` property.
+
+See [PASSWORD_VISIBILITY_TOGGLE.md](./docs/PASSWORD_VISIBILITY_TOGGLE.md) for details.
+
 ## Upgrading to 4.0.0
 
 Release 4.0.0 updates [`assets.mustaches`](./authentication_ui_bootstrap5/src/main/resources/mustache-templates/authlib_fragments/assets.mustache) to reflect the [new WebJar filenames](https://datatables.net/blog/2024/datatables-2#Upgrading) used in DataTables 2. This upgrade will require that applications:
@@ -16,7 +22,7 @@ If an application overrides [`assets.mustache`](./authentication_ui_bootstrap5/s
 
 ### Applications using common-lib
 
-To upgrade an application which uses [common-lib](https://github.com/OHSU-OCTRI/common-lib), be sure to upgrade common-lib to at least 2.0.0. Ideally, match the common-lib version in your application to the dependency specified in [`pom.xml`]. 
+To upgrade an application which uses [common-lib](https://github.com/OHSU-OCTRI/common-lib), be sure to upgrade common-lib to at least 2.0.0. Ideally, match the common-lib version in your application to the dependency specified in [`pom.xml`].
 
 
 ## Upgrading to 3.2.0

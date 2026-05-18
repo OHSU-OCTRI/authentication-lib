@@ -21,6 +21,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | octri.authentication.password-token-valid-for | OCTRI_AUTHENTICATION_PASSWORD_TOKEN_VALID_FOR | duration | 30m | Length of time that password reset tokens will be valid. See the [Spring Boot documentation](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations) for valid formats. |
 | octri.authentication.role-style | OCTRI_AUTHENTICATION_ROLE_STYLE | string | multiple | Role style. Determines how the role selector on the user form is rendered. Valid options are `single`, `multiple`, or `custom`. |
 | octri.authentication.username-style | OCTRI_AUTHENTICATION_USERNAMESTYLE | string | plain | Username style. Valid options are `plain`, `email`, or `mixed`. |
+| octri.authentication.enable-password-visibility-toggle | OCTRI_AUTHENTICATION_ENABLE_PASSWORD_VISIBILITY_TOGGLE | boolean | true | Whether to enable the password visibility toggle button. |
 
 ## Route Configuration
 

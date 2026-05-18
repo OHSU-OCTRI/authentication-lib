@@ -68,12 +68,12 @@ public class OctriAuthenticationProperties {
 	public static final Duration DEFAULT_PASSWORD_TOKEN_DURATION = Duration.ofMinutes(30);
 
 	/**
-	 * Whether LDAP authentication should be enabled.
+	 * Whether LDAP authentication should be enabled. Defaults to false.
 	 */
 	private Boolean enableLdap = false;
 
 	/**
-	 * Whether table-based authentication should be enabled.
+	 * Whether table-based authentication should be enabled. Defaults to false.
 	 */
 	private Boolean enableTableBased = false;
 
@@ -84,13 +84,13 @@ public class OctriAuthenticationProperties {
 	private String baseUrl = DEFAULT_BASE_URL;
 
 	/**
-	 * Number of failed login attempts allowed before accounts are locked.
+	 * Number of failed login attempts allowed before accounts are locked. Defaults to 7.
 	 */
 	private Integer maxLoginAttempts = 7;
 
 	/**
-	 * Length of time (in days) that credentials are valid. After this period has elapsed, users will be required
-	 * to change their password.
+	 * Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be
+	 * required to change their password. Defaults to 180 days.
 	 */
 	private Integer credentialsExpirationPeriod = 180;
 
@@ -101,18 +101,18 @@ public class OctriAuthenticationProperties {
 	private UsernameStyle usernameStyle = UsernameStyle.PLAIN;
 
 	/**
-	 * Length of time that password tokens will be valid for
+	 * Length of time that user-initiated password reset tokens will be valid for. Defaults to 30 minutes.
 	 */
 	@DurationUnit(ChronoUnit.MINUTES)
 	private Duration passwordTokenValidFor = DEFAULT_PASSWORD_TOKEN_DURATION;
 
 	/**
-	 * Whether the email field on the user form is required.
+	 * Whether the email field on the user form is required. Defaults to true.
 	 */
 	private Boolean emailRequired = true;
 
 	/**
-	 * Whether email should be sent or logged to the server instead.
+	 * Whether email should be sent or logged to the server instead. Defaults to false (send email).
 	 *
 	 * @deprecated
 	 *             Use `octri.messaging.email-delivery-method=log` to to log messages instead.
@@ -138,6 +138,11 @@ public class OctriAuthenticationProperties {
 	 * Email address that account notification emails should come from.
 	 */
 	private String accountMessageEmail;
+
+	/**
+	 * Whether the password visibility toggle button is enabled. Defaults to true.
+	 */
+	private Boolean enablePasswordVisibilityToggle = true;
 
 	/**
 	 * Gets whether LDAP authentication is enabled.
@@ -375,6 +380,25 @@ public class OctriAuthenticationProperties {
 		this.accountMessageEmail = accountMessageEmail;
 	}
 
+	/**
+	 * Gets whether the password visibility toggle button is enabled.
+	 *
+	 * @return true if enabled, false otherwise
+	 */
+	public Boolean getEnablePasswordVisibilityToggle() {
+		return enablePasswordVisibilityToggle;
+	}
+
+	/**
+	 * Sets whether the password visibility toggle button is enabled.
+	 *
+	 * @param enablePasswordVisibilityToggle
+	 *            true to enable the password visibility toggle, false to disable it
+	 */
+	public void setEnablePasswordVisibilityToggle(Boolean enablePasswordVisibilityToggle) {
+		this.enablePasswordVisibilityToggle = enablePasswordVisibilityToggle;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
@@ -382,7 +406,7 @@ public class OctriAuthenticationProperties {
 				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor="
 				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun
 				+ ", roleStyle=" + roleStyle + ", customRoleScript=" + customRoleScript + ", accountMessageEmail="
-				+ accountMessageEmail + "]";
+				+ accountMessageEmail + ", enablePasswordVisibilityToggle=" + enablePasswordVisibilityToggle + "]";
 	}
 
 }
