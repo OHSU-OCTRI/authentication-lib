@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-05-29
+
 ### Added
 
 - Add the ability to toggle password visibility. See [UPGRADING.md](./UPGRADING.md) for details. (AUTHLIB-173)
@@ -20,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump softprops/action-gh-release from 2 to 3 #73
 - Bump org.springframework.boot:spring-boot-starter-parent from 3.5.11 to 3.5.14 #76
 - Bump common-lib from 2.0.1 to 2.1.0
-
 
 ## [4.1.1] - 2026-05-06
 
@@ -497,7 +498,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.1.1...HEAD
+[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.2.0...HEAD
+[4.2.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.1.1...v4.2.0
 [4.1.1]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v3.2.0...v4.0.0
