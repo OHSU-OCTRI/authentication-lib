@@ -13,8 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgrade softprops/action-gh-release to v3
-- Upgrade from Spring Boot 3.5.11 to 3.5.14
+- Add GitHub Actions workflow to automatically add Dependabot updates to CHANGELOG.md.
+
+### Dependencies
+
+- Bump softprops/action-gh-release from 2 to 3 #73
+- Bump org.springframework.boot:spring-boot-starter-parent from 3.5.11 to 3.5.14 #76
+- Bump common-lib from 2.0.1 to 2.1.0
 
 
 ## [4.1.1] - 2026-05-06
