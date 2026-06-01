@@ -6,14 +6,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.passay.CharacterCharacteristicsRule;
-import org.passay.CharacterRule;
-import org.passay.EnglishCharacterData;
-import org.passay.LengthRule;
+import org.passay.DefaultPasswordValidator;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
-import org.passay.RuleResult;
 import org.passay.RuleResultDetail;
+import org.passay.ValidationResult;
+import org.passay.data.EnglishCharacterData;
+import org.passay.rule.CharacterCharacteristicsRule;
+import org.passay.rule.CharacterRule;
+import org.passay.rule.LengthRule;
 import org.springframework.stereotype.Component;
 
 import jakarta.validation.ConstraintValidatorContext;
@@ -49,13 +50,11 @@ public class PasswordConstraintValidator {
 
 		// Require one of: capital letter, punctuation/special character
 		// CharacterCharacteristicsRule allows x out of n rules to be matched
-		CharacterCharacteristicsRule capsOrSpecial = new CharacterCharacteristicsRule();
-		capsOrSpecial.setNumberOfCharacteristics(1);
-		capsOrSpecial.getRules().add(capitalLetter);
-		capsOrSpecial.getRules().add(specialCharacter);
+		CharacterCharacteristicsRule capsOrSpecial = new CharacterCharacteristicsRule(1, capitalLetter,
+				specialCharacter);
 
 		// Add all rules to the validator
-		PasswordValidator validator = new PasswordValidator(
+		PasswordValidator validator = new DefaultPasswordValidator(
 				Arrays.asList(
 						new LengthRule(8, Integer.MAX_VALUE),
 						new CharacterRule(EnglishCharacterData.Alphabetical, 1),
@@ -66,7 +65,7 @@ public class PasswordConstraintValidator {
 		// Note: INSUFFICIENT_CHARACTERISTICS is returned when either INSUFFICIENT_UPPERCASE or INSUFFICIENT_SPECIAL is
 		// thrown. These two constraints are handled by {@link CharacterCharacteristicsRule}. Filter them out so we
 		// don't duplicate messages in the UI.
-		RuleResult result = validator.validate(new PasswordData(password));
+		ValidationResult result = validator.validate(new PasswordData(password));
 		List<String> reasons = result.getDetails().stream().map(RuleResultDetail::getErrorCode)
 				.filter(key -> !Reason.ReasonKey.INSUFFICIENT_SPECIAL.toString().equals(key)
 						&& !Reason.ReasonKey.INSUFFICIENT_UPPERCASE.toString().equals(key))
