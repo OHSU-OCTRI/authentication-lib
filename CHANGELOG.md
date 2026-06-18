@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump org.passay:passay from 1.6.6 to 2.0.0
 - Bumps org.springframework.boot:spring-boot-starter-parent from 3.5.14 to 3.5.15
+- Bumps org.octri.messaging:messaging_lib from 0.2.1 to 0.2.2
 
 ## [4.2.0] - 2026-05-29
 
