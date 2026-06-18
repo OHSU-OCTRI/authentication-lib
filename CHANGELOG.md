@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - Bump org.passay:passay from 1.6.6 to 2.0.0
+- Bumps org.springframework.boot:spring-boot-starter-parent from 3.5.14 to 3.5.15
 
 ## [4.2.0] - 2026-05-29
 
