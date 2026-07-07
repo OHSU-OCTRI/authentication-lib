@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-java-source:
-    name: Build jar and test
+    name: Build jar and publish
     uses: OHSU-OCTRI/shared-workflows/.github/workflows/java-build.yaml@main
     with:
       java_version: '17'
