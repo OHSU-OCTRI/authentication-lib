@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Use shared GitHub Actions workflows (CIS-3773)
+- Create a test build workflow to handle PRs (CIS-3773)
+
 ### Dependencies
 
 - Bump org.passay:passay from 1.6.6 to 2.0.0
