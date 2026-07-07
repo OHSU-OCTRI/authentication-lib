@@ -13,4 +13,5 @@ jobs:
     with:
       java_version: '17'
       publish_to_github_packages: ${{ github.ref == 'refs/heads/main' || github.ref_type == 'tag' }}
+      publish_to_maven_central: ${{ github.ref == 'refs/heads/main' || github.ref_type == 'tag' }}
     secrets: inherit
