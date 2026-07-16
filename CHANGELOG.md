@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumps org.octri.messaging:messaging_lib from 0.2.1 to 0.2.2
 - Bumps org.octri.common:common_lib from 2.1.0 to 2.1.1
 - Bumps org.springframework.boot:spring-boot-starter-parent from 3.5.15 to 3.5.16
+- Bumps org.octri.messaging:messaging_lib from 0.2.2 to 0.2.3
 
 ## [4.2.0] - 2026-05-29
 
