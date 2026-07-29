@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.1] - 2026-07-29
+
 ### Changed
 
 - Use shared GitHub Actions workflows (CIS-3773)
@@ -512,7 +514,8 @@ _DO NOT USE: This release contains a bug that prevents application startup in so
 - Hide navbar items based on roles (AUTHLIB-25)
 - Prevent creation of table-based users when table-based auth is disabled (AUTHLIB-36)
 
-[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.2.0...HEAD
+[unreleased]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.2.1...HEAD
+[4.2.1]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.1.1...v4.2.0
 [4.1.1]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/OHSU-OCTRI/authentication-lib/compare/v4.0.0...v4.1.0
