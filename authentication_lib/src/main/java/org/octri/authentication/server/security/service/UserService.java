@@ -18,7 +18,6 @@ import org.octri.authentication.server.security.exception.UserManagementExceptio
 import org.octri.authentication.server.security.password.Messages;
 import org.octri.authentication.server.security.password.PasswordConstraintValidator;
 import org.octri.authentication.server.security.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,17 +32,18 @@ import org.springframework.util.Assert;
 @Service
 public class UserService {
 
-	@Autowired
-	private OctriAuthenticationProperties authenticationProperties;
+	private final OctriAuthenticationProperties authenticationProperties;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final PasswordResetTokenService passwordResetTokenService;
 
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired(required = false)
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private PasswordResetTokenService passwordResetTokenService;
+	public UserService(OctriAuthenticationProperties authenticationProperties, UserRepository userRepository,
+			Optional<PasswordEncoder> optPasswordEncoder, PasswordResetTokenService passwordResetTokenService) {
+		this.authenticationProperties = authenticationProperties;
+		this.userRepository = userRepository;
+		this.passwordEncoder = optPasswordEncoder.orElse(null);
+		this.passwordResetTokenService = passwordResetTokenService;
+	}
 
 	/**
 	 * Get the user account with the given ID.
@@ -106,11 +106,17 @@ public class UserService {
 			}
 		}
 
-		// Don't clobber existing passwords when editing a user.
 		if (!newUser) {
 			User existing = find(user.getId());
+
+			// Retain existing password when editing a user.
 			if (existing.getPassword() != null) {
 				user.setPassword(existing.getPassword());
+			}
+
+			// Reset failed login attempts when account is unlocked.
+			if (existing.getAccountLocked() && !user.getAccountLocked()) {
+				user.setConsecutiveLoginFailures(0);
 			}
 		}
 
