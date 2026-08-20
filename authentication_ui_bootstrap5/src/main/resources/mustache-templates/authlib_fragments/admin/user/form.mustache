@@ -187,7 +187,8 @@
 
 						<div class="form-group">
 							<label for="consecutive_login_failures" class="form-label">Consecutive Login Failures*</label>
-							<input class="form-control" type="text" readonly="readonly" id="consecutive_login_failures" name="consecutiveLoginFailures" value="{{#user.consecutiveLoginFailures}}{{.}}{{/user.consecutiveLoginFailures}}" />
+							<input class="form-control" type="text" readonly="readonly" id="consecutive_login_failures" name="consecutiveLoginFailures" value="{{#user.consecutiveLoginFailures}}{{.}}{{/user.consecutiveLoginFailures}}" aria-describedby="consecutive_login_failure_help" />
+							<div id="consecutive_login_failure_help" class="form-text">Read only. Reset by unlocking the account.</div>
 						</div>
 					</div>
 				</div>

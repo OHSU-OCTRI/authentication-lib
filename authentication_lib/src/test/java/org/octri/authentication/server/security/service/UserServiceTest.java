@@ -15,12 +15,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,7 +38,6 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-	@InjectMocks
 	private UserService userService;
 
 	@Spy
@@ -72,12 +71,70 @@ public class UserServiceTest {
 
 	@BeforeEach
 	public void beforeEach() throws UserManagementException {
+		userService = new UserService(authenticationProperties, userRepository, Optional.of(passwordEncoder),
+				passwordResetTokenService);
+
 		user = new User();
 		user.setUsername(USERNAME);
 		user.setFirstName("Foo");
 		user.setLastName("Bar");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
 		user.setEmail("foo@example.com");
+	}
+
+	@Test
+	public void testUpdateRetainsExistingPassword() throws UserManagementException {
+		var expectedId = 42L;
+		user.setId(expectedId);
+
+		var updated = copyUser(user);
+		updated.setPassword(null);
+
+		when(userRepository.findById(expectedId)).thenReturn(Optional.of(user));
+		when(userRepository.save(updated)).thenReturn(updated);
+
+		userService.save(updated);
+
+		assertNotNull(updated.getPassword(), "Password hash should be present");
+		assertEquals(user.getPassword(), updated.getPassword(), "Password hash should equal the previous value");
+	}
+
+	@Test
+	public void testUnlockingAccountResetsFailedAttempts() throws UserManagementException {
+		var expectedId = 42L;
+		user.setId(expectedId);
+		user.setAccountLocked(true);
+		user.setConsecutiveLoginFailures(8);
+
+		var updated = copyUser(user);
+		updated.setAccountLocked(false);
+		updated.setConsecutiveLoginFailures(8);
+
+		when(userRepository.findById(expectedId)).thenReturn(Optional.of(user));
+		when(userRepository.save(updated)).thenReturn(updated);
+
+		userService.save(updated);
+
+		assertFalse(updated.getAccountLocked(), "Saved account should be unlocked");
+		assertEquals(0, updated.getConsecutiveLoginFailures(), "Consecutive login failures should be reset");
+	}
+
+	@Test
+	public void testFailedAttemptsIsNotResetWhenAccountRemainsLocked() throws UserManagementException {
+		var expectedId = 42L;
+		user.setId(expectedId);
+		user.setAccountLocked(true);
+		user.setConsecutiveLoginFailures(8);
+
+		var updated = copyUser(user);
+
+		when(userRepository.findById(expectedId)).thenReturn(Optional.of(user));
+		when(userRepository.save(updated)).thenReturn(updated);
+
+		userService.save(updated);
+
+		assertTrue(updated.getAccountLocked(), "Saved account should still be locked");
+		assertEquals(8, updated.getConsecutiveLoginFailures(), "Consecutive login failures should not change");
 	}
 
 	@Test
@@ -270,7 +327,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testPasswordShouldContainCaptialLetterOrSymbol() {
+	public void testPasswordShouldContainCapitalLetterOrSymbol() {
 		List<String> reasons = new ArrayList<>();
 
 		final String invalidPassword = "asdf1asdf";
@@ -291,5 +348,24 @@ public class UserServiceTest {
 		final String withCapitalAndSymbol = invalidPassword + "M/";
 		reasons = userService.validatePassword(user, CURRENT_PASSWORD, withCapitalAndSymbol, withCapitalAndSymbol);
 		assertTrue(reasons.isEmpty(), "Should return 0 errors");
+	}
+
+	private User copyUser(User original) {
+		var copy = new User();
+		copy.setId(original.getId());
+		copy.setUsername(original.getUsername());
+		copy.setPassword(original.getPassword());
+		copy.setEnabled(original.getEnabled());
+		copy.setAccountLocked(original.getAccountLocked());
+		copy.setFirstName(original.getFirstName());
+		copy.setLastName(original.getLastName());
+		copy.setInstitution(original.getInstitution());
+		copy.setEmail(original.getEmail());
+		copy.setConsecutiveLoginFailures(original.getConsecutiveLoginFailures());
+		copy.setAccountExpirationDate(original.getAccountExpirationDate());
+		copy.setCredentialsExpirationDate(original.getCredentialsExpirationDate());
+		copy.setUserRoles(original.getUserRoles());
+		copy.setAuthenticationMethod(original.getAuthenticationMethod());
+		return copy;
 	}
 }
