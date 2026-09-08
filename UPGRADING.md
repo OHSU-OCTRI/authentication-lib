@@ -1,5 +1,21 @@
 # Upgrading
 
+## Upgrading to 4.3.0
+
+As of release 4.3.0, searching for users by username or email address is case insensitive, and the library ensures that these fields are normalized to lowercase when users are saved. This was done to ensure that login attempts do not fail due to case differences.
+
+Before upgrading an application, you should audit the `user` table to identify accounts that have uppercase characters in these fields. Usernames have been normalized to lowercase in JavaScript since version 0.1.0, so this should only impact email addresses.
+
+```sql
+ SELECT * FROM `user` WHERE REGEXP_LIKE(`username`, '[[:upper:]]', 'c')  OR REGEXP_LIKE(`email`, '[[:upper:]]', 'c');
+```
+
+If you identify accounts with uppercase characters in the email address or username, you can migrate the data to lowercase for consistency, but this is optional.
+
+```sql
+UPDATE `user` SET `username` = LOWER(`username`), `email` = LOWER(`email`);
+```
+
 ## Upgrading to 4.2.0
 
 Release 4.2.0 includes the ability to toggle password visibility. This feature is enabled by default, but it may be disabled using the `octri.authentication.enable-password-visibility-toggle` property.

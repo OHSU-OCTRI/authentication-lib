@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,7 +59,7 @@ public class UserService {
 	}
 
 	/**
-	 * Get the user account with the given username.
+	 * Get the user account with the given username. Search is case insensitive.
 	 *
 	 * @param username
 	 *            the username of the user to find
@@ -66,11 +67,11 @@ public class UserService {
 	 */
 	@Transactional(readOnly = true)
 	public User findByUsername(String username) {
-		return userRepository.findByUsername(username);
+		return userRepository.findByUsernameIgnoreCase(username);
 	}
 
 	/**
-	 * Get the user account with the given email address.
+	 * Get the user account with the given email address. Search is case insensitive.
 	 *
 	 * @param email
 	 *            the email of the user to find
@@ -78,7 +79,7 @@ public class UserService {
 	 */
 	@Transactional(readOnly = true)
 	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
+		return userRepository.findByEmailIgnoreCase(email);
 	}
 
 	/**
@@ -118,6 +119,12 @@ public class UserService {
 			if (existing.getAccountLocked() && !user.getAccountLocked()) {
 				user.setConsecutiveLoginFailures(0);
 			}
+		}
+
+		// Normalize username and email to lowercase
+		user.setUsername(user.getUsername().toLowerCase(Locale.ROOT));
+		if (user.getEmail() != null) {
+			user.setEmail(user.getEmail().toLowerCase(Locale.ROOT));
 		}
 
 		return userRepository.save(user);
