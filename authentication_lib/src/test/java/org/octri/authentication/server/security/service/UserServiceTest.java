@@ -63,6 +63,7 @@ public class UserServiceTest {
 
 	private User user;
 	private static final String USERNAME = "foo";
+	private static final String EMAIL = "foo@example.com";
 	private static final String CURRENT_PASSWORD = "currentPassword1";
 	private static final String VALID_PASSWORD = "Abcdefg.1";
 	private static final String INVALID_PASSWORD_WITH_USERNAME = "Abcdefg.1" + USERNAME;
@@ -79,7 +80,43 @@ public class UserServiceTest {
 		user.setFirstName("Foo");
 		user.setLastName("Bar");
 		user.setPassword(passwordEncoder.encode(CURRENT_PASSWORD));
-		user.setEmail("foo@example.com");
+		user.setEmail(EMAIL);
+	}
+
+	@Test
+	public void usernameNormalizedToLowercaseOnSave() throws UserManagementException {
+		user.setUsername(USERNAME.toUpperCase());
+
+		when(userRepository.findByEmailIgnoreCase(EMAIL)).thenReturn(null);
+		when(userRepository.save(user)).thenReturn(user);
+
+		userService.save(user);
+
+		assertEquals(USERNAME, user.getUsername(), "Username should be normalized to lowercase on save");
+	}
+
+	@Test
+	public void emailNormalizedToLowercaseOnSave() throws UserManagementException {
+		user.setEmail(EMAIL.toUpperCase());
+
+		when(userRepository.findByEmailIgnoreCase(EMAIL.toUpperCase())).thenReturn(null);
+		when(userRepository.save(user)).thenReturn(user);
+
+		userService.save(user);
+
+		assertEquals(EMAIL, user.getEmail(), "Email should be normalized to lowercase on save");
+	}
+
+	@Test
+	public void findByUsernameUsesCaseInsensitiveSearch() {
+		userService.findByUsername(USERNAME.toUpperCase());
+		verify(userRepository).findByUsernameIgnoreCase(USERNAME.toUpperCase());
+	}
+
+	@Test
+	public void findByEmailUsesCaseInsensitiveSearch() {
+		userService.findByEmail(EMAIL.toUpperCase());
+		verify(userRepository).findByEmailIgnoreCase(EMAIL.toUpperCase());
 	}
 
 	@Test
