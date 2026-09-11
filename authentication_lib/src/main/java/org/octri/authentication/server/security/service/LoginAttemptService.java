@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.octri.authentication.server.security.entity.LoginAttempt;
@@ -100,6 +101,32 @@ public class LoginAttemptService {
 	@Transactional(readOnly = true)
 	public LoginAttempt findLatestByError(String errorType) {
 		return loginAttemptRepository.findFirstByErrorTypeAndSuccessfulIsFalseOrderByAttemptedAtDesc(errorType);
+	}
+
+	/**
+	 * Finds login attempts since the given timestamp, returned in reverse chronological order.
+	 *
+	 * @param sinceTimestamp
+	 *            find login attempts since this timestamp
+	 * @return login attempts since the given timestamp, sorted in reverse order by when the login was attempted
+	 */
+	public List<LoginAttempt> findLoginAttemptsSince(LocalDateTime sinceTimestamp) {
+		return loginAttemptRepository.findByAttemptedAtGreaterThanOrderByAttemptedAtDesc(sinceTimestamp);
+	}
+
+	/**
+	 * Finds login attempts for the provided username since the given timestamp, returned in reverse chronological
+	 * order.
+	 *
+	 * @param username
+	 *            username to search by (case insensitive)
+	 * @param sinceTimestamp
+	 *            find login attempts since this timestamp
+	 * @return login attempts for the username since the given timestamp, sorted in reverse chronological order.
+	 */
+	public List<LoginAttempt> findLoginAttemptsForUsernameSince(String username, LocalDateTime sinceTimestamp) {
+		return loginAttemptRepository.findByUsernameIgnoreCaseAndAttemptedAtGreaterThanOrderByAttemptedAtDesc(username,
+				sinceTimestamp);
 	}
 
 }

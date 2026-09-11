@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a view that displays login attempts during the last month. (COMPASS-333)
+- Add the ability to view a user's recent login attempts from the user details / form page. (COMPASS-333)
+
 ### Changed
 
 - Make account lookup by username and email address case insensitive. See [`UPGRADING.md`](./UPGRADING.md) for details. (COMPASS-333)
+- Make locked account information more prominent on the user form. (COMPASS-333)
 
 ## [4.2.2] - 2026-08-20
 

@@ -1,0 +1,39 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="login_attempt_offcanvas" aria-labelledby="login_attempt_title">
+	<div class="offcanvas-header">
+		<h5 class="offcanvas-title" id="login_attempt_title">Recent login attempts</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+	</div>
+	<div class="offcanvas-body">
+		<p class="fw-light">The table below shows recent login attempts for the selected user. This list may be incomplete, because it
+		only includes login attempts where the username was correct. To see a full list of login attempts during
+		the last month, <a href="{{req.contextPath}}/admin/login_attempts">see this page</a>.</p>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Successful</th>
+					<th>Reason</th>
+				</tr>
+				<tbody>
+				{{#loginAttempts}}
+					<tr>
+						<td>{{#attemptedAt}}{{.}}{{/attemptedAt}}</td>
+						<td>
+							{{#successful}}
+							Yes <span class="fa-solid fa-circle-check text-success" aria-hidden="true"></span>
+							{{/successful}}
+							{{^successful}}
+							No <span class="fa-solid fa-circle-xmark text-danger" aria-hidden="true"></span>
+							{{/successful}}
+						</td>
+						<td>{{#errorType}}{{.}}{{/errorType}}</td>
+					</tr>
+				{{/loginAttempts}}
+				{{^loginAttempts.0}}
+				<tr><td colspan="3">No login attempts found.</td></tr>
+				{{/loginAttempts.0}}
+				</tbody>
+			</thead>
+		</table>
+	</div>
+</div>
