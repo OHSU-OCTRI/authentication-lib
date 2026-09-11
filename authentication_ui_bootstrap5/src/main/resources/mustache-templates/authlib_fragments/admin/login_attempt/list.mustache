@@ -1,0 +1,42 @@
+<div class="container-fluid authlib-login-attempt-list">
+	<h3>Recent Login Attempts</h3>
+
+	<p>This page shows login activity during the past month, including the username, timestamp, IP address, and
+	success or failure status. This can be used to assist users with login issues.</p>
+
+	<table class="table table-striped table-bordered center-all no-wrap sorted" data-column="1" data-orientation="desc">
+		<thead>
+			<th>Username</th>
+			<th>Attempted at</th>
+			<th>Successful</th>
+			<th>Reason unsuccessful</th>
+			<th>IP address</th>
+		</thead>
+		<tbody>
+			{{#loginAttempts}}
+			<tr>
+				<td>
+					{{#username}}{{.}}{{/username}}
+				</td>
+				<td>
+					{{#attemptedAt}}{{.}}{{/attemptedAt}}
+				</td>
+				<td>
+					{{#successful}}
+					Yes <span class="fa-solid fa-circle-check text-success" aria-hidden="true"></span>
+					{{/successful}}
+					{{^successful}}
+					No <span class="fa-solid fa-circle-xmark text-danger" aria-hidden="true"></span>
+					{{/successful}}
+				</td>
+				<td>
+					{{#errorType}}{{.}}{{/errorType}}
+				</td>
+				<td>
+					{{#ipAddress}}{{.}}{{/ipAddress}}
+				</td>
+			</tr>
+			{{/loginAttempts}}
+		</tbody>
+	</table>
+</div>

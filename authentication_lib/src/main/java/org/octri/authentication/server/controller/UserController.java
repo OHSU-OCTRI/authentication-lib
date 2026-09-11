@@ -1,5 +1,7 @@
 package org.octri.authentication.server.controller;
 
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.octri.authentication.server.security.entity.PasswordResetToken;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.exception.UserManagementException;
+import org.octri.authentication.server.security.service.LoginAttemptService;
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserRoleService;
@@ -94,6 +97,9 @@ public class UserController {
 
 	@Autowired(required = false)
 	private LdapContextProperties ldapContextProperties;
+
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 
 	/**
 	 * Returns view for displaying a list of all users.
@@ -305,6 +311,9 @@ public class UserController {
 		var authenticationMethods = org.octri.common.view.OptionList.fromEnum(
 				EnumSet.copyOf(enabledAuthenticationMethods),
 				user.getAuthenticationMethod());
+		var loginAttempts = newUser ? List.of()
+				: loginAttemptService.findLoginAttemptsForUsernameSince(user.getUsername(),
+						LocalDateTime.now().minus(Period.ofWeeks(1)));
 
 		model.addAttribute("user", user);
 		model.addAttribute("userRoles", OptionList.multiFromSearch(userRoles(), user.getUserRoles()));
@@ -314,6 +323,7 @@ public class UserController {
 		model.addAttribute("authenticationMethods", authenticationMethods);
 		model.addAttribute("multipleAuthenticationMethods", authenticationMethods.size() > 1);
 		model.addAttribute(getRoleStyleAttribute(), Boolean.TRUE);
+		model.addAttribute("loginAttempts", loginAttempts);
 	}
 
 	/**
