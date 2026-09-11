@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class LoginAttemptController {
 
-	private static final LocalDateTime ONE_MONTH_AGO = LocalDateTime.now().minus(Period.ofMonths(1));
+	private static final Period ONE_MONTH = Period.ofMonths(1);
 
 	private final LoginAttemptService loginAttemptService;
 
@@ -30,7 +30,8 @@ public class LoginAttemptController {
 
 	@GetMapping("admin/login_attempts")
 	public ModelAndView listLoginAttempts(ModelMap model) {
-		var loginAttempts = loginAttemptService.findLoginAttemptsSince(ONE_MONTH_AGO);
+		var oneMonthAgo = LocalDateTime.now().minus(ONE_MONTH);
+		var loginAttempts = loginAttemptService.findLoginAttemptsSince(oneMonthAgo);
 
 		// listView attribute adds DataTables assets to the page
 		model.addAttribute("listView", true);
