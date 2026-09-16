@@ -2,6 +2,8 @@
 
 ## Upgrading to 4.3.0
 
+### Case Insensitive Usernames and Email Addresses
+
 As of release 4.3.0, searching for users by username or email address is case insensitive, and the library ensures that these fields are normalized to lowercase when users are saved. This was done to ensure that login attempts do not fail due to case differences.
 
 Before upgrading an application, you should audit the `user` table to identify accounts that have uppercase characters in these fields. Usernames have been normalized to lowercase in JavaScript since version 0.1.0, so this should only impact email addresses.
@@ -15,6 +17,28 @@ If you identify accounts with uppercase characters in the email address or usern
 ```sql
 UPDATE `user` SET `username` = LOWER(`username`), `email` = LOWER(`email`);
 ```
+
+### Login Attempt Views
+
+Release 4.3.0 also provides a new controller for viewing login attempts during the last month. To integrate this view into your application, add a link to the navigation items shown to administrators.
+
+```diff
+                             <div class="dropdown-menu" aria-labelledby="user_management_menu">
+                                 <a class="dropdown-item" href="{{req.contextPath}}/admin/user/new">New User</a>
+                                 <a class="dropdown-item" href="{{req.contextPath}}/admin/user/list">User List</a>
++                                <a class="dropdown-item" href="{{req.contextPath}}/admin/login_attempts"><span class="fa fa-solid fa-arrow-right-to-bracket"></span> Login Attempts</a>
+                             </div>
+```
+
+You may also need to override the template to ensure that its styling matches your application. To do so, create a new template at `src/main/resources/mustache-templates/admin/login_attempt/list.mustache` that wraps the login attempt list fragment with the markup that styles your application pages.
+
+```mustache
+{{>layout/header}}
+{{>authlib_fragments/admin/login_attempt/list}}
+{{>layout/footer}}
+```
+
+A view of each user's login attempts during the past week has also been added to the user form. This can be accessed by clicking the "View login attempts" button under the "Account Locked" field.
 
 ## Upgrading to 4.2.0
 
