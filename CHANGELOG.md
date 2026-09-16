@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make account lookup by username and email address case insensitive. See [`UPGRADING.md`](./UPGRADING.md) for details. (COMPASS-333)
 - Make locked account information more prominent on the user form. (COMPASS-333)
 
+### Dependencies
+
+- Bumps common_lib from 2.1.1 to 2.1.3. (CIS-3862)
+
 ## [4.2.2] - 2026-08-20
 
 ### Fixed
