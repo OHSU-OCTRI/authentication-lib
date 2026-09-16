@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add a view that displays login attempts during the last month. (COMPASS-333)
 - Add the ability to view a user's recent login attempts from the user details / form page. (COMPASS-333)
+- Add the next release to UPGRADING.md (CIS-3861)
 
 ### Changed
 
