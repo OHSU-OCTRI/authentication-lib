@@ -30,7 +30,7 @@ public class LockoutCooldownProperties {
     private Duration duration = DEFAULT_COOLDOWN_DURATION;
 
     /**
-     * Schedule for cron task to check cooldown on locked accounts. Defaults to every 15 minutes.
+     * Schedule for cron task to check cooldown on locked accounts. Defaults to every minute.
      */
     private String pollingSchedule = "0 */1 * * * *";
 

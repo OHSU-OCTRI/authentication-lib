@@ -24,7 +24,7 @@ At least one of the authentication methods must be enabled (see `octri.authentic
 | octri.authentication.enable-password-visibility-toggle | OCTRI_AUTHENTICATION_ENABLE_PASSWORD_VISIBILITY_TOGGLE | boolean | true | Whether to enable the password visibility toggle button. |
 | octri.authentication.lockout-cooldown.enabled | OCTRI_AUTHENTICATION_LOCKOUTCOOLDOWN_ENABLED | boolean | false | Whether to enable automatic account unlocking with configurable cooldown. |
 | octri.authentication.lockout-cooldown.duration | OCTRI_AUTHENTICATION_LOCKOUTCOOLDOWN_DURATION | duration | 30m | Minimum lockout duration before account is unlocked. |
-| octri.authentication.lockout-cooldown.pollingSchedule | OCTRI_AUTHENTICATION_LOCKOUTCOOLDOWN_POLLINGSCHEDULE | string | "0 */1 * * * *" | Cron schedule to unlock eligible accounts. |
+| octri.authentication.lockout-cooldown.pollingSchedule | OCTRI_AUTHENTICATION_LOCKOUTCOOLDOWN_POLLINGSCHEDULE | string | "0 */1 * * * *" | Cron schedule to unlock eligible accounts. Defaults to every minute. |
 
 ## Route Configuration
 
