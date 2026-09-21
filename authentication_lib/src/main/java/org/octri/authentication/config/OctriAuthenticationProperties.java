@@ -91,8 +91,6 @@ public class OctriAuthenticationProperties {
 	/**
 	 * Minimum time (in minutes) that must elapse between the most recent failed login and automatic account unlock.
 	 * Defaults to 30 minutes.
-	 * 
-	 * If null, the cooldown is disabled and accounts will remain locked until changed by an admin.
 	 */
 	private Integer lockoutCooldownPeriod = 30;
 
@@ -233,18 +231,38 @@ public class OctriAuthenticationProperties {
 		this.maxLoginAttempts = maxLoginAttempts;
 	}
 
+	/**
+	 * Get the cooldown period for user lockouts due to failed login attempts
+	 * 
+	 * @return
+	 */
 	public Integer getLockoutCooldownPeriod() {
 		return lockoutCooldownPeriod;
 	}
 
+	/**
+	 * Set the cooldown period for user lockouts due to failed login attempts
+	 * 
+	 * @param lockoutCooldownPeriod
+	 */
 	public void setLockoutCooldownPeriod(Integer lockoutCooldownPeriod) {
 		this.lockoutCooldownPeriod = lockoutCooldownPeriod;
 	}
 
+	/**
+	 * Gets the cron schedule for checking the database for locked users
+	 * 
+	 * @return
+	 */
 	public String getLockoutPollingSchedule() {
 		return lockoutPollingSchedule;
 	}
 
+	/**
+	 * Sets the cron schedule for checking the database for locked users
+	 * 
+	 * @param lockoutPollingSchedule
+	 */
 	public void setLockoutPollingSchedule(String lockoutPollingSchedule) {
 		this.lockoutPollingSchedule = lockoutPollingSchedule;
 	}
