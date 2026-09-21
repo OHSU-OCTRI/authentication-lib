@@ -3,7 +3,6 @@ package org.octri.authentication.server.security.scheduled;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.octri.authentication.config.OctriAuthenticationProperties;
+import org.octri.authentication.config.LockoutCooldownProperties;
 import org.octri.authentication.server.security.entity.LoginAttempt;
 import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.exception.UserManagementException;
@@ -33,7 +32,7 @@ public class LockoutCooldownJobTest {
 	private static final Duration COOLDOWN_DURATION = Duration.ofMinutes(30);
 
 	@Mock
-	private OctriAuthenticationProperties authenticationProperties;
+	private LockoutCooldownProperties lockoutCooldownProperties;
 
 	@Mock
 	private LoginAttemptService loginAttemptService;
@@ -47,7 +46,7 @@ public class LockoutCooldownJobTest {
 
 	@BeforeEach
 	public void beforeEach() {
-		lockoutCooldownJob = new LockoutCooldownJob(authenticationProperties, loginAttemptService, userService);
+		lockoutCooldownJob = new LockoutCooldownJob(lockoutCooldownProperties, loginAttemptService, userService);
 
 		user = new User();
 		user.setUsername(USERNAME);
@@ -55,18 +54,8 @@ public class LockoutCooldownJobTest {
 	}
 
 	@Test
-	public void testCooldownDurationIsNull() {
-		when(authenticationProperties.getLockoutCooldownDuration()).thenReturn(null);
-
-		lockoutCooldownJob.checkLockoutCooldown();
-
-		verify(userService, never()).getUnlockableAccounts();
-		verify(loginAttemptService, never()).findLastFailure(anyString());
-	}
-
-	@Test
 	public void testCooldownHasElapsed() throws UserManagementException {
-		when(authenticationProperties.getLockoutCooldownDuration()).thenReturn(COOLDOWN_DURATION);
+		when(lockoutCooldownProperties.getDuration()).thenReturn(COOLDOWN_DURATION);
 		when(userService.getUnlockableAccounts()).thenReturn(List.of(user));
 
 		var lastFailure = new LoginAttempt();
@@ -81,7 +70,7 @@ public class LockoutCooldownJobTest {
 
 	@Test
 	public void testCooldownHasNotElapsed() throws UserManagementException {
-		when(authenticationProperties.getLockoutCooldownDuration()).thenReturn(COOLDOWN_DURATION);
+		when(lockoutCooldownProperties.getDuration()).thenReturn(COOLDOWN_DURATION);
 		when(userService.getUnlockableAccounts()).thenReturn(List.of(user));
 
 		var lastFailure = new LoginAttempt();
@@ -96,7 +85,7 @@ public class LockoutCooldownJobTest {
 
 	@Test
 	public void testNoFailedLoginAttemptIsFound() throws UserManagementException {
-		when(authenticationProperties.getLockoutCooldownDuration()).thenReturn(COOLDOWN_DURATION);
+		when(lockoutCooldownProperties.getDuration()).thenReturn(COOLDOWN_DURATION);
 		when(userService.getUnlockableAccounts()).thenReturn(List.of(user));
 		when(loginAttemptService.findLastFailure(USERNAME)).thenReturn(null);
 
@@ -109,7 +98,7 @@ public class LockoutCooldownJobTest {
 
 	@Test
 	public void testFailureToSaveIsHandledGracefully() throws UserManagementException {
-		when(authenticationProperties.getLockoutCooldownDuration()).thenReturn(COOLDOWN_DURATION);
+		when(lockoutCooldownProperties.getDuration()).thenReturn(COOLDOWN_DURATION);
 		when(userService.getUnlockableAccounts()).thenReturn(List.of(user));
 
 		var lastFailure = new LoginAttempt();
