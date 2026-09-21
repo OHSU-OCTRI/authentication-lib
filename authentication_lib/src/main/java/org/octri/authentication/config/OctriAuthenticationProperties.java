@@ -89,6 +89,19 @@ public class OctriAuthenticationProperties {
 	private Integer maxLoginAttempts = 7;
 
 	/**
+	 * Minimum time (in minutes) that must elapse between the most recent failed login and automatic account unlock.
+	 * Defaults to 30 minutes.
+	 * 
+	 * If null, the cooldown is disabled and accounts will remain locked until changed by an admin.
+	 */
+	private Integer lockoutCooldownPeriod = 30;
+
+	/**
+	 * Schedule for cron task to check cooldown on locked accounts. Defaults to every 15 minutes.
+	 */
+	private String lockoutPollingSchedule = "0 */15 * * * *";
+
+	/**
 	 * Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be
 	 * required to change their password. Defaults to 180 days.
 	 */
@@ -218,6 +231,22 @@ public class OctriAuthenticationProperties {
 	 */
 	public void setMaxLoginAttempts(Integer maxLoginAttempts) {
 		this.maxLoginAttempts = maxLoginAttempts;
+	}
+
+	public Integer getLockoutCooldownPeriod() {
+		return lockoutCooldownPeriod;
+	}
+
+	public void setLockoutCooldownPeriod(Integer lockoutCooldownPeriod) {
+		this.lockoutCooldownPeriod = lockoutCooldownPeriod;
+	}
+
+	public String getLockoutPollingSchedule() {
+		return lockoutPollingSchedule;
+	}
+
+	public void setLockoutPollingSchedule(String lockoutPollingSchedule) {
+		this.lockoutPollingSchedule = lockoutPollingSchedule;
 	}
 
 	/**

@@ -189,6 +189,15 @@ public class UserService {
 	}
 
 	/**
+	 * Fetches user accounts that are locked, omitting disabled accounts.
+	 * 
+	 * @return List of locked, enabled users
+	 */
+	public List<User> getUnlockableAccounts() {
+		return userRepository.findByAccountLockedAndEnabled(true, true);
+	}
+
+	/**
 	 * Saves user with newPassword and updates {@link User#credentialsExpirationDate}. If validation fails,
 	 * the User is returned paired with a list of errors.
 	 *

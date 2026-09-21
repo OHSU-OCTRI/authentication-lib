@@ -15,13 +15,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface LoginAttemptRepository extends JpaRepository<LoginAttempt, Long> {
 
 	/**
-	 * Finds the most recent successful login by the user with the given username.
+	 * Finds the most recent login by the user with the given username and success status
 	 *
 	 * @param username
 	 *            the username to check
-	 * @return the user's most recent successful login, or null if the user has never logged in successfully
+	 * @param successful
+	 *            the requirement of either successful or failed login
+	 * @return the user's most recent login, or null if the no record matches the username and successful requirement
 	 */
-	public LoginAttempt findFirstByUsernameAndSuccessfulIsTrueOrderByAttemptedAtDesc(String username);
+	public LoginAttempt findFirstByUsernameAndSuccessfulOrderByAttemptedAtDesc(String username, Boolean successful);
 
 	/**
 	 * Finds the most recent failed login of the given type.

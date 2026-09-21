@@ -88,7 +88,19 @@ public class LoginAttemptService {
 	 */
 	@Transactional(readOnly = true)
 	public LoginAttempt findLastSuccess(String username) {
-		return loginAttemptRepository.findFirstByUsernameAndSuccessfulIsTrueOrderByAttemptedAtDesc(username);
+		return loginAttemptRepository.findFirstByUsernameAndSuccessfulOrderByAttemptedAtDesc(username, true);
+	}
+
+	/**
+	 * Finds the most recent failed login attempt for the given username.
+	 *
+	 * @param username
+	 *            the username to search for
+	 * @return the most recent failed login attempt for the username, or null if they have never failed to log in
+	 */
+	@Transactional(readOnly = true)
+	public LoginAttempt findLastFailure(String username) {
+		return loginAttemptRepository.findFirstByUsernameAndSuccessfulOrderByAttemptedAtDesc(username, false);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.repository;
 
+import java.util.List;
+
 import org.octri.authentication.server.security.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -47,5 +49,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * @return the user with the given email address, or null if not found
 	 */
 	public User findByEmailIgnoreCase(@Param("email") String email);
+
+	/**
+	 * Finds user acccounts based on whether or not they are locked/enabled
+	 * 
+	 * @param accountLocked
+	 * @param enabled
+	 * @return users who match the accountLocked and enabled criteria
+	 */
+	public List<User> findByAccountLockedAndEnabled(Boolean accountLocked, Boolean enabled);
 
 }
