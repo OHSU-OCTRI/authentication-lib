@@ -1,7 +1,6 @@
 package org.octri.authentication.server.security.scheduled;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import org.octri.authentication.config.OctriAuthenticationProperties;
@@ -44,14 +43,15 @@ public class LockoutCooldownJob {
      * 
      * If octri.authentication.lockout-cooldown-period is configured as null, accounts are left locked.
      */
-    @Scheduled(cron = "${octri.authentication.lockout-polling-schedule:0 */15 * * * *}")
+    @Scheduled(cron = "${octri.authentication.lockout-polling-schedule:0 */1 * * * *}")
     public void checkLockoutCooldown() {
         log.info("Running checkLockoutCooldown job");
-        var cooldownPeriod = authenticationProperties.getLockoutCooldownPeriod();
-        if (cooldownPeriod == null)
+        var cooldownDuration = authenticationProperties.getLockoutCooldownDuration();
+        if (cooldownDuration == null) {
             return;
+        }
 
-        var cooldownThreshold = Date.from(Instant.now().minus(cooldownPeriod, ChronoUnit.MINUTES));
+        var cooldownThreshold = Date.from(Instant.now().minus(cooldownDuration));
         userService.getUnlockableAccounts().stream().forEach(user -> {
             var lastFailure = loginAttemptService.findLastFailure(user.getUsername());
             if (lastFailure == null) {

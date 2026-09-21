@@ -68,6 +68,11 @@ public class OctriAuthenticationProperties {
 	public static final Duration DEFAULT_PASSWORD_TOKEN_DURATION = Duration.ofMinutes(30);
 
 	/**
+	 * The default value of "octri.authentication.lockout-cooldown-duration"
+	 */
+	public static final Duration DEFAULT_LOCKOUT_COOLDOWN_DURATION = Duration.ofMinutes(30);
+
+	/**
 	 * Whether LDAP authentication should be enabled. Defaults to false.
 	 */
 	private Boolean enableLdap = false;
@@ -92,12 +97,13 @@ public class OctriAuthenticationProperties {
 	 * Minimum time (in minutes) that must elapse between the most recent failed login and automatic account unlock.
 	 * Defaults to 30 minutes.
 	 */
-	private Integer lockoutCooldownPeriod = 30;
+	@DurationUnit(ChronoUnit.MINUTES)
+	private Duration lockoutCooldownDuration = DEFAULT_LOCKOUT_COOLDOWN_DURATION;
 
 	/**
 	 * Schedule for cron task to check cooldown on locked accounts. Defaults to every 15 minutes.
 	 */
-	private String lockoutPollingSchedule = "0 */15 * * * *";
+	private String lockoutPollingSchedule = "0 */1 * * * *";
 
 	/**
 	 * Length of time (in days) that table-based credentials are valid. After this period has elapsed, users will be
@@ -236,17 +242,17 @@ public class OctriAuthenticationProperties {
 	 * 
 	 * @return
 	 */
-	public Integer getLockoutCooldownPeriod() {
-		return lockoutCooldownPeriod;
+	public Duration getLockoutCooldownDuration() {
+		return lockoutCooldownDuration;
 	}
 
 	/**
 	 * Set the cooldown period for user lockouts due to failed login attempts
 	 * 
-	 * @param lockoutCooldownPeriod
+	 * @param lockoutCooldownDuration
 	 */
-	public void setLockoutCooldownPeriod(Integer lockoutCooldownPeriod) {
-		this.lockoutCooldownPeriod = lockoutCooldownPeriod;
+	public void setLockoutCooldownDuration(Duration lockoutCooldownDuration) {
+		this.lockoutCooldownDuration = lockoutCooldownDuration;
 	}
 
 	/**
