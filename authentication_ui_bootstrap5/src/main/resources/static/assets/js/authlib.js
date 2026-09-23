@@ -320,7 +320,7 @@
       authenticationMethodInput.addEventListener('change', () => {
         ldapLookupButton.disabled = authenticationMethodInput.value !== 'LDAP';
       });
-      ldapLookupButton.dispatchEvent(new Event('change'));
+      authenticationMethodInput.dispatchEvent(new Event('change'));
 
       // Look up by username in LDAP and prepopulate user fields
       ldapLookupButton.addEventListener('click', function (evt) {
@@ -385,11 +385,6 @@
       emailInput.addEventListener('change', () => {
         emailInput.classList.toggle('is-invalid', !checkEmailDomain());
       });
-      // const updateEmailFeedback = function () {
-      //   emailInput.classList.toggle('is-invalid', !checkEmailDomain());
-      // };
-      // ldapLookupButton.addEventListener('click', updateEmailFeedback);
-      // Changing the account type should not flag an email the user has not entered yet
       authenticationMethodInput.addEventListener('change', () => {
         const valid = checkEmailDomain();
         emailInput.classList.toggle('is-invalid', !valid && emailInput.value.trim() !== '');
