@@ -317,14 +317,10 @@
     // Enable LDAP lookup when appropriate authentication method is selected
     const ldapLookupButton = document.getElementById('ldap_lookup');
     if (ldapLookupButton && authenticationMethodInput) {
-      const updateLdapLookupButton = function () {
-        const enableLdapSearch = authenticationMethodInput.value &&
-          authenticationMethodInput.value !== 'TABLE_BASED';
-        ldapLookupButton.disabled = !enableLdapSearch;
-      };
-
-      updateLdapLookupButton();
-      authenticationMethodInput.addEventListener('change', updateLdapLookupButton);
+      authenticationMethodInput.addEventListener('change', () => {
+        ldapLookupButton.disabled = authenticationMethodInput.value !== 'LDAP';
+      });
+      ldapLookupButton.dispatchEvent(new Event('change'));
 
       // Look up by username in LDAP and prepopulate user fields
       ldapLookupButton.addEventListener('click', function (evt) {
