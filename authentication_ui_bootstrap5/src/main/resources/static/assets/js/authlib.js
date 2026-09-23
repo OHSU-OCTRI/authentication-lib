@@ -378,13 +378,14 @@
           emailFeedback, defaultEmailFeedback);
       };
 
-      // Check email domain when input changes or 
+      // Check email domain when input changes
       emailInput.addEventListener('input', () => {
         emailInput.classList.toggle('is-invalid', !checkEmailDomain());
       });
       emailInput.addEventListener('change', () => {
         emailInput.classList.toggle('is-invalid', !checkEmailDomain());
       });
+      // Update validation when the authentication method changes
       authenticationMethodInput.addEventListener('change', () => {
         const valid = checkEmailDomain();
         emailInput.classList.toggle('is-invalid', !valid && emailInput.value.trim() !== '');
