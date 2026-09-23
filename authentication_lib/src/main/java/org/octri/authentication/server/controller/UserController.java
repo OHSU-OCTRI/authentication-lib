@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -155,10 +156,10 @@ public class UserController {
 		setUserFormAttributes(model, user);
 		var errorView = new ModelAndView(FORM_TEMPLATE, model);
 
-		var validationResult = validateUser(user);
-		if (validationResult.size() > 0) {
+		var errors = validateUser(user);
+		if (errors.size() > 0) {
 			model.addAttribute("error", true);
-			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
+			model.addAttribute("errors", errors);
 			return errorView;
 		}
 
@@ -255,10 +256,10 @@ public class UserController {
 		setUserFormAttributes(model, user);
 		var errorView = new ModelAndView(FORM_TEMPLATE, model);
 
-		var validationResult = validateUser(user);
-		if (validationResult.size() > 0) {
+		var errors = validateUser(user);
+		if (errors.size() > 0) {
 			model.addAttribute("error", true);
-			model.addAttribute("errors", validationUtils.getErrors(user, validationResult));
+			model.addAttribute("errors", errors);
 			return errorView;
 		}
 
@@ -340,9 +341,9 @@ public class UserController {
 	 * Validates the user entity and returns any violations found.
 	 *
 	 * @param user
-	 * @return any constraint violations found when validating the user. May be empty.
+	 * @return any field errors caused by constraint violations found when validating the user. May be empty.
 	 */
-	private Set<ConstraintViolation<User>> validateUser(User user) {
+	private List<FieldError> validateUser(User user) {
 		Boolean emailRequired = authenticationProperties.getEmailRequired();
 
 		Set<ConstraintViolation<User>> validationResult = !emailRequired
@@ -350,7 +351,26 @@ public class UserController {
 						? validator.validate(user, Default.class)
 						: validator.validate(user, Emailable.class);
 
-		return validationResult;
+		List<FieldError> errors = validationUtils.getErrors(user, validationResult);
+		if (invalidEmailDomain(user)) {
+			errors.add(new FieldError(User.class.getName(), "email",
+					"Email must end with @" + getLdapEmailDomain() + " for LDAP accounts"));
+		}
+		return errors;
+	}
+
+	/**
+	 * Checks that an LDAP user's email address belongs to the configured LDAP email domain. Blank emails are left to
+	 * bean validation.
+	 *
+	 * @param user
+	 * @return an error for the email field if the domain does not match
+	 */
+	private Boolean invalidEmailDomain(User user) {
+		var ldapEmailDomain = getLdapEmailDomain();
+		return !StringUtils.isBlank(ldapEmailDomain)
+				&& !StringUtils.isBlank(user.getEmail())
+				&& !SecurityHelper.hasEmailDomain(user, ldapEmailDomain);
 	}
 
 	/**
