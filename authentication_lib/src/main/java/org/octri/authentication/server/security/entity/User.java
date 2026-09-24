@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.octri.authentication.validation.Emailable;
+import org.octri.authentication.validation.ValidLdapEmailDomain;
 import org.octri.common.domain.AbstractEntity;
 import org.octri.common.view.Labelled;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +35,7 @@ import jakarta.validation.constraints.Size;
  *
  */
 @Entity
+@ValidLdapEmailDomain
 public class User extends AbstractEntity implements Labelled {
 
 	private static final String INVALID_EMAIL_MESSAGE = "Please provide a valid email address";

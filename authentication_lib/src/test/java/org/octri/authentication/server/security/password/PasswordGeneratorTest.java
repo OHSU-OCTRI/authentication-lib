@@ -11,11 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.octri.authentication.server.security.entity.AuthenticationMethod;
 import org.octri.authentication.server.security.entity.User;
+import org.octri.authentication.test.ValidatorTestUtil;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 
 public class PasswordGeneratorTest {
 
@@ -25,8 +24,7 @@ public class PasswordGeneratorTest {
 
 	@BeforeAll
 	public static void setUp() {
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		validator = factory.getValidator();
+		validator = ValidatorTestUtil.buildValidator();
 	}
 
 	@BeforeEach
