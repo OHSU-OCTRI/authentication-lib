@@ -157,6 +157,37 @@
   }
 
   /**
+   * Validates that email input matches the configured LDAP domain, if the authenticationMethod
+   * is set to LDAP.
+   * 
+   * The browser's built-in checks (required, format, length) take precedence.
+   * @returns true if the email is valid
+   */
+  function validateLdapEmail(emailInput, authenticationMethod, ldapEmailDomain, feedbackElement, defaultMessage) {
+    // Clear any previous domain error; empty input is left to the built-in required check
+    emailInput.setCustomValidity('');
+
+    const email = emailInput.value.trim().toLowerCase();
+    const domainMatches = authenticationMethod !== 'LDAP'
+      || email === ''
+      || email.endsWith(ldapEmailDomain.toLowerCase());
+    let errorMessage = '';
+    if (!emailInput.validity.valid) {
+      errorMessage = defaultMessage;
+    } else if (!domainMatches) {
+      errorMessage = 'Email must end with ' + ldapEmailDomain + ' for LDAP accounts';
+    }
+
+    if (errorMessage !== '') {
+      emailInput.setCustomValidity(errorMessage);
+    }
+    if (feedbackElement) {
+      feedbackElement.textContent = errorMessage;
+    }
+    return errorMessage === '';
+  }
+
+  /**
    * Displays an LDAP search error message.
    */
   function showLdapError(message) {
@@ -279,74 +310,102 @@
 
       usernameInput.addEventListener('input', searchHandler);
     }
-  });
 
-  // Enable LDAP lookup when appropriate authentication method is selected
-  const authenticationMethodInput = document.getElementById('authentication_method');
-  const ldapLookupButton = document.getElementById('ldap_lookup');
-  const enableLdapSearch = authenticationMethodInput && authenticationMethodInput.value &&
-    authenticationMethodInput.value !== 'TABLE_BASED';
+    const authenticationMethodInput = document.getElementById('authentication_method');
+    const emailInput = document.getElementById('email');
 
-  if (ldapLookupButton) {
-    ldapLookupButton.disabled = !enableLdapSearch;
-    authenticationMethodInput.addEventListener('change', function(_evt) {
-      const enableLdapSearch = this.value && this.value !== 'TABLE_BASED';
-      ldapLookupButton.disabled = !enableLdapSearch;
-    });
+    // Enable LDAP lookup when appropriate authentication method is selected
+    const ldapLookupButton = document.getElementById('ldap_lookup');
+    if (ldapLookupButton && authenticationMethodInput) {
+      authenticationMethodInput.addEventListener('change', () => {
+        ldapLookupButton.disabled = authenticationMethodInput.value !== 'LDAP';
+      });
+      authenticationMethodInput.dispatchEvent(new Event('change'));
 
-    // Look up by username in LDAP and prepopulate user fields
-    ldapLookupButton.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      hideLdapError();
-      const usernameInput = document.getElementById('username');
-      const username = usernameInput ? usernameInput.value : null;
+      // Look up by username in LDAP and prepopulate user fields
+      ldapLookupButton.addEventListener('click', function (evt) {
+        evt.preventDefault();
+        hideLdapError();
+        const username = usernameInput ? usernameInput.value : null;
 
-      if (!username) {
-        return;
-      }
-
-      const csrfTokenInput = document.querySelector('input[name="_csrf"]');
-      const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
-      const ldapLookupEndpoint = getContextPath() + 'admin/user/ldapLookup';
-      const requestBody = new FormData();
-      requestBody.set('username', username);
-
-      fetch(ldapLookupEndpoint, {
-        method: 'post',
-        body: requestBody,
-        headers: {
-          'X-CSRF-TOKEN': csrfToken
+        if (!username) {
+          return;
         }
-      })
-        .then(response => {
-          if (!response.ok) {
-            const errorMessage = 'Search request failed';
-            showLdapError(errorMessage);
-            throw new Error(errorMessage);
-          }
-          return response.json();
-        })
-        .then(jsonData => {
-          if (jsonData.ldapLookupError) {
-            showLdapError(jsonData.ldapLookupError);
-          } else {
-            document.getElementById('first_name').value = jsonData.firstName;
-            document.getElementById('last_name').value = jsonData.lastName;
-            document.getElementById('email').value = jsonData.email;
-            document.getElementById('institution').value = jsonData.institution;
-          }
-        })
-        .catch(reason => console.error(reason));
-    });
-  }
 
-  // Display any server validation errors included in hidden elements
-  const serverValidationErrors = document.querySelectorAll('[data-error]');
-  for (const serverError of serverValidationErrors) {
-    const inputElement = document.getElementById(serverError.dataset.field);
-    if (inputElement) {
-      inputElement.classList.add('is-invalid');
+        const csrfTokenInput = document.querySelector('input[name="_csrf"]');
+        const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+
+        const ldapLookupEndpoint = getContextPath() + 'admin/user/ldapLookup';
+        const requestBody = new FormData();
+        requestBody.set('username', username);
+
+        fetch(ldapLookupEndpoint, {
+          method: 'post',
+          body: requestBody,
+          headers: {
+            'X-CSRF-TOKEN': csrfToken
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              const errorMessage = 'Search request failed';
+              showLdapError(errorMessage);
+              throw new Error(errorMessage);
+            }
+            return response.json();
+          })
+          .then(jsonData => {
+            if (jsonData.ldapLookupError) {
+              showLdapError(jsonData.ldapLookupError);
+            } else {
+              document.getElementById('first_name').value = jsonData.firstName;
+              document.getElementById('last_name').value = jsonData.lastName;
+              document.getElementById('email').value = jsonData.email;
+              document.getElementById('institution').value = jsonData.institution;
+              document.getElementById('email').dispatchEvent(new Event('change'));
+            }
+          })
+          .catch(reason => console.error(reason));
+      });
     }
-  }
+
+    // For LDAP users, require the email address to belong to the configured LDAP domain.
+    if (ldapEmailDomain && emailInput && authenticationMethodInput) {
+      const emailFeedback = findErrorDivForElement(emailInput);
+      const defaultEmailFeedback = emailFeedback ? emailFeedback.textContent : '';
+      const checkEmailDomain = function () {
+        return validateLdapEmail(emailInput, authenticationMethodInput.value, ldapEmailDomain,
+          emailFeedback, defaultEmailFeedback);
+      };
+
+      // Check email domain when input changes
+      emailInput.addEventListener('input', () => {
+        emailInput.classList.toggle('is-invalid', !checkEmailDomain());
+      });
+      emailInput.addEventListener('change', () => {
+        emailInput.classList.toggle('is-invalid', !checkEmailDomain());
+      });
+      // Update validation when the authentication method changes
+      authenticationMethodInput.addEventListener('change', () => {
+        const valid = checkEmailDomain();
+        emailInput.classList.toggle('is-invalid', !valid && emailInput.value.trim() !== '');
+      });
+
+      // Set the initial validity without clearing any server-side error styling
+      checkEmailDomain();
+    }
+
+    // Display any server validation errors included in hidden elements
+    const serverValidationErrors = document.querySelectorAll('[data-error]');
+    for (const serverError of serverValidationErrors) {
+      const inputElement = document.getElementById(serverError.dataset.field);
+      if (inputElement) {
+        inputElement.classList.add('is-invalid');
+        const feedbackElement = findErrorDivForElement(inputElement);
+        if (feedbackElement) {
+          feedbackElement.textContent = serverError.dataset.message;
+        }
+      }
+    }
+  });
 })();
