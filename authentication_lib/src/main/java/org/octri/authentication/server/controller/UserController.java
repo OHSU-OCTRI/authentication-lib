@@ -351,26 +351,7 @@ public class UserController {
 						? validator.validate(user, Default.class)
 						: validator.validate(user, Emailable.class);
 
-		List<FieldError> errors = validationUtils.getErrors(user, validationResult);
-		if (invalidEmailDomain(user)) {
-			errors.add(new FieldError(User.class.getName(), "email",
-					"Email must end with @" + getLdapEmailDomain() + " for LDAP accounts"));
-		}
-		return errors;
-	}
-
-	/**
-	 * Checks that an LDAP user's email address belongs to the configured LDAP email domain. Blank emails are left to
-	 * bean validation.
-	 *
-	 * @param user
-	 * @return an error for the email field if the domain does not match
-	 */
-	private Boolean invalidEmailDomain(User user) {
-		var ldapEmailDomain = getLdapEmailDomain();
-		return !StringUtils.isBlank(ldapEmailDomain)
-				&& !StringUtils.isBlank(user.getEmail())
-				&& !SecurityHelper.hasEmailDomain(user, ldapEmailDomain);
+		return validationUtils.getErrors(user, validationResult);
 	}
 
 	/**
