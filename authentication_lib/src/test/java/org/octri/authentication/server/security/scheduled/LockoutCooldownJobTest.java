@@ -60,7 +60,7 @@ public class LockoutCooldownJobTest {
 
 		var lastFailure = new LoginAttempt();
 		lastFailure.setAttemptedAt(Date.from(Instant.now().minus(COOLDOWN_DURATION).minusSeconds(60)));
-		when(loginAttemptService.findLastFailure(USERNAME)).thenReturn(lastFailure);
+		when(loginAttemptService.findLastFailure(user)).thenReturn(lastFailure);
 
 		lockoutCooldownJob.checkLockoutCooldown();
 
@@ -75,7 +75,7 @@ public class LockoutCooldownJobTest {
 
 		var lastFailure = new LoginAttempt();
 		lastFailure.setAttemptedAt(Date.from(Instant.now().minus(COOLDOWN_DURATION).plusSeconds(60)));
-		when(loginAttemptService.findLastFailure(USERNAME)).thenReturn(lastFailure);
+		when(loginAttemptService.findLastFailure(user)).thenReturn(lastFailure);
 
 		lockoutCooldownJob.checkLockoutCooldown();
 
@@ -87,7 +87,7 @@ public class LockoutCooldownJobTest {
 	public void testNoFailedLoginAttemptIsFound() throws UserManagementException {
 		when(lockoutCooldownProperties.getDuration()).thenReturn(COOLDOWN_DURATION);
 		when(userService.getUnlockableAccounts()).thenReturn(List.of(user));
-		when(loginAttemptService.findLastFailure(USERNAME)).thenReturn(null);
+		when(loginAttemptService.findLastFailure(user)).thenReturn(null);
 
 		lockoutCooldownJob.checkLockoutCooldown();
 
@@ -103,7 +103,7 @@ public class LockoutCooldownJobTest {
 
 		var lastFailure = new LoginAttempt();
 		lastFailure.setAttemptedAt(Date.from(Instant.now().minus(COOLDOWN_DURATION).minusSeconds(60)));
-		when(loginAttemptService.findLastFailure(USERNAME)).thenReturn(lastFailure);
+		when(loginAttemptService.findLastFailure(user)).thenReturn(lastFailure);
 		when(userService.save(user)).thenThrow(new UserManagementException("Could not save user"));
 
 		assertDoesNotThrow(() -> lockoutCooldownJob.checkLockoutCooldown(),

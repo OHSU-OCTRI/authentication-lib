@@ -54,9 +54,8 @@ public abstract class AuditLoginAuthenticationSuccessHandler extends SavedReques
 	 * @throws UserManagementException
 	 *             if the user cannot be saved
 	 */
-	protected void resetUserFailedAttempts(Authentication auth)
-			throws UserManagementException {
-		User user = userService.findByUsername(auth.getName());
+	protected void resetUserFailedAttempts(Authentication auth) throws UserManagementException {
+		User user = userService.findByLoginIdentifier(auth.getName());
 		if (user == null || !(user.getConsecutiveLoginFailures() > 0)) {
 			return;
 		}

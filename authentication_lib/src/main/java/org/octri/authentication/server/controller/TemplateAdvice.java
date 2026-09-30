@@ -77,6 +77,7 @@ public class TemplateAdvice {
 		model.addAttribute("sessionTimeoutSeconds", sessionTimeoutSeconds());
 		model.addAttribute("enablePasswordVisibilityToggle",
 				authenticationProperties.getEnablePasswordVisibilityToggle());
+		model.addAttribute("enableLoginByEmail", authenticationProperties.getEnableLoginByEmail());
 	}
 
 	/**

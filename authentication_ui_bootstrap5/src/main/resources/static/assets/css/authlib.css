@@ -47,3 +47,14 @@ body.authlib {
 .was-validated .form-control:invalid ~ .show-password-toggle {
 	color: var(--bs-form-invalid-border-color);
 }
+
+#login_attempt_offcanvas {
+	--bs-offcanvas-width: 600px;
+}
+
+#login_attempt_offcanvas .truncate {
+	max-width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

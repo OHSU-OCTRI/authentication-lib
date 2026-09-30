@@ -2,7 +2,12 @@
     for custom login pages. See `login.mustache` or `login_form.mustache` for most uses. }}
 <form class="form" action="{{req.contextPath}}/login" method="POST">
 	<div class="form-group">
+		{{^enableLoginByEmail}}
 		<label for="username" class="form-label">Username</label>
+		{{/enableLoginByEmail}}
+		{{#enableLoginByEmail}}
+		<label for="username" class="form-label">Username or email</label>
+		{{/enableLoginByEmail}}
 		<input id="username" name="username" class="form-control" type="text" data-focus />
 	</div>
 

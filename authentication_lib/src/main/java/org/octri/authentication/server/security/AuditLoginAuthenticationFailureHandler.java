@@ -16,8 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This abstract failure handler can be extended to provide auditing of the login and increment the failed attempts
- * flag,
- * locking the account if the maximum is exceeded.
+ * flag, locking the account if the maximum is exceeded.
  *
  * The number of failed attempts prior to locking can be configured using the property:
  * octri.authentication.max-login-attempts
@@ -66,7 +65,8 @@ public class AuditLoginAuthenticationFailureHandler extends SimpleUrlAuthenticat
 	 *            exception describing why authentication failed
 	 */
 	protected void recordUserFailedAttempts(String username, AuthenticationException exception) {
-		if (exception.getClass() == BadCredentialsException.class && userService.findByUsername(username) != null) {
+		if (exception.getClass() == BadCredentialsException.class
+				&& userService.findByLoginIdentifier(username) != null) {
 			userService.incrementFailedAttempts(username);
 		}
 

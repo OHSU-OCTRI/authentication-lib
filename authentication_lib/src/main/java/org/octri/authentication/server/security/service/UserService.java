@@ -83,6 +83,24 @@ public class UserService {
 	}
 
 	/**
+	 * Finds a user by the configured login identifier field(s). By default, searches for a user whose username matches
+	 * the given identifier. If <code>octri.authentication.enable-login-by-email</code> is true, searches for a user
+	 * with a matching username or email address.
+	 *
+	 * @param identifier
+	 *            string to match; expected to be a username or email address
+	 * @return matching user, or null if not found
+	 */
+	@Transactional(readOnly = true)
+	public User findByLoginIdentifier(String identifier) {
+		if (authenticationProperties.getEnableLoginByEmail()) {
+			return userRepository.findByUsernameOrEmailEquals(identifier);
+		} else {
+			return userRepository.findByUsername(identifier);
+		}
+	}
+
+	/**
 	 * Saves the given user account to the database. Handles logic for throwing an exception if the email already exists
 	 * Also handles not expiring passwords when a password changes.
 	 *
@@ -164,7 +182,7 @@ public class UserService {
 	@Transactional
 	public User incrementFailedAttempts(String username) {
 		Assert.hasText(username, "Username is required");
-		User user = userRepository.findByUsername(username);
+		User user = findByLoginIdentifier(username);
 		Assert.notNull(user, "User " + username + " not found when attempting to increment failed attempts");
 
 		return incrementFailedAttempts(user);
@@ -190,7 +208,7 @@ public class UserService {
 
 	/**
 	 * Fetches user accounts that are locked, omitting disabled accounts.
-	 * 
+	 *
 	 * @return List of locked, enabled users
 	 */
 	public List<User> getUnlockableAccounts() {

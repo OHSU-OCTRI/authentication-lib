@@ -145,6 +145,11 @@ public class OctriAuthenticationProperties {
 	private Boolean enablePasswordVisibilityToggle = true;
 
 	/**
+	 * Whether to allow login by email address in addition to username. Defaults to false.
+	 */
+	private Boolean enableLoginByEmail = false;
+
+	/**
 	 * Gets whether LDAP authentication is enabled.
 	 *
 	 * @return true if LDAP authentication is enabled, false if not
@@ -399,6 +404,25 @@ public class OctriAuthenticationProperties {
 		this.enablePasswordVisibilityToggle = enablePasswordVisibilityToggle;
 	}
 
+	/**
+	 * Gets whether login by email address in addition to username is enabled.
+	 *
+	 * @return true if enabled, false otherwise
+	 */
+	public Boolean getEnableLoginByEmail() {
+		return Boolean.TRUE.equals(enableLoginByEmail);
+	}
+
+	/**
+	 * Sets whether login by email address in addition to username is enabled.
+	 *
+	 * @param enableLoginByEmail
+	 *            true to enable login by email address, false to disable it
+	 */
+	public void setEnableLoginByEmail(Boolean enableLoginByEmail) {
+		this.enableLoginByEmail = enableLoginByEmail;
+	}
+
 	@Override
 	public String toString() {
 		return "OctriAuthenticationProperties [enableLdap=" + enableLdap + ", enableTableBased=" + enableTableBased
@@ -406,7 +430,8 @@ public class OctriAuthenticationProperties {
 				+ credentialsExpirationPeriod + ", usernameStyle=" + usernameStyle + ", passwordTokenValidFor="
 				+ passwordTokenValidFor + ", emailRequired=" + emailRequired + ", emailDryRun=" + emailDryRun
 				+ ", roleStyle=" + roleStyle + ", customRoleScript=" + customRoleScript + ", accountMessageEmail="
-				+ accountMessageEmail + ", enablePasswordVisibilityToggle=" + enablePasswordVisibilityToggle + "]";
+				+ accountMessageEmail + ", enablePasswordVisibilityToggle=" + enablePasswordVisibilityToggle
+				+ "enableLoginByEmail=" + enableLoginByEmail + "]";
 	}
 
 }
