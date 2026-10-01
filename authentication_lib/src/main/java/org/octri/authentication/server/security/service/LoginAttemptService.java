@@ -1,10 +1,10 @@
 package org.octri.authentication.server.security.service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.LoginAttempt;
@@ -135,8 +135,7 @@ public class LoginAttemptService {
 			var byEmail = loginAttemptRepository.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(
 					user.getEmail(),
 					false);
-			var optFailure = Arrays.asList(byUsername, byEmail)
-					.stream()
+			var optFailure = Stream.of(byUsername, byEmail)
 					.filter(Objects::nonNull)
 					.sorted(Comparator.comparing(LoginAttempt::getAttemptedAt).reversed())
 					.findFirst();
