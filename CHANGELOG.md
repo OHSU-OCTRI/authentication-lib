@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add polling to unlock accounts after a configurable cooldown period (AUTHLIB-180)
 - Email domain validation for LDAP accounts (AUTHLIB-178)
+- Allow login by email address in addition to username. See [`UPGRADING.md`](./UPGRADING.md) for details. (AUTHLIB-179)
 
 ### Changed
 

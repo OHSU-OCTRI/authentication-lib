@@ -1,14 +1,17 @@
 package org.octri.authentication.server.security.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.entity.LoginAttempt;
+import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.repository.LoginAttemptRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.annotation.Resource;
 
 /**
  * A service wrapper for the {@link LoginAttemptRepository}.
@@ -19,8 +22,22 @@ import jakarta.annotation.Resource;
 @Service
 public class LoginAttemptService {
 
-	@Resource
-	LoginAttemptRepository loginAttemptRepository;
+	private final OctriAuthenticationProperties authenticationProperties;
+	private final LoginAttemptRepository loginAttemptRepository;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param loginAttemptRepository
+	 *            login attempt repository
+	 * @param authenticationProperties
+	 *            library configuration properties
+	 */
+	public LoginAttemptService(LoginAttemptRepository loginAttemptRepository,
+			OctriAuthenticationProperties authenticationProperties) {
+		this.loginAttemptRepository = loginAttemptRepository;
+		this.authenticationProperties = authenticationProperties;
+	}
 
 	/**
 	 * Gets the login attempt with the given ID.
@@ -88,7 +105,7 @@ public class LoginAttemptService {
 	 */
 	@Transactional(readOnly = true)
 	public LoginAttempt findLastSuccess(String username) {
-		return loginAttemptRepository.findFirstByUsernameAndSuccessfulOrderByAttemptedAtDesc(username, true);
+		return loginAttemptRepository.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(username, true);
 	}
 
 	/**
@@ -100,7 +117,34 @@ public class LoginAttemptService {
 	 */
 	@Transactional(readOnly = true)
 	public LoginAttempt findLastFailure(String username) {
-		return loginAttemptRepository.findFirstByUsernameAndSuccessfulOrderByAttemptedAtDesc(username, false);
+		return loginAttemptRepository.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(username, false);
+	}
+
+	/**
+	 * Finds the most recent failed login attempt for the given user.
+	 *
+	 * @param user
+	 *            the user to search for
+	 * @return the most recent failed login attempt for the user, or null if they have never failed to log in
+	 */
+	@Transactional(readOnly = true)
+	public LoginAttempt findLastFailure(User user) {
+		if (authenticationProperties.getEnableLoginByEmail()) {
+			var byUsername = loginAttemptRepository
+					.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(user.getUsername(), false);
+			var byEmail = loginAttemptRepository.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(
+					user.getEmail(),
+					false);
+			var optFailure = Stream.of(byUsername, byEmail)
+					.filter(Objects::nonNull)
+					.sorted(Comparator.comparing(LoginAttempt::getAttemptedAt).reversed())
+					.findFirst();
+			return optFailure.orElse(null);
+		} else {
+			return loginAttemptRepository.findFirstByUsernameIgnoreCaseAndSuccessfulOrderByAttemptedAtDesc(
+					user.getUsername(),
+					false);
+		}
 	}
 
 	/**
@@ -137,8 +181,27 @@ public class LoginAttemptService {
 	 * @return login attempts for the username since the given timestamp, sorted in reverse chronological order.
 	 */
 	public List<LoginAttempt> findLoginAttemptsForUsernameSince(String username, LocalDateTime sinceTimestamp) {
-		return loginAttemptRepository.findByUsernameIgnoreCaseAndAttemptedAtGreaterThanOrderByAttemptedAtDesc(username,
-				sinceTimestamp);
+		return loginAttemptRepository.findByUsernameSince(username, sinceTimestamp);
+	}
+
+	/**
+	 * Finds login attempts for the provided user since the given timestamp, returned in reverse chronological order. If
+	 * login by email address is enabled, searches by username or email address. Otherwise only login attempts matching
+	 * the user's username are returned.
+	 *
+	 * @param user
+	 *            user entity
+	 * @param sinceTimestamp
+	 *            find login attempts since this timestamp
+	 * @return login attempts for the user since the given timestamp, sorted in reverse chronological order
+	 */
+	public List<LoginAttempt> findLoginAttemptsForUserSince(User user, LocalDateTime sinceTimestamp) {
+		if (authenticationProperties.getEnableLoginByEmail()) {
+			return loginAttemptRepository.findByUsernameOrEmailSince(user.getUsername(), user.getEmail(),
+					sinceTimestamp);
+		} else {
+			return loginAttemptRepository.findByUsernameSince(user.getUsername(), sinceTimestamp);
+		}
 	}
 
 }

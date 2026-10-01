@@ -313,7 +313,7 @@ public class UserController {
 				EnumSet.copyOf(enabledAuthenticationMethods),
 				user.getAuthenticationMethod());
 		var loginAttempts = newUser ? List.of()
-				: loginAttemptService.findLoginAttemptsForUsernameSince(user.getUsername(),
+				: loginAttemptService.findLoginAttemptsForUserSince(user,
 						LocalDateTime.now().minus(Period.ofWeeks(1)));
 
 		model.addAttribute("user", user);

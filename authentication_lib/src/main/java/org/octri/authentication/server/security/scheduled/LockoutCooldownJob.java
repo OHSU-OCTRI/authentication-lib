@@ -27,7 +27,7 @@ public class LockoutCooldownJob {
 
     /**
      * Constructor.
-     * 
+     *
      * @param lockoutCooldownProperties
      * @param loginAttemptService
      * @param userService
@@ -41,7 +41,7 @@ public class LockoutCooldownJob {
 
     /**
      * Scheduled task to periodically unlock accounts that have exceeded the maximum number of login attempts.
-     * 
+     *
      * Leverages {@link UserService} to poll the database for locked accounts, and checks the most recent failure from
      * {@link LoginAttemptService} to unlock the account if the configured cooldown period has elapsed.
      */
@@ -51,7 +51,7 @@ public class LockoutCooldownJob {
                 .minus(lockoutCooldownProperties.getDuration()));
 
         userService.getUnlockableAccounts().stream().forEach(user -> {
-            var lastFailure = loginAttemptService.findLastFailure(user.getUsername());
+            var lastFailure = loginAttemptService.findLastFailure(user);
             if (lastFailure == null) {
                 log.warn("No failed login attempts found for " + user.getUsername() + "'s locked account");
             } else if (lastFailure.getAttemptedAt().before(cooldownThreshold)) {

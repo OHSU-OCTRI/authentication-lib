@@ -9,7 +9,6 @@ import org.octri.authentication.server.security.entity.User;
 import org.octri.authentication.server.security.entity.UserRole;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.server.security.service.UserUserRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,11 +32,14 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class AuthenticationUserDetailsService implements UserDetailsService {
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
-	private UserUserRoleService userUserRoleService;
+	private final UserUserRoleService userUserRoleService;
+
+	public AuthenticationUserDetailsService(UserService userService, UserUserRoleService userUserRoleService) {
+		this.userService = userService;
+		this.userUserRoleService = userUserRoleService;
+	}
 
 	/**
 	 *
@@ -55,7 +57,7 @@ public class AuthenticationUserDetailsService implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userService.findByUsername(username);
+		var user = userService.findByLoginIdentifier(username);
 
 		if (user == null) {
 			throw new UsernameNotFoundException("Invalid username " + username);

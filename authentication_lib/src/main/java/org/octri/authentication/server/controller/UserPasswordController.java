@@ -17,7 +17,6 @@ import org.octri.authentication.server.security.service.EmailNotificationService
 import org.octri.authentication.server.security.service.PasswordGeneratorService;
 import org.octri.authentication.server.security.service.PasswordResetTokenService;
 import org.octri.authentication.server.security.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -67,17 +66,18 @@ public class UserPasswordController {
 
 	private static final Log log = LogFactory.getLog(UserPasswordController.class);
 
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
+	private final PasswordResetTokenService passwordResetTokenService;
+	private final EmailNotificationService emailNotificationService;
+	private final PasswordGeneratorService generator;
 
-	@Autowired
-	private PasswordResetTokenService passwordResetTokenService;
-
-	@Autowired
-	private EmailNotificationService emailNotificationService;
-
-	@Autowired
-	private PasswordGeneratorService generator;
+	public UserPasswordController(UserService userService, PasswordResetTokenService passwordResetTokenService,
+			EmailNotificationService emailNotificationService, PasswordGeneratorService generator) {
+		this.userService = userService;
+		this.passwordResetTokenService = passwordResetTokenService;
+		this.emailNotificationService = emailNotificationService;
+		this.generator = generator;
+	}
 
 	/**
 	 * Present a form for changing a password when credentials are expired.
@@ -97,7 +97,7 @@ public class UserPasswordController {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
 		Assert.notNull(username, Messages.COULD_NOT_FIND_USERNAME_IN_SESSION);
 
-		final User user = userService.findByUsername(username);
+		final User user = userService.findByLoginIdentifier(username);
 		Assert.notNull(user, Messages.COULD_NOT_FIND_AN_EXISTING_USER);
 		model.addAttribute("user", user);
 
@@ -130,7 +130,7 @@ public class UserPasswordController {
 		final String username = (String) request.getSession().getAttribute("lastUsername");
 		Assert.notNull(username, Messages.COULD_NOT_FIND_USERNAME_IN_SESSION);
 
-		final User user = userService.findByUsername(username);
+		final User user = userService.findByLoginIdentifier(username);
 		Assert.notNull(user, Messages.COULD_NOT_FIND_AN_EXISTING_USER);
 
 		model.addAttribute("user", user);
