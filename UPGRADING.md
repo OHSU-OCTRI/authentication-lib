@@ -6,7 +6,7 @@
 
 As of release 4.4.0, it is possible for users to log in using their account's username or email address. This feature is disabled by default. To enable it, set `octri.authentication.enable-login-by-email=true`.
 
-If you are using LDAP authentication, you may need to adjust the LDAP search filter to ensure that LDAP accounts are able to log in using username or password. The example below shows example search filters for Active Directory.
+If you are using LDAP authentication, you may need to adjust the LDAP search filter to ensure that LDAP accounts are able to log in using username or email address. The example below shows example search filters for Active Directory.
 
 ```properties
 # before: search by username only
