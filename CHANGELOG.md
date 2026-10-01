@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Extract custom LDAP domain validation class for consistency with other validation (AUTHLIB-178)
 
+### Fixed
+
+- Fix error instantiating `ValidLdapEmailDomainValidator` when updating `User` entities in authentication success/failure handlers (AUTHLIB-181)
+
 ## [4.3.0] - 2026-09-16
 
 ### Added

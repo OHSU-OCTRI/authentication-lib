@@ -30,6 +30,7 @@ import org.octri.authentication.server.security.service.UserRoleService;
 import org.octri.authentication.server.security.service.UserService;
 import org.octri.authentication.utils.ValidationUtils;
 import org.octri.authentication.validation.Emailable;
+import org.octri.authentication.validation.UserManagement;
 import org.octri.common.view.OptionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -348,8 +349,8 @@ public class UserController {
 
 		Set<ConstraintViolation<User>> validationResult = !emailRequired
 				&& StringUtils.isBlank(user.getEmail())
-						? validator.validate(user, Default.class)
-						: validator.validate(user, Emailable.class);
+						? validator.validate(user, Default.class, UserManagement.class)
+						: validator.validate(user, Emailable.class, UserManagement.class);
 
 		return validationUtils.getErrors(user, validationResult);
 	}
