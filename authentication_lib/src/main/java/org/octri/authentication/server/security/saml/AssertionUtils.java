@@ -39,7 +39,7 @@ public class AssertionUtils {
 	}
 
 	/**
-	 * Extracted from Spring Security's {@link BaseOpenSamlAuthenticationProvider}.
+	 * Extracted from Spring Security's {@code BaseOpenSamlAuthenticationProvider}.
 	 *
 	 * @see <a href=
 	 *      "https://github.com/spring-projects/spring-security/blob/7.0.x/saml2/saml2-service-provider/src/main/java/org/springframework/security/saml2/provider/service/authentication/BaseOpenSamlAuthenticationProvider.java">BaseOpenSamlAuthenticationProvider
@@ -66,7 +66,7 @@ public class AssertionUtils {
 	}
 
 	/**
-	 * Extracted from Spring Security's {@link BaseOpenSamlAuthenticationProvider}.
+	 * Extracted from Spring Security's {@code BaseOpenSamlAuthenticationProvider}.
 	 *
 	 * @see <a href=
 	 *      "https://github.com/spring-projects/spring-security/blob/7.0.x/saml2/saml2-service-provider/src/main/java/org/springframework/security/saml2/provider/service/authentication/BaseOpenSamlAuthenticationProvider.java">BaseOpenSamlAuthenticationProvider
