@@ -16,8 +16,9 @@ import org.opensaml.core.xml.schema.XSURI;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Utility methods for working with SAML assertions.
@@ -38,17 +39,17 @@ public class AssertionUtils {
 	}
 
 	/**
-	 * Extracted from Spring Security's {@link OpenSaml4AuthenticationProvider}.
+	 * Extracted from Spring Security's {@link BaseOpenSamlAuthenticationProvider}.
 	 *
 	 * @see <a href=
-	 *      "https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java">OpenSaml4AuthenticationProvider
+	 *      "https://github.com/spring-projects/spring-security/blob/7.0.x/saml2/saml2-service-provider/src/main/java/org/springframework/security/saml2/provider/service/authentication/BaseOpenSamlAuthenticationProvider.java">BaseOpenSamlAuthenticationProvider
 	 *      code</a>
 	 * @param assertion
 	 *            SAML assertion
 	 * @return a map containing the assertion's attributes
 	 */
 	public static Map<String, List<Object>> getAssertionAttributes(Assertion assertion) {
-		Map<String, List<Object>> attributeMap = new LinkedHashMap<>();
+		MultiValueMap<String, Object> attributeMap = new LinkedMultiValueMap<>();
 		for (AttributeStatement attributeStatement : assertion.getAttributeStatements()) {
 			for (Attribute attribute : attributeStatement.getAttributes()) {
 				List<Object> attributeValues = new ArrayList<>();
@@ -58,17 +59,17 @@ public class AssertionUtils {
 						attributeValues.add(attributeValue);
 					}
 				}
-				attributeMap.put(attribute.getName(), attributeValues);
+				attributeMap.addAll(attribute.getName(), attributeValues);
 			}
 		}
-		return attributeMap;
+		return new LinkedHashMap<>(attributeMap);
 	}
 
 	/**
-	 * Extracted from Spring Security's {@link OpenSaml4AuthenticationProvider}.
+	 * Extracted from Spring Security's {@link BaseOpenSamlAuthenticationProvider}.
 	 *
 	 * @see <a href=
-	 *      "https://github.com/spring-projects/spring-security/blob/5.6.x/saml2/saml2-service-provider/src/opensaml4Main/java/org/springframework/security/saml2/provider/service/authentication/OpenSaml4AuthenticationProvider.java">OpenSaml4AuthenticatoinProvider
+	 *      "https://github.com/spring-projects/spring-security/blob/7.0.x/saml2/saml2-service-provider/src/main/java/org/springframework/security/saml2/provider/service/authentication/BaseOpenSamlAuthenticationProvider.java">BaseOpenSamlAuthenticationProvider
 	 *      code</a>
 	 * @param xmlObject
 	 *            XML node
@@ -94,6 +95,6 @@ public class AssertionUtils {
 		if (xmlObject instanceof XSDateTime time) {
 			return time.getValue();
 		}
-		return null;
+		return xmlObject;
 	}
 }
