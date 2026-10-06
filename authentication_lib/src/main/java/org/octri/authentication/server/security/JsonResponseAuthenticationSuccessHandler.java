@@ -31,7 +31,7 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 	/**
 	 * Constructor.
 	 * 
-	 * @param JacksonJsonHttpMessageConverter
+	 * @param jacksonJsonHttpMessageConverter
 	 *            JSON message converter
 	 */
 	public JsonResponseAuthenticationSuccessHandler(
