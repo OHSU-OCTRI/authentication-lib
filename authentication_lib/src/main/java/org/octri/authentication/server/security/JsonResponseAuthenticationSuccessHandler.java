@@ -5,15 +5,14 @@ import java.io.PrintWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import tools.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * This success handler can be used with JSON APIs to record the login event and send a JSON response with
@@ -27,17 +26,17 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 
 	private static final Log log = LogFactory.getLog(JsonResponseAuthenticationSuccessHandler.class);
 
-	private final ObjectMapper mapper;
+	private final JsonMapper mapper;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param mappingJackson2HttpMessageConverter
+	 * @param JacksonJsonHttpMessageConverter
 	 *            JSON message converter
 	 */
 	public JsonResponseAuthenticationSuccessHandler(
-			MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
-		this.mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+			JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {
+		this.mapper = jacksonJsonHttpMessageConverter.getMapper();
 	}
 
 	@Override
