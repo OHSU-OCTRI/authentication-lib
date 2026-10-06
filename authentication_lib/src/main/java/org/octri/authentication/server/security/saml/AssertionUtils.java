@@ -75,24 +75,24 @@ public class AssertionUtils {
 	 * @return the node's value
 	 */
 	private static Object getXmlObjectValue(XMLObject xmlObject) {
-		if (xmlObject instanceof XSAny) {
-			return ((XSAny) xmlObject).getTextContent();
+		if (xmlObject instanceof XSAny any) {
+			return any.getTextContent();
 		}
-		if (xmlObject instanceof XSString) {
-			return ((XSString) xmlObject).getValue();
+		if (xmlObject instanceof XSString string) {
+			return string.getValue();
 		}
-		if (xmlObject instanceof XSInteger) {
-			return ((XSInteger) xmlObject).getValue();
+		if (xmlObject instanceof XSInteger integer) {
+			return integer.getValue();
 		}
-		if (xmlObject instanceof XSURI) {
-			return ((XSURI) xmlObject).getURI();
+		if (xmlObject instanceof XSURI rI) {
+			return rI.getURI();
 		}
-		if (xmlObject instanceof XSBoolean) {
-			XSBooleanValue xsBooleanValue = ((XSBoolean) xmlObject).getValue();
+		if (xmlObject instanceof XSBoolean boolean1) {
+			XSBooleanValue xsBooleanValue = boolean1.getValue();
 			return (xsBooleanValue != null) ? xsBooleanValue.getValue() : null;
 		}
-		if (xmlObject instanceof XSDateTime) {
-			return ((XSDateTime) xmlObject).getValue();
+		if (xmlObject instanceof XSDateTime time) {
+			return time.getValue();
 		}
 		return null;
 	}

@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.exception;
 
+import java.io.Serial;
+
 /**
  * An exception for marking invalid passwords.
  *
@@ -7,6 +9,7 @@ package org.octri.authentication.server.security.exception;
  */
 public class InvalidPasswordException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = -2066695845899054899L;
 
 	/**

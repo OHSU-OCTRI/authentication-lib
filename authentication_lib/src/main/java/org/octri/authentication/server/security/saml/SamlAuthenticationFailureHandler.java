@@ -43,8 +43,8 @@ public class SamlAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 		attempt.setIpAddress(RequestUtils.getClientIpAddr(request));
 		attempt.setSuccessful(false);
 
-		if (exception instanceof Saml2AuthenticationException) {
-			Saml2Error error = ((Saml2AuthenticationException) exception).getSaml2Error();
+		if (exception instanceof Saml2AuthenticationException authenticationException) {
+			Saml2Error error = authenticationException.getSaml2Error();
 			attempt.setErrorType(error.getErrorCode());
 			attempt.setErrorMessage(error.getDescription());
 		} else {
