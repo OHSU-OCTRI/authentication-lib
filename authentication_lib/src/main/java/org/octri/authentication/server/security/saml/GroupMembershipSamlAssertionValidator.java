@@ -13,8 +13,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.saml2.core.Saml2Error;
 import org.springframework.security.saml2.core.Saml2ErrorCodes;
 import org.springframework.security.saml2.core.Saml2ResponseValidatorResult;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider.AssertionToken;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider.AssertionToken;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider.AssertionValidator;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -43,8 +43,8 @@ public class GroupMembershipSamlAssertionValidator implements Converter<Assertio
 	 */
 	@Override
 	public Saml2ResponseValidatorResult convert(AssertionToken assertionToken) {
-		Saml2ResponseValidatorResult result = OpenSaml4AuthenticationProvider
-				.createDefaultAssertionValidator()
+		Saml2ResponseValidatorResult result = AssertionValidator
+				.withDefaults()
 				.convert(assertionToken);
 
 		Assertion assertion = assertionToken.getAssertion();

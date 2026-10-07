@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security.saml;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 public class ApplicationSaml2AuthenticatedPrincipal extends AuthenticationUserDetails
 		implements Saml2AuthenticatedPrincipal {
 
+	@Serial
 	private static final long serialVersionUID = -7394856325865885172L;
 
 	/**

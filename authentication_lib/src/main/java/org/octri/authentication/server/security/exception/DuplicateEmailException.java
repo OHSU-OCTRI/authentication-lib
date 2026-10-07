@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.exception;
 
+import java.io.Serial;
+
 /**
  * An exception thrown when trying to save a user with an email address that belongs to another user.
  *
@@ -7,6 +9,7 @@ package org.octri.authentication.server.security.exception;
  */
 public class DuplicateEmailException extends UserManagementException {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**

@@ -68,13 +68,13 @@ public class SessionEventService {
 		final Optional<SessionEvent> login = findLoginEvent(sessionId);
 		switch (event) {
 			case LOGIN:
-				if (helper.isLoggedIn() && !login.isPresent()) {
+				if (helper.isLoggedIn() && login.isEmpty()) {
 					sessionEventRepository.save(new SessionEvent(sessionId, event, findUser(), null));
 				}
 				break;
 			case LOGOUT:
 				final Optional<SessionEvent> logout = findLogoutEvent(sessionId);
-				if (login.isPresent() && !logout.isPresent()) {
+				if (login.isPresent() && logout.isEmpty()) {
 					sessionEventRepository.save(new SessionEvent(sessionId, event, login.get().getUser(), null));
 				}
 				break;

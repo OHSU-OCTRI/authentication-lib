@@ -1,5 +1,7 @@
 package org.octri.authentication.server.security.exception;
 
+import java.io.Serial;
+
 /**
  * An exception primarily for when adding new users. If the provided user details do not match those of LDAP this
  * exception may be thrown.
@@ -8,6 +10,7 @@ package org.octri.authentication.server.security.exception;
  */
 public class InvalidLdapUserDetailsException extends UserManagementException {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
