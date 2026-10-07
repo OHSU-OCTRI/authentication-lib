@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -31,12 +30,11 @@ public class JsonResponseAuthenticationSuccessHandler extends AuditLoginAuthenti
 	/**
 	 * Constructor.
 	 * 
-	 * @param jacksonJsonHttpMessageConverter
-	 *            JSON message converter
+	 * @param mapper
+	 *            the application's auto-configured JSON mapper
 	 */
-	public JsonResponseAuthenticationSuccessHandler(
-			JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {
-		this.mapper = jacksonJsonHttpMessageConverter.getMapper();
+	public JsonResponseAuthenticationSuccessHandler(JsonMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	@Override
