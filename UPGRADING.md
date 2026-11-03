@@ -1,5 +1,9 @@
 # Upgrading
 
+## Upgrading to 5.0.0
+
+Release 5.0.0 upgrades dependencies to Spring Boot 4, and Spring Security 7. This also updates minimum Java version to Java 21. To use this version, you must upgrade your application to at least Spring Boot 4.0 and Java 21 as well.
+
 ## Upgrading to 4.4.0
 
 ### Interchangeable Login By Username or Email Address

@@ -9,7 +9,6 @@ import org.octri.authentication.config.OctriAuthenticationProperties;
 import org.octri.authentication.server.security.password.PasswordGenConfig;
 import org.octri.authentication.server.security.password.RandomDictionary;
 import org.octri.authentication.server.security.password.StructuredPasswordGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -39,8 +38,8 @@ public class PasswordGeneratorService {
 	 * @throws IOException
 	 *             if an error occurs when reading the dictionary file
 	 */
-	public PasswordGeneratorService(@Autowired ResourceLoader loader, @Autowired PasswordGenConfig passwordGenConfig,
-			@Autowired OctriAuthenticationProperties authProperties)
+	public PasswordGeneratorService(ResourceLoader loader, PasswordGenConfig passwordGenConfig,
+			OctriAuthenticationProperties authProperties)
 			throws IOException {
 		this.resourceLoader = loader;
 		// Check that both password generation and table based users are configured

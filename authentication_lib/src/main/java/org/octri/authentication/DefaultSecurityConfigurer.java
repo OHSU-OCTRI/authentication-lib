@@ -36,7 +36,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
@@ -101,7 +101,7 @@ public class DefaultSecurityConfigurer {
 	private SamlProperties samlProperties;
 
 	@Autowired(required = false)
-	private OpenSaml4AuthenticationProvider samlAuthenticationProvider;
+	private OpenSaml5AuthenticationProvider samlAuthenticationProvider;
 
 	@Autowired(required = false)
 	private SamlAuthenticationSuccessHandler samlAuthenticationSuccessHandler;

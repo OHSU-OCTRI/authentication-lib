@@ -1,5 +1,6 @@
 package org.octri.authentication.server.security;
 
+import java.io.Serial;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class AuthenticationUserDetails extends User {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
