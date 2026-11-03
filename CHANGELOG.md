@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - Upgrades from spring-boot-starter-parent 3.5.16 to 4.0.8 (CIS-3898)
-- Bumps common-lib from 2.1.3 to 3.0.0 (CIS-3898)
+- Bumps common-lib from 2.1.3 to 3.0.1 (CIS-3898)
 - Bumps messaging-lib from 0.2.3 to 1.0.0 (CIS-3898)
 
 ## [4.4.0] - 2026-10-01
